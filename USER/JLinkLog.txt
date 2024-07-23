@@ -1,0 +1,136 @@
+T1BC4 002:977.240   SEGGER J-Link V7.62 Log File
+T1BC4 002:977.297   DLL Compiled: Feb 16 2022 16:05:10
+T1BC4 002:977.302   Logging started @ 2022-04-27 05:10
+T1BC4 002:977.327 - 62.080ms
+T1BC4 002:977.334 JLINK_SetWarnOutHandler(...)
+T1BC4 002:977.338 - 0.005ms
+T1BC4 002:977.343 JLINK_OpenEx(...)
+T1BC4 002:979.160   Firmware: J-Link V9 compiled May  7 2021 16:26:12
+T1BC4 002:979.782   Firmware: J-Link V9 compiled May  7 2021 16:26:12
+T1BC4 002:979.901   Decompressing FW timestamp took 102 us
+T1BC4 002:987.953   Hardware: V9.70
+T1BC4 002:987.967   S/N: 59701285
+T1BC4 002:987.972   OEM: SEGGER
+T1BC4 002:987.977   Feature(s): RDI, GDB, FlashDL, FlashBP, JFlash
+T1BC4 002:990.338   TELNET listener socket opened on port 19021
+T1BC4 002:994.586   WEBSRV WEBSRV_Init(): Starting webserver thread(s)
+T1BC4 002:994.734   WEBSRV Webserver running on local port 19080
+T1BC4 003:002.166 - 24.835ms returns "O.K."
+T1BC4 003:002.187 JLINK_GetEmuCaps()
+T1BC4 003:002.192 - 0.006ms returns 0xB9FF7BBF
+T1BC4 003:002.198 JLINK_TIF_GetAvailable(...)
+T1BC4 003:002.655 - 0.461ms
+T1BC4 003:002.663 JLINK_SetErrorOutHandler(...)
+T1BC4 003:002.667 - 0.005ms
+T1BC4 003:002.676 JLINK_ExecCommand("ProjectFile = "F:\A0 ·ëè÷°²\F4LVGL³ÌÐò\template\USER\JLinkSettings.ini"", ...). 
+T1BC4 003:003.280 - 0.609ms returns 0x00
+T1BC4 003:003.293 JLINK_ExecCommand("Device = STM32F407ZG", ...). 
+T1BC4 003:003.692   Device "STM32F407ZG" selected.
+T1BC4 003:003.852 - 0.558ms returns 0x00
+T1BC4 003:003.861 JLINK_ExecCommand("DisableConnectionTimeout", ...). 
+T1BC4 003:003.867 - 0.003ms returns 0x01
+T1BC4 003:003.872 JLINK_GetHardwareVersion()
+T1BC4 003:003.876 - 0.005ms returns 97000
+T1BC4 003:003.881 JLINK_GetDLLVersion()
+T1BC4 003:003.884 - 0.005ms returns 76200
+T1BC4 003:003.889 JLINK_GetOEMString(...)
+T1BC4 003:003.894 JLINK_GetFirmwareString(...)
+T1BC4 003:003.897 - 0.005ms
+T1BC4 003:003.904 JLINK_GetDLLVersion()
+T1BC4 003:003.907 - 0.005ms returns 76200
+T1BC4 003:003.912 JLINK_GetCompileDateTime()
+T1BC4 003:003.915 - 0.005ms
+T1BC4 003:003.921 JLINK_GetFirmwareString(...)
+T1BC4 003:003.925 - 0.005ms
+T1BC4 003:003.930 JLINK_GetHardwareVersion()
+T1BC4 003:003.933 - 0.005ms returns 97000
+T1BC4 003:003.938 JLINK_GetSN()
+T1BC4 003:003.942 - 0.005ms returns 59701285
+T1BC4 003:003.947 JLINK_GetOEMString(...)
+T1BC4 003:003.953 JLINK_TIF_Select(JLINKARM_TIF_SWD)
+T1BC4 003:005.363 - 1.414ms returns 0x00
+T1BC4 003:005.372 JLINK_HasError()
+T1BC4 003:005.377 JLINK_SetSpeed(1000)
+T1BC4 003:005.561 - 0.187ms
+T1BC4 003:005.791 JLINK_HasError()
+T1BC4 003:005.800 JLINK_SetResetType(JLINKARM_RESET_TYPE_ADI)
+T1BC4 003:005.804 - 0.005ms returns JLINKARM_RESET_TYPE_NORMAL
+T1BC4 003:005.808 JLINK_Reset()
+T1BC4 003:006.177   InitTarget() start
+T1BC4 003:006.184    J-Link Script File: Executing InitTarget()
+T1BC4 003:017.953   InitTarget() end
+T1BC4 003:019.115   Found SW-DP with ID 0x2BA01477
+T1BC4 003:022.843   DPIDR: 0x2BA01477
+T1BC4 003:022.892   CoreSight SoC-400 or earlier
+T1BC4 003:022.924   Scanning AP map to find all available APs
+T1BC4 003:024.348   AP[1]: Stopped AP scan as end of AP map has been reached
+T1BC4 003:024.360   AP[0]: AHB-AP (IDR: 0x24770011)
+T1BC4 003:024.365   Iterating through AP map to find AHB-AP to use
+T1BC4 003:026.333   AP[0]: Core found
+T1BC4 003:026.342   AP[0]: AHB-AP ROM base: 0xE00FF000
+T1BC4 003:027.429   CPUID register: 0xE00FF003. Implementer code: 0xE0 (???)
+T1BC4 003:027.438   Unknown core, assuming Cortex-M0
+T1BC4 003:027.443   Found Cortex-M0 r0p3, Big endian.
+T1BC4 003:127.749   Identified core does not match configuration. (Found: Cortex-M0, Configured: Cortex-M4)
+T1BC4 003:128.493   -- Max. mem block: 0x00010C20
+T1BC4 003:128.943   CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T1BC4 003:129.961   CPU_ReadMem(4 bytes @ 0xE0002000)
+T1BC4 003:130.906   FPUnit: 112 code (BP) slots and 0 literal slots
+T1BC4 003:130.915   CPU_ReadMem(4 bytes @ 0xE000EDFC)
+T1BC4 003:131.928   CPU_WriteMem(4 bytes @ 0xE000EDFC)
+T1BC4 003:132.681   CPU_ReadMem(4 bytes @ 0xE0001000)
+T1BC4 003:133.612   CPU_WriteMem(4 bytes @ 0xE0001000)
+T1BC4 003:134.386   CoreSight components:
+T1BC4 003:134.399   ROMTbl[0] @ E00FF000
+T1BC4 003:134.406   CPU_ReadMem(64 bytes @ 0xE00FF000)
+T1BC4 003:136.243   CPU_ReadMem(32 bytes @ 0xC01FEFE0)
+T1BC4 003:138.055   [0][0]: C01FE000 CID 00000000 PID 00000000 ???
+T1BC4 003:138.068   CPU_ReadMem(32 bytes @ 0xE000EFE0)
+T1BC4 003:140.499   [0][1]: E000E000 CID 00000000 PID 00000000 ???
+T1BC4 003:140.551   CPU_ReadMem(32 bytes @ 0xE0001FE0)
+T1BC4 003:142.928   [0][2]: E0001000 CID 00000000 PID 00000000 ???
+T1BC4 003:142.939   CPU_ReadMem(32 bytes @ 0xE0002FE0)
+T1BC4 003:145.198   [0][3]: E0002000 CID 00000000 PID 00000000 ???
+T1BC4 003:145.216   CPU_ReadMem(32 bytes @ 0xE0000FE0)
+T1BC4 003:147.651   [0][4]: E0000000 CID 00000000 PID 00000000 ???
+T1BC4 003:147.662   CPU_ReadMem(32 bytes @ 0xE0040FE0)
+T1BC4 003:149.919   [0][5]: E0040000 CID 00000000 PID 00000000 ???
+T1BC4 003:149.932   CPU_ReadMem(32 bytes @ 0xE0041FE0)
+T1BC4 003:152.356   [0][6]: E0041000 CID 00000000 PID 00000000 ???
+T1BC4 003:152.375   CPU is running
+T1BC4 003:152.381   CPU_WriteMem(4 bytes @ 0xE000EDF0)
+T1BC4 003:154.525   CPU is running
+T1BC4 003:154.564   CPU_WriteMem(4 bytes @ 0xE000EDFC)
+T1BC4 003:156.918   Reset: Halt core after reset via DEMCR.VC_CORERESET.
+T1BC4 003:156.927   Reset: Reset device via reset pin
+T1BC4 003:285.926   Reset: VC_CORERESET did not halt CPU. (Debug logic also reset by reset pin?).
+T1BC4 003:285.946   Reset: Reconnecting and manually halting CPU.
+T1BC4 003:287.223   Found SW-DP with ID 0x2BA01477
+T1BC4 003:291.225   DPIDR: 0x2BA01477
+T1BC4 003:291.285   CoreSight SoC-400 or earlier
+T1BC4 003:291.319   AP map detection skipped. Manually configured AP map found.
+T1BC4 003:291.349   AP[0]: AHB-AP (IDR: Not set)
+T1BC4 003:293.300   AP[0]: Core found
+T1BC4 003:293.350   AP[0]: AHB-AP ROM base: 0xE00FF000
+T1BC4 003:294.535   CPUID register: 0xE00FF003. Implementer code: 0xE0 (???)
+T1BC4 003:294.546   Unknown core, assuming Cortex-M0
+T1BC4 003:294.552   Found Cortex-M0 r0p3, Big endian.
+T1BC4 003:597.782   T-bit of XPSR is 0 but should be 1. Changed to 1.
+T1BC4 003:597.809   CPU_WriteMem(4 bytes @ 0xE000EDFC)
+T1BC4 003:604.485   CPU_ReadMem(4 bytes @ 0xE000EDF0)
+T1BC4 003:610.872   CPU_WriteMem(4 bytes @ 0xE0002000)
+T1BC4 003:611.637   CPU_ReadMem(4 bytes @ 0xE000EDFC)
+T1BC4 003:612.689   CPU_ReadMem(4 bytes @ 0xE0001000)
+T1BC4 003:613.702   CPU_WriteMem(4 bytes @ 0xE0001000)
+T1BC4 003:614.374 - 608.599ms
+T1BC4 003:614.441 JLINK_GetId()
+T1BC4 003:615.096 - 0.660ms returns 0x2BA01477
+T1BC4 003:616.354 JLINK_GetFirmwareString(...)
+T1BC4 003:616.362 - 0.010ms
+T1BC4 007:491.624 JLINK_Close()
+T1BC4 007:492.317   CPU_ReadMem(4 bytes @ 0xE0001000)
+T1BC4 007:493.251   CPU_WriteMem(4 bytes @ 0xE0001000)
+T1BC4 007:494.051   CPU_WriteMem(4 bytes @ 0xE0001004)
+T1BC4 007:729.491 - 237.882ms
+T1BC4 007:729.509   
+T1BC4 007:729.513   Closed
