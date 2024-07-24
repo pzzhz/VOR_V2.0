@@ -1,9 +1,12 @@
 ﻿#include "task_stroage.h"
 #include "../other/list.h"
+#include "../other/system_function.h"
 #define use_windows
 #ifndef STM32F40_41xxx
 #include "Windows.h"
 #include <stdio.h>
+#else
+#include "stdlib.h"
 #endif // use_windows
 
 // 定义链表节点结构
@@ -35,7 +38,7 @@ uint8_t Task_Stroage_GetIndexByInstant(Task_Parameter_Struct *info, int *Index);
 // 输入输出接口
 uint8_t Task_Stroage_Get(Task_Parameter_Struct *info, short INDEX)
 {
-    Node_Task_Stroage *node = (Node_Task_Stroage *)FindNode(task.list, INDEX);
+    Node_Task_Stroage *node = (Node_Task_Stroage *)FindNode((List *)task.list, INDEX);
     if (node == NULL)
         return 0;
     Task_Parameter_Struct *src = node->instant;
@@ -53,60 +56,63 @@ Task_Parameter_Struct *Task_Stroage_add(Task_Parameter_Struct info)
 {
     Task_Parameter_Struct *info_pt = task.list->_malloc(sizeof(Task_Parameter_Struct));
     memcpy(info_pt, &info, sizeof(Task_Parameter_Struct));
-    Node_Task_Stroage *node = add(task.list, info_pt);
-    ID_UPdata(task.list);
+    Node_Task_Stroage *node = (Node_Task_Stroage *)add((List *)task.list, info_pt);
+    ID_UPdata((List *)task.list);
     return info_pt;
 }
 
 // 申请插入
 Task_Parameter_Struct *Task_Stroage_Insert(Task_Parameter_Struct insert_info, uint16_t insert_index)
 {
-    List *head = task.list;
+    List *head = (List *)task.list;
     Node_Task_Stroage *newnode = 0;
-    Task_Parameter_Struct *info_pt = task.list->_malloc(sizeof(Task_Parameter_Struct));
+    Task_Parameter_Struct *info_pt = head->_malloc(sizeof(Task_Parameter_Struct));
     memcpy(info_pt, &insert_info, sizeof(Task_Parameter_Struct));
     if (insert_index == 0xffff)
     {
-        newnode = add(head, info_pt);
+        newnode = (Node_Task_Stroage *)add(head, (void *)info_pt);
     }
     else
     {
-        newnode = insert(head, insert_index, info_pt);
+        newnode = (Node_Task_Stroage *)insert(head, insert_index, (void *)info_pt);
         if (newnode == 0)
-            newnode = add(head, info_pt);
+            newnode = (Node_Task_Stroage *)add(head, info_pt);
     }
-    ID_UPdata(task.list);
+    ID_UPdata(head);
     return info_pt;
 }
 
 // 申请删除
 uint8_t Task_Stroage_delByID(short ID)
 {
+    List *head = (List *)task.list;
     if (ID < 0)
         return 0;
-    Node *node = FindNode(task.list, ID);
+    Node *node = FindNode(head, ID);
     if (node == 0)
-        return;
+        return 0;
     if (node->instant != 0)
-        task.list->_free(node->instant);
-    removeNode(task.list, ID);
+        head->_free(node->instant);
+    removeNode(head, ID);
     return 1;
 }
 
 // 申请删除
 uint8_t Task_Stroage_del(Task_Parameter_Struct *info)
 {
+    List *head = (List *)task.list;
     if (info == 0)
         return 0;
-    DelNodeByInstant(task.list, info);
-    task.list->_free(info);
+    DelNodeByInstant(head, info);
+    head->_free(info);
     return 1;
 }
 
 // find id by instant address
 uint8_t Task_Stroage_GetIndexByInstant(Task_Parameter_Struct *info, int *Index)
 {
-    Node *node = FindNodeByInstant(task.list, info);
+    List *head = (List *)task.list;
+    Node *node = FindNodeByInstant(head, info);
     if (node == 0)
         return 0;
     int id = node->data;
@@ -130,7 +136,7 @@ void Task_Stroage_handle(void)
         if (task_change_ready)
         {
         }
-        Sleep(100);
+        // Sleep(100);
     }
 }
 #else
@@ -151,10 +157,10 @@ void Task_Stroage_Init()
                            &dwThreadId);        // 线程ID)
 
 #endif // use_windows
-    List *list = malloc(sizeof(List));
+    List *list = (List *)malloc(sizeof(List));
     /// memset(list, 0, sizeof(List));
     List_init(list);
     list->_free = free;
     list->_malloc = malloc;
-    task.list = list;
+    task.list = (List_Task_Stroage *)list;
 }

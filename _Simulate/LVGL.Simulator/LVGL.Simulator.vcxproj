@@ -52,7 +52,9 @@
     <ClCompile Include="..\..\INTERFACE\UI\control\control.c" />
     <ClCompile Include="..\..\INTERFACE\UI\control\control_base.c" />
     <ClCompile Include="..\..\INTERFACE\UI\control\control_VOR.c" />
+    <ClCompile Include="..\..\INTERFACE\UI\control\task_control.c" />
     <ClCompile Include="..\..\INTERFACE\UI\other\list.c" />
+    <ClCompile Include="..\..\INTERFACE\UI\other\system_function.c" />
     <ClCompile Include="..\..\INTERFACE\UI\Task\task_stroage.c" />
     <ClCompile Include="..\..\INTERFACE\UI\UI_Component\UI_Btn.c" />
     <ClCompile Include="..\..\INTERFACE\UI\UI_Component\UI_Dropdown.c" />

@@ -56,6 +56,12 @@
     <ClCompile Include="..\..\INTERFACE\UI\UI_page\page1.c">
       <Filter>UI\UI_page</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\INTERFACE\UI\other\system_function.c">
+      <Filter>UI\other</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INTERFACE\UI\control\task_control.c">
+      <Filter>UI\control</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LVGL.Simulator.rc" />

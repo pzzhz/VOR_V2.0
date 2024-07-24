@@ -1,4 +1,4 @@
-﻿#include "UI_ListBox.h"
+#include "UI_ListBox.h"
 #include "../other/list.h"
 
 
@@ -11,6 +11,7 @@ static void anim_y_cb(void* var, int32_t v) {
 
 // 自定义动画路径函数，例如 y = t^2
 static int32_t custom_anim_path(const lv_anim_t* a) {
+	static float movement_factor=0.14;
     Table_Property* table = a->user_data;
     if (table->isremove)
     {
@@ -25,7 +26,7 @@ static int32_t custom_anim_path(const lv_anim_t* a) {
         return 0;
     }
     table->set_pos = table->set_clearence * (*table->ID);
-    table->pos_y += (table->set_pos - table->pos_y) * 0.05;
+    table->pos_y += (table->set_pos - table->pos_y) * movement_factor;
     //lv_group_focus_obj(table->obj);
     return  (int32_t)table->pos_y;
 }
@@ -107,7 +108,7 @@ void UI_Table_Clean_event(lv_event_t* e)
 {
     lv_event_code_t code = e->code;
     List* head = e->user_data;
-    List2* _head = head;
+    List2* _head = ( List2*)head;
     lv_obj_t* table = e->current_target;
     int index = 0;
     if (code == LV_EVENT_DELETE)

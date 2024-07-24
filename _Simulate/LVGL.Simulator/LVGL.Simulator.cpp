@@ -106,8 +106,7 @@ int main()
     }
     lv_fs_win32_init();
     lv_win32_add_all_input_devices_to_group(NULL);
-    Task_Stroage_Init();
-    controlInit();
+
     /* lv_fs_file_t f;
      lv_fs_res_t res = lv_fs_open(&f, "C:/Users/pzh/Desktop/t4.bmp", LV_FS_MODE_RD);
      if (res == LV_RES_OK) {
@@ -133,6 +132,8 @@ int main()
     lv_btn_create(lv_scr_act());
 
 #endif // 0
+    Task_Stroage_Init();
+    controlInit();
     mainpage_init(lv_scr_act());
     Mode_init(lv_scr_act());
 

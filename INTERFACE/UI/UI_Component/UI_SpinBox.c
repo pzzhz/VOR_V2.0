@@ -1,4 +1,12 @@
-﻿#include "UI_SpinBox.h"
+﻿/*
+ * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
+ * @Date: 2024-07-22 16:00:07
+ * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
+ * @LastEditTime: 2024-07-23 16:18:31
+ * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\INTERFACE\UI\UI_Component\UI_SpinBox.c
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
+#include "UI_SpinBox.h"
 
 typedef enum
 {
@@ -71,8 +79,8 @@ void SpinBox_Init(UI_SpinBox_Struct* e)
     // set 
     lv_obj_set_style_bg_img_src(btn_increase, LV_SYMBOL_PLUS, 0);
     lv_obj_set_style_bg_img_src(btn_decrease, LV_SYMBOL_MINUS, 0);
-    btn_increase->user_data = SpinBox_increase;
-    btn_decrease->user_data = SpinBox_decrease;
+    btn_increase->user_data = (void *)SpinBox_increase;
+    btn_decrease->user_data = (void *)SpinBox_decrease;
     // btn event
     lv_obj_add_event_cb(btn_increase, SpinBox_Btn_handler, LV_EVENT_ALL, (void*)spinbox);
     lv_obj_add_event_cb(btn_decrease, SpinBox_Btn_handler, LV_EVENT_ALL, (void*)spinbox);

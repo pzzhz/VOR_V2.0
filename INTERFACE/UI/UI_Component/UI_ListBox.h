@@ -14,7 +14,7 @@ extern "C"
         float set_pos;
         float pos_y;
         int32_t set_clearence;
-        const uint8_t* ID;
+        const int* ID;
         lv_anim_t* anim;
 
         uint32_t last_tick;
