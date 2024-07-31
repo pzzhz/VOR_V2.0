@@ -36,6 +36,8 @@
   <Import Project="LVGL.Portable.vcxitems" />
   <Import Project="LVGL.Drivers.vcxitems" />
   <ItemGroup>
+    <ClInclude Include="..\..\INTERFACE\UI\control\control_Hardware_API.h" />
+    <ClInclude Include="control_type.h" />
     <ClInclude Include="lv_conf.h" />
   </ItemGroup>
   <ItemGroup>
@@ -49,11 +51,16 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\commuication\communication_API.c" />
+    <ClCompile Include="..\..\commuication\mpu\jy60.c" />
     <ClCompile Include="..\..\INTERFACE\UI\control\control.c" />
     <ClCompile Include="..\..\INTERFACE\UI\control\control_base.c" />
+    <ClCompile Include="..\..\INTERFACE\UI\control\control_CONT.c" />
+    <ClCompile Include="..\..\INTERFACE\UI\control\control_Hardware_API.c" />
     <ClCompile Include="..\..\INTERFACE\UI\control\control_VOR.c" />
     <ClCompile Include="..\..\INTERFACE\UI\control\task_control.c" />
     <ClCompile Include="..\..\INTERFACE\UI\other\list.c" />
+    <ClCompile Include="..\..\INTERFACE\UI\other\meassage_center.c" />
     <ClCompile Include="..\..\INTERFACE\UI\other\system_function.c" />
     <ClCompile Include="..\..\INTERFACE\UI\Task\task_stroage.c" />
     <ClCompile Include="..\..\INTERFACE\UI\UI_Component\UI_Btn.c" />

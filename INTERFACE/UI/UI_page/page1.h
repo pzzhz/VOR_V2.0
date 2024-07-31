@@ -6,7 +6,7 @@ extern "C"
 {
 #endif //
     void mainpage_init(lv_obj_t* parent);
-
+    char* UI_Page1_Get_Msg_Array(uint16_t* len);
 #ifdef __cplusplus
 }
 #endif // 

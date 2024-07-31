@@ -10,7 +10,6 @@
       <TargetName>release</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pArmCC>5060061::V5.06 update 1 (build 61)::ARMCC</pArmCC>
       <pCCUsed>5060061::V5.06 update 1 (build 61)::ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
@@ -338,10 +337,10 @@
             <v6WtE>0</v6WtE>
             <v6Rtti>0</v6Rtti>
             <VariousControls>
-              <MiscControls>--diag_suppress=68  --diag_suppress=111  --diag_suppress=550  --diag_suppress=188  --diag_suppress=167  --diag_suppress=668 --diag_suppress=1035</MiscControls>
-              <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER</Define>
+              <MiscControls>--diag_suppress=68  --diag_suppress=111  --diag_suppress=550  --diag_suppress=188  --diag_suppress=167  --diag_suppress=668 --diag_suppress=1035,1</MiscControls>
+              <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER,HARDWARE_TEST,USE_USB_OTG_FS</Define>
               <Undefine></Undefine>
-              <IncludePath>..\FREERTOS\source\include;..\CORE;..\USER;..\HARDWARE\LCD;..\FWLIB\inc;..\HARDWARE\TOUCH;..\INTERFACE\LVGL\lvgl;..\INTERFACE\LVGL\lvgl\lsrc;..\INTERFACE\LVGL\lvgl\src\core;..\INTERFACE\LVGL\lvgl\src\draw;..\INTERFACE\LVGL\lvgl\src\font;..\INTERFACE\LVGL\lvgl\src\hal;..\INTERFACE\LVGL\lvgl\src\misc;..\INTERFACE\LVGL\lvgl\src\theme;..\INTERFACE\LVGL\lvgl\src\widgets;..\INTERFACE\LVGL\lvgl\src\extra;..\INTERFACE\LVGL\lvgl\src\extra\layouts;..\INTERFACE\LVGL\lvgl\src\extra\layout\flex;..\INTERFACE\LVGL\lv_port;..\INTERFACE\LVGL\lvgl\src\extra\layouts\flex;..\INTERFACE\LVGL\lvgl\src\extra\layouts\grid;..\INTERFACE\LVGL\lvgl\src\extra\libs;..\INTERFACE\LVGL\lvgl\src\extra\others;..\INTERFACE\LVGL\lvgl\src\extra\themes;..\INTERFACE\LVGL\lvgl\src\extra\widgets;..\INTERFACE\LVGL\lvgl\src\extra\themes\basic;..\INTERFACE\LVGL\lvgl\src\extra\libs\qrcode;..\HARDWARE\SYSTEM\sys;..\HARDWARE\SYSTEM\delay;..\HARDWARE\SYSTEM\usart;..\FREERTOS;..\FREERTOS\source\portable\rvds\ARM_CM4F;..\INTERFACE\LVGL;..\INTERFACE\UI;..\INTERFACE\UI\control</IncludePath>
+              <IncludePath>..\FREERTOS\source\include;..\CORE;..\USER;..\HARDWARE\LCD;..\FWLIB\inc;..\HARDWARE\TOUCH;..\INTERFACE\LVGL\lvgl;..\INTERFACE\LVGL\lvgl\lsrc;..\INTERFACE\LVGL\lvgl\src\core;..\INTERFACE\LVGL\lvgl\src\draw;..\INTERFACE\LVGL\lvgl\src\font;..\INTERFACE\LVGL\lvgl\src\hal;..\INTERFACE\LVGL\lvgl\src\misc;..\INTERFACE\LVGL\lvgl\src\theme;..\INTERFACE\LVGL\lvgl\src\widgets;..\INTERFACE\LVGL\lvgl\src\extra;..\INTERFACE\LVGL\lvgl\src\extra\layouts;..\INTERFACE\LVGL\lvgl\src\extra\layout\flex;..\INTERFACE\LVGL\lv_port;..\INTERFACE\LVGL\lvgl\src\extra\layouts\flex;..\INTERFACE\LVGL\lvgl\src\extra\layouts\grid;..\INTERFACE\LVGL\lvgl\src\extra\libs;..\INTERFACE\LVGL\lvgl\src\extra\others;..\INTERFACE\LVGL\lvgl\src\extra\themes;..\INTERFACE\LVGL\lvgl\src\extra\widgets;..\INTERFACE\LVGL\lvgl\src\extra\themes\basic;..\INTERFACE\LVGL\lvgl\src\extra\libs\qrcode;..\HARDWARE\SYSTEM\sys;..\HARDWARE\SYSTEM\delay;..\HARDWARE\SYSTEM\usart;..\FREERTOS;..\FREERTOS\source\portable\rvds\ARM_CM4F;..\INTERFACE\LVGL;..\INTERFACE\UI;..\INTERFACE\UI\control;..\commuication\USB\USB_APP;..\commuication\USB\STM32_USB_Device_Library\Class\cdc\inc;..\commuication\USB\STM32_USB_OTG_Driver\inc;..\commuication\USB\STM32_USB_Device_Library\Core\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -429,6 +428,21 @@
               <FileName>Slave1_Timer.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\SLAVE\Slave1_Timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>USART3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\USART\USART3.c</FilePath>
+            </File>
+            <File>
+              <FileName>USART5.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\USART\USART5.c</FilePath>
+            </File>
+            <File>
+              <FileName>USART1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\USART\USART1.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -612,6 +626,96 @@
               <FileName>Slave_Vor_Ctrl.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\implement\Slave_Vor_Ctrl.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>cummunication</GroupName>
+          <Files>
+            <File>
+              <FileName>communication.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\communication.c</FilePath>
+            </File>
+            <File>
+              <FileName>communication_API.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\communication_API.c</FilePath>
+            </File>
+            <File>
+              <FileName>jy60.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\mpu\jy60.c</FilePath>
+            </File>
+            <File>
+              <FileName>BlueTooth.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\BLUETOOTH\BlueTooth.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>usb</GroupName>
+          <Files>
+            <File>
+              <FileName>usb_bsp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\USB_APP\usb_bsp.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_desc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\USB_APP\usbd_desc.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_usr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\USB_APP\usbd_usr.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_Device_Library\Core\src\usbd_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_ioreq.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_Device_Library\Core\src\usbd_ioreq.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_req.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_Device_Library\Core\src\usbd_req.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_OTG_Driver\src\usb_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_dcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_OTG_Driver\src\usb_dcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_dcd_int.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_OTG_Driver\src\usb_dcd_int.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_cdc_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_Device_Library\Class\cdc\src\usbd_cdc_core.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>other</GroupName>
+          <Files>
+            <File>
+              <FileName>system_function.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\other\system_function.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1041,6 +1145,21 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\SLAVE\Slave1_Timer.c</FilePath>
             </File>
+            <File>
+              <FileName>USART3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\USART\USART3.c</FilePath>
+            </File>
+            <File>
+              <FileName>USART5.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\USART\USART5.c</FilePath>
+            </File>
+            <File>
+              <FileName>USART1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\USART\USART1.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1292,6 +1411,96 @@
               <FileName>Slave_Vor_Ctrl.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\implement\Slave_Vor_Ctrl.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>cummunication</GroupName>
+          <Files>
+            <File>
+              <FileName>communication.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\communication.c</FilePath>
+            </File>
+            <File>
+              <FileName>communication_API.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\communication_API.c</FilePath>
+            </File>
+            <File>
+              <FileName>jy60.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\mpu\jy60.c</FilePath>
+            </File>
+            <File>
+              <FileName>BlueTooth.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\BLUETOOTH\BlueTooth.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>usb</GroupName>
+          <Files>
+            <File>
+              <FileName>usb_bsp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\USB_APP\usb_bsp.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_desc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\USB_APP\usbd_desc.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_usr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\USB_APP\usbd_usr.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_Device_Library\Core\src\usbd_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_ioreq.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_Device_Library\Core\src\usbd_ioreq.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_req.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_Device_Library\Core\src\usbd_req.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_OTG_Driver\src\usb_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_dcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_OTG_Driver\src\usb_dcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_dcd_int.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_OTG_Driver\src\usb_dcd_int.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_cdc_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_Device_Library\Class\cdc\src\usbd_cdc_core.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>other</GroupName>
+          <Files>
+            <File>
+              <FileName>system_function.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\other\system_function.c</FilePath>
             </File>
           </Files>
         </Group>

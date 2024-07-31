@@ -1,108 +1,34 @@
 #include "Slave1_Timer.h"
 #include "Slave1_IO.h"
 #include "stm32f4xx.h"
+#include "math.h"
 
-void Step_Phase_Set(u32 arr, u32 psc);
+Slave_Function_CB function_cb;
+void TIM4_IRQHandler(void)
+{
+    if (TIM4->SR & TIM_IT_Update) // ????????????
+    {
+        if (function_cb != 0)
+        {
+            uint8_t res = function_cb();
+            if (res)
+                TIM4->CR1 &= ~TIM_CR1_CEN;
+        }
+        // 补停机代码
+    }
+    TIM4->SR = (uint16_t)~TIM_IT_Update;
+}
+// 当handler返回1时停止状态机
+void Slave1_Set_Machine_Cb(Slave_Function_CB cb)
+{
+    Slave1_IO_Init();
+    Slave1_En_IO(1);
+    Slave1_Step_Generator_Init(50000, 10);
+    TIM4->CR1 &= ~TIM_CR1_CEN;
+    function_cb = cb;
+    TIM4->CR1 |= TIM_CR1_CEN;
+}
 
-// void tim_f_sin_set(int f)
-// {
-//     // #define sys_clk 42000000
-//     u8 Mins_flag;
-//     int time_arr, time_psc;
-//     int a, clk = 84000000, c, y, r = 0, t, i;
-//     if (f < 0)
-//     {
-//         f = -f;
-//         Mins_flag = 0;
-//     }
-//     else
-//         Mins_flag = 1;
-//     // if (f < 10)
-//     //     return;
-//     a = clk / (f);
-//     c = sqrt(a);
-//     y = 10000000;
-//     for (i = 2; i <= c; i++)
-//     {
-//         t = a % (i);
-
-//         if (y > t && a / i < 65536)
-//         {
-
-//             y = t;
-
-//             r = i;
-//             if (y == 0 && a / i < 65536)
-//                 break;
-//         }
-//     }
-//     c = 10;
-
-//     time_arr = a / r - 1;
-//     time_psc = r - 1;
-//     // tempb = time_arr;
-//     // tempc = time_psc;
-//     // Out_Put_data = sys_clk / time_arr / time_psc;
-//     if (f > 1000 || TIM1->CNT > TIM1->CCR3)
-//     {
-//         Slave1_Dir_IO(Mins_flag);
-//         if (time_arr != TIM1->ARR || time_psc != TIM1->PSC)
-//             Step_Phase_Set(time_arr, time_psc);
-//     }
-//     TIM1->CR1 |= TIM_CR1_CEN;
-// }
-
-// void tim_f_set(int f)
-// {
-//     // #define sys_clk 42000000
-//     u8 Mins_flag;
-//     int time_arr, time_psc;
-//     int a, clk = 84000000, c, y, r = 0, t, i;
-//     if (f == 0)
-//     {
-//         TIM_Cmd(TIM1, 0);
-//         return;
-//     }
-//     if (f < 0)
-//     {
-//         f = -f;
-//         Mins_flag = 0;
-//     }
-//     else
-//         Mins_flag = 1;
-//     a = clk / (f);
-//     c = sqrt(a);
-//     y = 10000000;
-//     for (i = 2; i <= c; i++)
-//     {
-//         t = a % (i);
-
-//         if (y > t && a / i < 65536)
-//         {
-
-//             y = t;
-
-//             r = i;
-//             if (y == 0 && a / i < 65536)
-//                 break;
-//         }
-//     }
-//     c = 10;
-
-//     time_arr = a / r - 1;
-//     time_psc = r - 1;
-//     // tempb = time_arr;
-//     // tempc = time_psc;
-//     // Out_Put_data = sys_clk / time_arr / time_psc;
-//     if (f > 1000|| TIM1->CNT > TIM1->CCR3)
-//     {
-//         Slave1_Dir_IO(Mins_flag);
-//         if (time_arr != TIM1->ARR || time_psc != TIM1->PSC)
-//             Step_Phase_Set(time_arr, time_psc);
-//     }
-//    TIM1->CR1 |= TIM_CR1_CEN;
-// }
-float deg;
 void Step_Phase_Set(u32 arr, u32 psc)
 {
 #if 1
@@ -175,6 +101,26 @@ void Slave1_Step_Generator_Init(uint32_t arr, uint32_t psc)
     // Enable the TIM1 counter
     TIM1->CR1 |= TIM_CR1_CEN;
     TIM1->CCR1 = arr / 2;
+
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
+    NVIC_InitTypeDef NVIC_InitStructure;
+
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE); /// 使能TIM4时钟
+
+    TIM_TimeBaseInitStructure.TIM_Period = 999;                     // 自动重装载值
+    TIM_TimeBaseInitStructure.TIM_Prescaler = 167;                  // 定时器分频
+    TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up; // 向上计数模式
+    TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+
+    TIM_TimeBaseInit(TIM4, &TIM_TimeBaseInitStructure); // 初始化TIM4
+
+    TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
+
+    NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x00;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x00;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
 }
 
 void tim_f_set(int f)
@@ -270,3 +216,18 @@ void tim_f_sin_set(int f)
     }
     TIMx->CR1 |= TIM_CR1_CEN;
 }
+uint8_t Slave_Back(int Tag_Pos)
+{
+}
+
+u8 Slave_Back_spd(int Tag_Pos, int spd)
+{
+}
+u8 slave_sin_back(void)
+{
+}
+
+// void Slave1_CMD(Slave1_CMD_Typed cmd,int freq)
+// {
+
+// }

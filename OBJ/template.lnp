@@ -5,6 +5,9 @@
 "..\obj\lcd.o"
 "..\obj\ft5206.o"
 "..\obj\ctiic.o"
+"..\obj\slave1_io.o"
+"..\obj\slave1_timer.o"
+"..\obj\can.o"
 "..\obj\delay.o"
 "..\obj\sys.o"
 "..\obj\usart.o"
@@ -155,6 +158,9 @@
 "..\obj\control.o"
 "..\obj\control_base.o"
 "..\obj\control_vor.o"
+"..\obj\task_control.o"
+"..\obj\control_hardware_api.o"
+"..\obj\control_cont.o"
 "..\obj\list_1.o"
 "..\obj\system_function.o"
 "..\obj\task_stroage.o"
@@ -166,6 +172,7 @@
 "..\obj\ui_parameter_cont.o"
 "..\obj\ui_parameter_set.o"
 "..\obj\ui_parameter_vor.o"
+"..\obj\slave_vor_ctrl.o"
 --library_type=microlib --strict --scatter "..\OBJ\template.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

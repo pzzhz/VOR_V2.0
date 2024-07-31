@@ -1,6 +1,7 @@
 #include "sys.h"
 #include "usart.h"
 #include "stdarg.h"
+#include "string.h"
 
 u8 usart_switch = 1;
 short Uart_len = 0;
@@ -296,35 +297,35 @@ void uart_init(u32 bound)
 #endif
 }
 
-void USART1_IRQHandler(void) // 串口1中断服务程序
-{
-    u8 Res;
-#if SYSTEM_SUPPORT_OS // 如果SYSTEM_SUPPORT_OS为真，则需要支持OS.
-    OSIntEnter();
-#endif
-    if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) // 接收中断(接收到的数据必须是0x0d 0x0a结尾)
-    {
-        Res = USART1->DR;
-        if (Uart_len >= sizeof USART_RX_BUF)
-            Uart_len = 0;
-        if (Uart_len == 10)
-            if (Res != 0XFC)
-                memset(USART_RX_BUF, 0, 20);
-            else
-                uart_flag = 1;
-        if (USART_RX_BUF[0] == 0XFE && USART_RX_BUF[1] == 0XFD)
-            USART_RX_BUF[Uart_len++] = Res;
+//void USART1_IRQHandler(void) // 串口1中断服务程序
+//{
+//    u8 Res;
+//#if SYSTEM_SUPPORT_OS // 如果SYSTEM_SUPPORT_OS为真，则需要支持OS.
+//    OSIntEnter();
+//#endif
+//    if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) // 接收中断(接收到的数据必须是0x0d 0x0a结尾)
+//    {
+//        Res = USART1->DR;
+//        if (Uart_len >= sizeof USART_RX_BUF)
+//            Uart_len = 0;
+//        if (Uart_len == 10)
+//            if (Res != 0XFC)
+//                memset(USART_RX_BUF, 0, 20);
+//            else
+//                uart_flag = 1;
+//        if (USART_RX_BUF[0] == 0XFE && USART_RX_BUF[1] == 0XFD)
+//            USART_RX_BUF[Uart_len++] = Res;
 
-        if (USART_RX_BUF[0] == 0XFE && Res == 0XFD)
-            USART_RX_BUF[1] = 0XFD;
-        if (USART_RX_BUF[0] != 0XFE && Res == 0XFE)
-            USART_RX_BUF[0] = 0XFE;
-        // USART_RX_BUF[Uart_len++] = USART1->DR;
-    }
-#if SYSTEM_SUPPORT_OS // 如果SYSTEM_SUPPORT_OS为真，则需要支持OS.
-    OSIntExit();
-#endif
-}
+//        if (USART_RX_BUF[0] == 0XFE && Res == 0XFD)
+//            USART_RX_BUF[1] = 0XFD;
+//        if (USART_RX_BUF[0] != 0XFE && Res == 0XFE)
+//            USART_RX_BUF[0] = 0XFE;
+//        // USART_RX_BUF[Uart_len++] = USART1->DR;
+//    }
+//#if SYSTEM_SUPPORT_OS // 如果SYSTEM_SUPPORT_OS为真，则需要支持OS.
+//    OSIntExit();
+//#endif
+//}
 
 void uart2_init(u32 bound)
 {

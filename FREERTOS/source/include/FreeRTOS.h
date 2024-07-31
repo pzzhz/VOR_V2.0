@@ -119,7 +119,7 @@
 #endif
 
 #ifndef INCLUDE_vTaskDelete
-    #define INCLUDE_vTaskDelete    0
+    #define INCLUDE_vTaskDelete    1
 #endif
 
 #ifndef INCLUDE_vTaskSuspend

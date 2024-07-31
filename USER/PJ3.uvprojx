@@ -420,6 +420,21 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\TOUCH\ctiic.c</FilePath>
             </File>
+            <File>
+              <FileName>Slave1_IO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\SLAVE\Slave1_IO.c</FilePath>
+            </File>
+            <File>
+              <FileName>Slave1_Timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\SLAVE\Slave1_Timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>can.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\CAN\can.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1273,6 +1288,26 @@
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\control\control_VOR.c</FilePath>
             </File>
+            <File>
+              <FileName>task_control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\control\task_control.c</FilePath>
+            </File>
+            <File>
+              <FileName>control_Hardware_API.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\control\control_Hardware_API.c</FilePath>
+            </File>
+            <File>
+              <FileName>control_CONT.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\INTERFACE\UI\control\control_CONT.h</FilePath>
+            </File>
+            <File>
+              <FileName>control_CONT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\control\control_CONT.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1352,6 +1387,16 @@
               <FileName>UI_Parameter_Vor.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\UI_Parameter\UI_Parameter_Vor.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>implement</GroupName>
+          <Files>
+            <File>
+              <FileName>Slave_Vor_Ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\Slave_Vor_Ctrl.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1821,6 +1866,21 @@
               <FileName>ctiic.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\TOUCH\ctiic.c</FilePath>
+            </File>
+            <File>
+              <FileName>Slave1_IO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\SLAVE\Slave1_IO.c</FilePath>
+            </File>
+            <File>
+              <FileName>Slave1_Timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\SLAVE\Slave1_Timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>can.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\CAN\can.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2744,6 +2804,26 @@
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\control\control_VOR.c</FilePath>
             </File>
+            <File>
+              <FileName>task_control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\control\task_control.c</FilePath>
+            </File>
+            <File>
+              <FileName>control_Hardware_API.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\control\control_Hardware_API.c</FilePath>
+            </File>
+            <File>
+              <FileName>control_CONT.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\INTERFACE\UI\control\control_CONT.h</FilePath>
+            </File>
+            <File>
+              <FileName>control_CONT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\control\control_CONT.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2823,6 +2903,16 @@
               <FileName>UI_Parameter_Vor.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\UI_Parameter\UI_Parameter_Vor.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>implement</GroupName>
+          <Files>
+            <File>
+              <FileName>Slave_Vor_Ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\Slave_Vor_Ctrl.c</FilePath>
             </File>
           </Files>
         </Group>

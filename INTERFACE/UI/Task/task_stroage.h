@@ -20,6 +20,7 @@ extern "C"
     uint8_t Task_Stroage_delByID(short ID);
     uint8_t Task_Stroage_Get(Task_Parameter_Struct* info, short INDEX);
     uint8_t Task_Stroage_GetIndexByInstant(Task_Parameter_Struct* info, int* Index);
+    uint16_t Task_Stroage_GetArray(Task_Parameter_Struct* taskarray, uint16_t arraySize);
     void Task_Stroage_Init();
     //申请插入
     Task_Parameter_Struct* Task_Stroage_Insert(Task_Parameter_Struct insert_info, uint16_t insert_index);

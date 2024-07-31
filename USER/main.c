@@ -63,7 +63,6 @@ void LVGL_HANDLER()
 	lv_port_disp_init();	 // lvgl显示接口初�?��?,放在lv_init()的后�??
 	lv_port_indev_init();	 // lvgl输入接口初�?��?,放在lv_init()的后�??
 	TIM3_Int_Init(1999, 83); // 定时器初始化(1ms�?�?),用于给lvgl提供1ms的心跳节�??
-
 	 Task_Stroage_Init();
 	controlInit();
 	mainpage_init(lv_scr_act());

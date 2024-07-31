@@ -5,6 +5,12 @@
   <ItemGroup>
     <ClInclude Include="lv_conf.h" />
     <ClInclude Include="lv_drv_conf.h" />
+    <ClInclude Include="..\..\INTERFACE\UI\control\control_Hardware_API.h">
+      <Filter>UI\control</Filter>
+    </ClInclude>
+    <ClInclude Include="control_type.h">
+      <Filter>UI\control</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="LVGL.Simulator.manifest" />
@@ -21,9 +27,6 @@
       <Filter>UI\control</Filter>
     </ClCompile>
     <ClCompile Include="..\..\INTERFACE\UI\control\control_base.c">
-      <Filter>UI\control</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\INTERFACE\UI\control\control_VOR.c">
       <Filter>UI\control</Filter>
     </ClCompile>
     <ClCompile Include="..\..\INTERFACE\UI\Task\task_stroage.c">
@@ -62,6 +65,24 @@
     <ClCompile Include="..\..\INTERFACE\UI\control\task_control.c">
       <Filter>UI\control</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\INTERFACE\UI\control\control_Hardware_API.c">
+      <Filter>UI\control</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INTERFACE\UI\control\control_VOR.c">
+      <Filter>UI\control\mode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INTERFACE\UI\control\control_CONT.c">
+      <Filter>UI\control\mode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\commuication\communication_API.c">
+      <Filter>UI\commuication</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\commuication\mpu\jy60.c">
+      <Filter>UI\commuication\mpu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INTERFACE\UI\other\meassage_center.c">
+      <Filter>UI\other</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LVGL.Simulator.rc" />
@@ -90,6 +111,15 @@
     </Filter>
     <Filter Include="UI\other">
       <UniqueIdentifier>{29618644-a56b-4926-9331-6d7d631aa5d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\control\mode">
+      <UniqueIdentifier>{2bafa99e-02c8-4e5f-a6fc-e160b1b981ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\commuication">
+      <UniqueIdentifier>{fc9beddd-8673-4c00-ab76-874ac9f96574}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\commuication\mpu">
+      <UniqueIdentifier>{a1115f72-cb4b-42ef-b99c-d8c859253fea}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
