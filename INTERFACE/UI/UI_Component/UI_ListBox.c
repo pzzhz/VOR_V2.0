@@ -129,6 +129,12 @@ Table_Property* UI_Table_Get_Property(lv_obj_t* obj)
 	return (Table_Property*)obj->user_data;
 }
 
+void UI_Table_Set_Property(lv_obj_t* obj, void* src)
+{
+	obj->user_data = src;
+	return;
+}
+
 
 static void Tabels_Touch_handler(lv_event_t* e);
 ///// event handler
@@ -218,6 +224,7 @@ Table_Contain_Property* UI_ListBox_Create(lv_obj_t* parent)
 	table_box->user_data = table_Contain_Property;
 	table_Contain_Property->list = list;
 	table_Contain_Property->obj = table_box;
+	table_Contain_Property->hightLight_index = 0;
 	//add(list, table_box);
 
 	return table_Contain_Property;

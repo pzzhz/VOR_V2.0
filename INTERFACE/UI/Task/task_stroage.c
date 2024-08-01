@@ -45,6 +45,16 @@ uint8_t Task_Stroage_Get(Task_Parameter_Struct* info, short INDEX)
 	memcpy(info, src, sizeof(Task_Parameter_Struct));
 	return 1;
 }
+
+uint8_t Task_Stroage_Set(Task_Parameter_Struct src, short INDEX)
+{
+	Node_Task_Stroage* node = (Node_Task_Stroage*)FindNode((List*)task.list, INDEX);
+	if (node == NULL)
+		return 0;
+	Task_Parameter_Struct* traget = node->instant;
+	memcpy(traget, &src, sizeof(Task_Parameter_Struct));
+	return 1;
+}
 // /*
 //  读取时调用函数 要自锁
 //  写入数据时候要 等函数被调用
@@ -97,6 +107,14 @@ uint8_t Task_Stroage_delByID(short ID)
 	return 1;
 }
 
+uint8_t Task_Stroage_MoveByID(uint16_t swap1, uint16_t swap2)
+{
+	List* head = (List*)task.list;
+	move(head, swap1, swap2);
+	ID_UPdata(head);
+	return 1;
+}
+
 // 申请删除
 uint8_t Task_Stroage_del(Task_Parameter_Struct* info)
 {
@@ -139,6 +157,12 @@ uint16_t Task_Stroage_GetArray(Task_Parameter_Struct* taskarray, uint16_t arrayS
 		}
 	}
 	return arrayWriteIndex;
+}
+
+int Task_Stroage_GetSize()
+{
+	List* head = (List*)task.list;
+	return head->size;
 }
 
 #ifdef use_windows

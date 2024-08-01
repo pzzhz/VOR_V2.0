@@ -38,7 +38,7 @@ uint8_t HAL_Incline_Init(uint32_t time, float angle)
 	return 1;
 }
 
-uint8_t HAL_Incline_Get_State(float *angle)
+uint8_t HAL_Incline_Get_State(float* angle)
 {
 #if use_simluate
 	uint32_t tick = ControlGetTick() - inc_info.time;
@@ -68,11 +68,11 @@ uint8_t HAL_CAM_REC_Set(uint8_t flag)
 	static uint8_t Cam_Flag = 0;
 	uint8_t res = 1; // reture success
 #ifdef STM32F40_41xxx
-//	if (Cam_Flag == flag)
+	//	if (Cam_Flag == flag)
 	{
 		const uint8_t CAN_CAM_MSG[8] = {
-			01, 0, 0, 0, 0, 0, 0, 0};
-		res = can_send_msg(0x00, (uint8_t *)CAN_CAM_MSG, 8); // can_send reture 1->fail 0->success
+			01, 0, 0, 0, 0, 0, 0, 0 };
+		res = can_send_msg(0x00, (uint8_t*)CAN_CAM_MSG, 8); // can_send reture 1->fail 0->success
 		res = (res == 1) ? 0 : 1;						 // exchange reture 1->success 0->fail
 		Cam_Flag = flag;
 	}
@@ -86,14 +86,14 @@ uint8_t HAL_CAM_SET_Set(void)
 	uint8_t res = 1; // reture success
 #ifdef STM32F40_41xxx
 	const uint8_t CAN_CAM_MSG[8] = {
-		0, 0, 0, 0, 0, 0, 0, 0};
-	res = can_send_msg(0x00, (uint8_t *)CAN_CAM_MSG, 8); // can_send reture 1->fail 0->success
+		0, 0, 0, 0, 0, 0, 0, 0 };
+	res = can_send_msg(0x00, (uint8_t*)CAN_CAM_MSG, 8); // can_send reture 1->fail 0->success
 	res = (res == 1) ? 0 : 1;						 // exchange reture 1->success 0->fail
 #endif
 	return res;
 }
 
-uint8_t HAL_Control_Get_Start_Cmd(Start_Cmd_Type *cmd)
+uint8_t HAL_Control_Get_Start_Cmd(Start_Cmd_Type* cmd)
 {
 	extern uint8_t UI_Start_Btn_Get_CMD(void);
 	uint8_t ui_flag = UI_Start_Btn_Get_CMD();
@@ -102,20 +102,22 @@ uint8_t HAL_Control_Get_Start_Cmd(Start_Cmd_Type *cmd)
 	{
 		*cmd = StartCmdBegin;
 	}
-	//	else
-	//	{
-	//		*cmd = StartCmdStop;
-	//	}
+	if (Message_Center_Receive_Compare("Ctrl", 1, 0,
+		"ReqStrat") == 0)
+	{
+
+	}
+
 	return 0;
 }
 
-uint8_t HAL_Set_UI_Page1_Msg(const char *format, ...)
+uint8_t HAL_Set_UI_Page1_Msg(const char* format, ...)
 {
 	va_list args;
 	va_start(args, format);
-	extern char *UI_Page1_Get_Msg_Array(uint16_t * len);
+	extern char* UI_Page1_Get_Msg_Array(uint16_t * len);
 	extern void UI_Page1_Set_Msg_Finish(void);
-	char *msg_pt = UI_Page1_Get_Msg_Array(0);
+	char* msg_pt = UI_Page1_Get_Msg_Array(0);
 	while (msg_pt == 0)
 	{
 		msg_pt = UI_Page1_Get_Msg_Array(0);
@@ -126,7 +128,7 @@ uint8_t HAL_Set_UI_Page1_Msg(const char *format, ...)
 	return 1;
 }
 
-uint16_t HAL_Task_GetArray(Task_Parameter_Struct *taskarray, uint16_t arraySize)
+uint16_t HAL_Task_GetArray(Task_Parameter_Struct* taskarray, uint16_t arraySize)
 {
 	uint16_t res = Task_Stroage_GetArray(taskarray, arraySize);
 	return res;

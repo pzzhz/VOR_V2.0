@@ -122,6 +122,7 @@ BEGIN_POS:
 	}
 	Message_Center_Send_prinft(
 		"PAGE1", 0,
+		0,
 		"End");
 	//len = sprintf(msg_buffer, "End");
 	//Message_Center_Send("PAGE1", 0, msg_buffer, len);

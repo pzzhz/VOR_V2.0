@@ -15,7 +15,7 @@ extern "C"
 #endif //
 #include "stdint.h"
 
-
+	void Communication_Init();
 
 #ifdef __cplusplus
 }

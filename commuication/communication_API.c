@@ -5,7 +5,7 @@
 #define USE_BL 1
 #else
 #define USE_USB 0
-#define USE_BL 0
+#define USE_BL 1
 #endif
 
 #if USE_USB
@@ -23,6 +23,7 @@ extern USBD_Usr_cb_TypeDef USR_cb;
 #include "BLUETOOTH/BlueTooth.h"
 #include "../HARDWARE/USART/USART3.h"
 #include "../HARDWARE/USART/USART1.h"
+#include "../serial/serialPort.h"
 
 #endif
 
@@ -63,9 +64,16 @@ uint8_t HAL_MPU_Get_Angle(float* angle)
 
 uint8_t HAL_BL_USART_INIT(void)
 {
+	extern void usart_protocol_InterruptHandle(uint8_t dr);
 #if USE_BL
+#ifdef STM32F40_41xxx
 	USART1_INIT(9600,
 		usart_protocol_InterruptHandle);
+#else
+	SerialPort_Init(usart_protocol_InterruptHandle);
+	usart_protocol_init(SerialPort_SendBuf);
+#endif // STM32F40_41xxx
+
 #endif
 	return 1;
 }

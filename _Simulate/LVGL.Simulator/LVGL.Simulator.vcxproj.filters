@@ -11,6 +11,9 @@
     <ClInclude Include="control_type.h">
       <Filter>UI\control</Filter>
     </ClInclude>
+    <ClInclude Include="serial\serialPort.h">
+      <Filter>UI\commuication</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="LVGL.Simulator.manifest" />
@@ -86,6 +89,15 @@
     <ClCompile Include="..\..\INTERFACE\UI\Task\task_manager.c">
       <Filter>UI\Task</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\commuication\communication.c">
+      <Filter>UI\commuication</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\commuication\BLUETOOTH\BlueTooth.c">
+      <Filter>UI\commuication\BL</Filter>
+    </ClCompile>
+    <ClCompile Include="serial\serialPort.c">
+      <Filter>UI\commuication</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LVGL.Simulator.rc" />
@@ -123,6 +135,9 @@
     </Filter>
     <Filter Include="UI\commuication\mpu">
       <UniqueIdentifier>{a1115f72-cb4b-42ef-b99c-d8c859253fea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\commuication\BL">
+      <UniqueIdentifier>{cbcd70ef-7d14-45b3-9208-73eb121c44bc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

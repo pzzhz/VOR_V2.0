@@ -32,6 +32,7 @@ extern "C"
 
 	Table_Contain_Property* UI_ListBox_Create(lv_obj_t* parent);
 	Table_Property* UI_Table_Get_Property(lv_obj_t* obj);
+	void UI_Table_Set_Property(lv_obj_t* obj, void* src);
 	lv_obj_t* UI_Table_Create(Table_Contain_Property* table_Contain_Property, void* updata_cd, uint16_t insert_index);
 	void UI_Table_Clean(List* head, int index, lv_obj_t* parent_);
 	int UI_Table_Find_Size(Table_Contain_Property* head);

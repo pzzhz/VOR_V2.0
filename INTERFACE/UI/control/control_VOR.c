@@ -106,6 +106,7 @@ uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 	{
 		Message_Center_Send_prinft(
 			"PAGE1", 0,
+			0,
 			"CAM_ERROR");
 		//Message_Center_Send("PAGE1", 0, "CAM_ERROR", sizeof("CAM_ERROR") - 1);
 	}
@@ -118,6 +119,7 @@ uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 		{
 			Message_Center_Send_prinft(
 				"PAGE1", 0,
+				0,
 				"Count:%d", count);
 			LastCount = count;
 		}

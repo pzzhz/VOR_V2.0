@@ -15,7 +15,8 @@ extern "C"
 #endif //
 #include "stdint.h"
 
-uint8_t HAL_BL_USART_Server(void);
+	uint8_t HAL_BL_USART_Server(void);
+	void HAL_communication_Init(void);
 
 #ifdef __cplusplus
 }

@@ -81,6 +81,7 @@ void controlfunction()
 	memset(control_cb_array, 0, sizeof(control_cb_array));
 	thread_create(Task_control_handler, &e, &task_ctrl_thread, 1000);
 	Meassage_Center_Add("PAGE1");
+	Meassage_Center_Add("Ctrl");
 	HAL_API_INIT();
 	while (1)
 	{

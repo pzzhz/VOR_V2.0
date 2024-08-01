@@ -35,6 +35,7 @@ extern "C"
 #include "../../INTERFACE/UI/control/control.h"
 #include "../../INTERFACE/UI/UI_Parameter/UI_Parameter_Cont.h"
 #include "../../INTERFACE/UI/UI_page/page1.h"
+#include "../../commuication/communication.h"
 
 }
 
@@ -93,14 +94,8 @@ void table_updata(Table_Property* table_Property)
 #if 1
 int main()
 {
-
-    Task_mangager_Init();
-    while (true)
-    {
-
-    }
     lv_init();
-
+    Communication_Init();
     if (!lv_win32_init(
         GetModuleHandleW(NULL),
         SW_SHOW,

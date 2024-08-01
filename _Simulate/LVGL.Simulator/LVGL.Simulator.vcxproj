@@ -39,6 +39,7 @@
     <ClInclude Include="..\..\INTERFACE\UI\control\control_Hardware_API.h" />
     <ClInclude Include="control_type.h" />
     <ClInclude Include="lv_conf.h" />
+    <ClInclude Include="serial\serialPort.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lv_drv_conf.h" />
@@ -51,6 +52,8 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\commuication\BLUETOOTH\BlueTooth.c" />
+    <ClCompile Include="..\..\commuication\communication.c" />
     <ClCompile Include="..\..\commuication\communication_API.c" />
     <ClCompile Include="..\..\commuication\mpu\jy60.c" />
     <ClCompile Include="..\..\INTERFACE\UI\control\control.c" />
@@ -75,6 +78,7 @@
     <ClCompile Include="GUI\arrow_rotate_right.c" />
     <ClCompile Include="GUI\GUI_BackGround.c" />
     <ClCompile Include="LVGL.Simulator.cpp" />
+    <ClCompile Include="serial\serialPort.c" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LVGL.Simulator.rc" />

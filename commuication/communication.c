@@ -1,12 +1,10 @@
 #include "communication.h"
 #include "../INTERFACE/UI/other/system_function.h"
-#ifdef STM32F40_41xxx
 #include "communication_API.h"
-
-#endif
 
 void communication_thread()
 {
+	HAL_communication_Init();
 	while (1)
 	{
 		HAL_BL_USART_Server();

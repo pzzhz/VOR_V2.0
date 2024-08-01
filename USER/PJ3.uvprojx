@@ -430,11 +430,6 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\SLAVE\Slave1_Timer.c</FilePath>
             </File>
-            <File>
-              <FileName>can.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\CAN\can.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -1876,11 +1871,6 @@
               <FileName>Slave1_Timer.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\SLAVE\Slave1_Timer.c</FilePath>
-            </File>
-            <File>
-              <FileName>can.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\CAN\can.c</FilePath>
             </File>
           </Files>
         </Group>

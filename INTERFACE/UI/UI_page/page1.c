@@ -2,7 +2,7 @@
 #include "page1_message_id.h"
 // #include "page_include.h"
 #include "../../UI/page_include.h"
-#include "../../UI/Task/task_stroage.h"
+#include "../../UI/Task/task_manager.h"
 #include "../../UI/UI_Component/UI_ListBox.h"
 #include "../../UI/UI_Parameter/UI_Parameter_Set.h"
 #include "../../UI/control/control.h"
@@ -18,7 +18,7 @@ lv_obj_t* start_btn;
 int16_t CurrentTask = -1, Interval_ID = -1;
 int16_t CurrentCount = -1, Interval_RemainingSec = -1;
 uint8_t parent_bo2_index = 0;
-char msgBuffer[50];
+static char msgBuffer[50];
 static int touch_counter = 0;
 #define Read_Flag(n) (*((volatile) & n))
 typedef enum
@@ -101,51 +101,63 @@ void ui1_(Table_Property* p)
 		Set_table_Cell_Text(p->obj, task_info);
 	}
 }
-uint8_t Control_btn_communication(uint8_t message[50], uint8_t* cmd)
+//uint8_t Control_btn_communication(uint8_t message[50], uint8_t* cmd)
+//{
+//	char* CMD = cmd;
+//	if (CmdCheck(cmd, CMD_BTN_ADD) == 0)
+//	{
+//		// 执行添加
+//	}
+//	if (Control_Add_Task.flag == Flag_required)
+//	{
+//		uint16_t index = Control_Add_Task.fouce_index;
+//		Control_Add_Task.info_pt = Task_Stroage_Insert(Control_Add_Task.info, index);
+//		if (Control_Add_Task.info_pt != 0)
+//			Control_Add_Task.flag = Flag_OKNE; // 让参数继续运行
+//		else
+//			Control_Add_Task.flag = Flag_Error;
+//		return 0;
+//	}
+//	if (Control_del_Task.flag == Flag_required)
+//	{
+//		uint16_t index = Control_del_Task.fouce_index;
+//		if (Task_Stroage_delByID(index))
+//			Control_del_Task.flag = Flag_OKNE; // 让参数继续运行
+//		else
+//			Control_del_Task.flag = Flag_Error;
+//		return 0;
+//	}
+//	if (Control_Save_Task.flag == Flag_required)
+//	{
+//		uint16_t index = Control_Save_Task.fouce_index;
+//		if (Control_Save_Task.para == 0)
+//		{
+//			Control_Save_Task.flag = Flag_Error;
+//		}
+//		else
+//		{
+//			memcpy(Control_Save_Task.para, &Control_Save_Task.Set, sizeof(Task_Parameter_Struct));
+//			Control_Save_Task.flag = Flag_OKNE;
+//		}
+//		return 0;
+//	}
+//	return 0;
+//}
+
+void UI_Task_Btn_ADD_Callback(uint16_t fouces_index, Task_Parameter_Struct* pt)
 {
-	char* CMD = cmd;
-	if (CmdCheck(cmd, CMD_BTN_ADD) == 0)
-	{
-		// 执行添加
-	}
-	if (Control_Add_Task.flag == Flag_required)
-	{
-		uint16_t index = Control_Add_Task.fouce_index;
-		Control_Add_Task.info_pt = Task_Stroage_Insert(Control_Add_Task.info, index);
-		if (Control_Add_Task.info_pt != 0)
-			Control_Add_Task.flag = Flag_OKNE; // 让参数继续运行
-		else
-			Control_Add_Task.flag = Flag_Error;
-		return 0;
-	}
-	if (Control_del_Task.flag == Flag_required)
-	{
-		uint16_t index = Control_del_Task.fouce_index;
-		if (Task_Stroage_delByID(index))
-			Control_del_Task.flag = Flag_OKNE; // 让参数继续运行
-		else
-			Control_del_Task.flag = Flag_Error;
-		return 0;
-	}
-	if (Control_Save_Task.flag == Flag_required)
-	{
-		uint16_t index = Control_Save_Task.fouce_index;
-		if (Control_Save_Task.para == 0)
-		{
-			Control_Save_Task.flag = Flag_Error;
-		}
-		else
-		{
-			memcpy(Control_Save_Task.para, &Control_Save_Task.Set, sizeof(Task_Parameter_Struct));
-			Control_Save_Task.flag = Flag_OKNE;
-		}
-		return 0;
-	}
-	return 0;
+	touch_counter++;
+	lv_obj_t* table = UI_Table_Create(table_Contain_Property, ui1_, fouces_index);
+	Table_Property* table_Property = UI_Table_Get_Property(table);
+	parent_bo2[parent_bo2_index++] = table;
+	// 设置好数据源
+	table_Property->Updata_Source = pt;
+	UI_Table_Set_Fouces(table_Contain_Property, fouces_index);
 }
 
 void UI_Task_Btn_ADD_Click_Event(lv_event_t* e)
 {
+	uint32_t handleID;
 	// volatile Control_flag *add_flag = &Control_Add_Task.flag;		//避免汇编只访问reg导致错误
 	uint8_t res = UI_Parameter_Read(&Control_Add_Task.info);
 	if (res == 0)
@@ -153,76 +165,67 @@ void UI_Task_Btn_ADD_Click_Event(lv_event_t* e)
 
 	int fouces_index = UI_Table_Get_Fouces(table_Contain_Property);
 	Control_Add_Task.fouce_index = fouces_index;
-	// Control_Add_Task.info.mode = Task_VOR;
-	// Control_Add_Task.info.VOR.Counter++;
-#if 1
-	Control_Add_Task.flag = Flag_required;
-	// 设置好要写入的参数
-	volatile Control_flag* add_flag = &Control_Add_Task.flag; // 避免汇编只访问reg导致错误
-	while (*add_flag == Flag_required)
-		;
-	if (Control_Add_Task.flag == Flag_Error)
-		return;
-#endif
-	touch_counter++;
-	lv_obj_t* table = UI_Table_Create(table_Contain_Property, ui1_, fouces_index);
-	Table_Property* table_Property = UI_Table_Get_Property(table);
-	parent_bo2[parent_bo2_index++] = table;
-#if 1
-	// 设置好数据源
-	table_Property->Updata_Source = Control_Add_Task.info_pt;
+	Task_manager_Begin_Req(&handleID);
+	Task_manager_Req_add(handleID, fouces_index, Control_Add_Task.info);
+	Task_manager_End_release(handleID);
+}
+
+void UI_Task_Btn_Move_Callback(uint16_t swap_index1, uint16_t swap_index2)
+{
+	uint16_t fouces_index = 0;
+	UI_Table_Move(table_Contain_Property, swap_index1, swap_index2);
+	int task_size = UI_Table_Find_Size(table_Contain_Property);
+	if (task_size > swap_index2)
+	{
+		fouces_index = swap_index2;
+	}
 	UI_Table_Set_Fouces(table_Contain_Property, fouces_index);
-#endif // 1
+
 }
 
 void UI_Task_Btn_Move_Click_Event(lv_event_t* e)
 {
+	uint32_t handleID;
 	int fouces_index = UI_Table_Get_Fouces(table_Contain_Property);
-	UI_Table_Move(table_Contain_Property, fouces_index, fouces_index + 1);
-	int task_size = UI_Table_Find_Size(table_Contain_Property);
-	if (task_size > fouces_index)
-	{
-		fouces_index++;
-	}
-	UI_Table_Set_Fouces(table_Contain_Property, fouces_index);
+	Task_manager_Begin_Req(&handleID);
+	Task_manager_Req_Move(handleID, fouces_index, fouces_index + 1);
+	Task_manager_End_release(handleID);
+}
+
+void UI_Task_Btn_Save_Callback(uint16_t fouces_index, Task_Parameter_Struct* src, Task_Parameter_Struct* traget)
+{
+	;
 }
 
 void UI_Task_Btn_Save_Click_Event(lv_event_t* e)
 {
-	uint8_t res = UI_Parameter_Read(&Control_Save_Task.Set);
+	uint32_t handleID = 0;
+	Task_Parameter_Struct src;
+	uint8_t res = UI_Parameter_Read(&src);
 	int fouces_index = UI_Table_Get_Fouces(table_Contain_Property);
-	//get fouce property
-	Table_Property* item_property = UI_Table_Find_Obj_User_Data(table_Contain_Property, fouces_index);
-	if (item_property == 0)
-		return;
-	Control_Save_Task.para = item_property->Updata_Source;
-	Control_Save_Task.flag = Flag_required;
-	volatile Control_flag* save_flag = &Control_Save_Task.flag; // 避免汇编只访问reg导致错误
-	while (*save_flag == Flag_required)
-		;
-	if (*save_flag == Flag_Error)
-		return;
+	Task_manager_Begin_Req(&handleID);
+	Task_manager_Req_Save(handleID, fouces_index, src);
+	Task_manager_End_release(handleID);
+}
+
+void UI_Task_Btn_Del_Callback(uint16_t fouces_index)
+{
+	UI_Table_Clean(table_Contain_Property->list, fouces_index, 0);
 }
 
 void UI_Task_Btn_Del_Click_Event(lv_event_t* e)
 {
+	static const Task_Parameter_Struct del_templete = { .mode = 0xff };
 	int fouces_index = UI_Table_Get_Fouces(table_Contain_Property);
 	if (fouces_index < 0)
 		return;
-	Control_del_Task.fouce_index = fouces_index;
-	Control_del_Task.flag = Flag_required;
+	Table_Property* item_property = UI_Table_Find_Obj_User_Data(table_Contain_Property, fouces_index);
+	item_property->Updata_Source = &del_templete;
 	LV_LOG_USER("DEL %d", fouces_index);
-
-	volatile Control_flag* flag = &Control_del_Task.flag; // 避免汇编只访问reg导致错误
-	// 设置好要写入的参数
-	while (*flag == Flag_required)
-		;
-	if (Control_del_Task.flag == Flag_Error)
-	{
-		LV_LOG_USER(" error %d", fouces_index);
-		return;
-	}
-	UI_Table_Clean(table_Contain_Property->list, fouces_index, 0);
+	uint32_t handleID;
+	Task_manager_Begin_Req(&handleID);
+	Task_manager_Req_Del(handleID, fouces_index);
+	Task_manager_End_release(handleID);
 }
 
 void UI_Task_Btn_Init(lv_obj_t* parent)
@@ -299,9 +302,65 @@ void UI_Page1_Set_Msg_Finish(void)
 	Page1_meassege_flag = 1;
 }
 
-void UI_Page1_Get_Mechine_Msg(uint8_t flag, uint16_t ID)
+void UI_Page1_Get_Souce_Updata()
 {
-	if (flag == 0 && ID == ID_Task_ctrl)
+	uint16_t funid = 0;
+	void* pt = 0;
+	uint8_t flag = Message_Center_Get(
+		"task", funid,
+		&pt,
+		msgBuffer, sizeof(msgBuffer));
+	if (flag == 0)
+	{
+		if (COMPARE("ADD", msgBuffer) == 0)
+		{
+			if (pt == 0)
+				return;
+			Task_Parameter_Struct* task_pt = pt;
+			int add_index = 0;
+			if (sscanf(msgBuffer, "ADD %d", &add_index) == 1)
+			{
+				UI_Task_Btn_ADD_Callback(add_index, task_pt);
+			};
+		}
+		if (COMPARE("DEL", msgBuffer) == 0)
+		{
+			int del_index = 0;
+			if (sscanf(msgBuffer, "DEL %d", &del_index) == 1)
+			{
+				UI_Task_Btn_Del_Callback(del_index);
+			};
+		}
+		if (COMPARE("Save", msgBuffer) == 0)
+		{
+#if 0
+			int _index = 0;
+			if (sscanf(msgBuffer, "Save %d", &del_index) == 1)
+			{
+				//UI_Task_Btn_Save_Callback(del_index);
+			};
+#endif
+		}
+		if (COMPARE("Move", msgBuffer) == 0)
+		{
+			int swap1 = 0, swap2;
+			if (sscanf(msgBuffer, "Move %d %d", &swap1, &swap2) == 2)
+			{
+				UI_Task_Btn_Move_Callback(swap1, swap2);
+			};
+		}
+		Message_Center_Clean_Flag("task", funid);
+
+	}
+}
+
+void UI_Page1_Get_Mechine_Msg()
+{
+	uint16_t funid = 0;
+	uint8_t flag = Message_Center_Get(
+		"PAGE1", funid, 0,
+		msgBuffer, sizeof(msgBuffer));
+	if (flag == 0)
 	{
 		if (strncmp("Begin", msgBuffer, 5) == 0)
 		{
@@ -334,6 +393,7 @@ void UI_Page1_Get_Mechine_Msg(uint8_t flag, uint16_t ID)
 		if (strncmp("CAM_ERROR", msgBuffer, 9) == 0)
 		{
 		}
+		Message_Center_Clean_Flag("PAGE1",funid);
 	}
 }
 
@@ -341,16 +401,15 @@ void UI_Page1_Respone_Updata_Msg(uint8_t flag, uint16_t ID)
 {
 	if (flag == 0 && ID == ID_Bl_ctrl)
 	{
-		
+
 	}
 }
 
 void UI_Page1_Timer_handle(lv_timer_t* t)
 {
-	uint16_t funid = 0;
-	uint8_t flag = Message_Center_Get("PAGE1", &funid, msgBuffer, sizeof(msgBuffer));
-	UI_Page1_Get_Mechine_Msg(flag, funid);
 
+	UI_Page1_Get_Mechine_Msg();
+	UI_Page1_Get_Souce_Updata();
 	//if (Page1_meassege_flag && Page1_meassege[0] != 0)
 	//{
 	//	if (strncmp("Begin", Page1_meassege, 5) == 0)
