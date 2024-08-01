@@ -1,4 +1,5 @@
 #include "page1.h"
+#include "page1_message_id.h"
 // #include "page_include.h"
 #include "../../UI/page_include.h"
 #include "../../UI/Task/task_stroage.h"
@@ -7,6 +8,7 @@
 #include "../../UI/control/control.h"
 #include "../../UI/control/control_Hardware_API.h"
 #include "string.h"
+
 
 static Table_Contain_Property* table_Contain_Property;
 lv_timer_t Page1_timer;
@@ -297,11 +299,9 @@ void UI_Page1_Set_Msg_Finish(void)
 	Page1_meassege_flag = 1;
 }
 
-void UI_Page1_Timer_handle(lv_timer_t* t)
+void UI_Page1_Get_Mechine_Msg(uint8_t flag, uint16_t ID)
 {
-	uint16_t funid = 0;
-	uint8_t res = Message_Center_Get("PAGE1", &funid, msgBuffer, sizeof(msgBuffer));
-	if (res == 0 && funid == 0)
+	if (flag == 0 && ID == ID_Task_ctrl)
 	{
 		if (strncmp("Begin", msgBuffer, 5) == 0)
 		{
@@ -335,6 +335,21 @@ void UI_Page1_Timer_handle(lv_timer_t* t)
 		{
 		}
 	}
+}
+
+void UI_Page1_Respone_Updata_Msg(uint8_t flag, uint16_t ID)
+{
+	if (flag == 0 && ID == ID_Bl_ctrl)
+	{
+		
+	}
+}
+
+void UI_Page1_Timer_handle(lv_timer_t* t)
+{
+	uint16_t funid = 0;
+	uint8_t flag = Message_Center_Get("PAGE1", &funid, msgBuffer, sizeof(msgBuffer));
+	UI_Page1_Get_Mechine_Msg(flag, funid);
 
 	//if (Page1_meassege_flag && Page1_meassege[0] != 0)
 	//{
@@ -391,6 +406,6 @@ void mainpage_init(lv_obj_t* parent)
 	// meassage
 
 	// 加参数进入接口
-	Control_Set_cb(control_cb_array, control_cb_array_size, Control_btn_communication);
+	//Control_Set_cb(control_cb_array, control_cb_array_size, Control_btn_communication);
 	lv_timer_create(UI_Page1_Timer_handle, 5, 0);
 }

@@ -83,6 +83,9 @@
     <ClCompile Include="..\..\INTERFACE\UI\other\meassage_center.c">
       <Filter>UI\other</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\INTERFACE\UI\Task\task_manager.c">
+      <Filter>UI\Task</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LVGL.Simulator.rc" />

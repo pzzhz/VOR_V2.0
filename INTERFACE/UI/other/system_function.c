@@ -58,30 +58,31 @@ uint32_t ControlGetTick()
 #endif
 }
 
-long ControlThreadCreate(void *function,	 // set thread code
-						 void *e,			 // set parameter
-						 void *taskhandle_t, // thread instant
-						 const char *name,	 // thread name
-						 uint16_t sizeofstack)
+long ControlThreadCreate(void* function,	 // set thread code
+	void* e,			 // set parameter
+	void* taskhandle_t, // thread instant
+	const char* name,	 // thread name
+	uint16_t sizeofstack)
 {
 #ifndef STM32F40_41xxx
 	HANDLE hThread;
 	DWORD dwThreadId;
 	hThread = CreateThread(NULL,		 // 默认安全属性
-						   0,			 // 默认堆栈大小
-						   function,	 // 线程函数
-						   e,			 // 传递给线程函数的参数
-						   0,			 // 默认创建标志
-						   &dwThreadId); // 线程ID)
+		sizeofstack,			 // 默认堆栈大小
+		function,	 // 线程函数
+		e,			 // 传递给线程函数的参数
+		0,			 // 默认创建标志
+		&dwThreadId); // 线程ID)
+
 #else
 	//	static TaskHandle_t control_thread;
 	volatile BaseType_t res =
 		xTaskCreate((TaskFunction_t)function,
-					(const char *)name,
-					(uint16_t)sizeofstack,
-					(void *)e,
-					(UBaseType_t)2,
-					(TaskHandle_t *)&taskhandle_t);
+			(const char*)name,
+			(uint16_t)sizeofstack,
+			(void*)e,
+			(UBaseType_t)2,
+			(TaskHandle_t*)&taskhandle_t);
 	return res;
 #endif
 	return 0;

@@ -91,7 +91,7 @@ uint8_t Message_Center_Send_prinft(
 			node->funcion_Id = fun_id;
 			va_list args;
 			va_start(args, format);
-			node->msg_len = vprintf(format, args);
+			node->msg_len = vsprintf(node->msg,format, args);
 			return okne;
 		}
 		node = node->next;

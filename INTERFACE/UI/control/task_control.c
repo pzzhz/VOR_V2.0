@@ -35,14 +35,20 @@ void task_interval_handle(int index)
 {
 	const uint32_t waitMillSec = 5000;
 	uint32_t time = ControlGetTick(), remainingTime = 0;
-	uint16_t len = sprintf(msg_buffer, "Interval: ID:%d", index);
-	Message_Center_Send("PAGE1", 0, msg_buffer, len);
+	//uint16_t len = sprintf(msg_buffer, "Interval: ID:%d", index);
+	//Message_Center_Send("PAGE1", 0, msg_buffer, len);
+	Message_Center_Send_prinft(
+		"PAGE1", 0,
+		"Interval: ID:%d", index);
 	/*HAL_Set_UI_Page1_Msg("Interval: ID:%d", index);*/
 	while (remainingTime < waitMillSec)
 	{
 		remainingTime = ControlGetTick() - time;
-		len = sprintf(msg_buffer, "Interval: Sec:%d", waitMillSec - remainingTime);
-		Message_Center_Send("PAGE1", 0, msg_buffer, len);
+		Message_Center_Send_prinft(
+			"PAGE1", 0,
+			"Interval: Sec:%d", waitMillSec - remainingTime);
+		/*len = sprintf(msg_buffer, "Interval: Sec:%d", waitMillSec - remainingTime);
+		Message_Center_Send("PAGE1", 0, msg_buffer, len);*/
 		//HAL_Set_UI_Page1_Msg("Interval: Sec:%d", waitMillSec - remainingTime);
 		ControlDelay(100);
 	}
@@ -96,8 +102,11 @@ BEGIN_POS:
 	{
 		Task_Parameter_Struct* task = &e->taskArray[i];
 		task_interval_handle(i);
-		len = sprintf(msg_buffer, "Begin:Running %d", i + 1);
-		Message_Center_Send("PAGE1", 0, msg_buffer, len);
+		Message_Center_Send_prinft(
+			"PAGE1", 0,
+			"Begin:Running %d", i + 1);
+		/*len = sprintf(msg_buffer, "Begin:Running %d", i + 1);
+		Message_Center_Send("PAGE1", 0, msg_buffer, len);*/
 		//HAL_Set_UI_Page1_Msg("Begin:Running %d", i + 1);
 		switch (task->mode)
 		{
@@ -111,8 +120,11 @@ BEGIN_POS:
 			break;
 		}
 	}
-	len = sprintf(msg_buffer, "End");
-	Message_Center_Send("PAGE1", 0, msg_buffer, len);
+	Message_Center_Send_prinft(
+		"PAGE1", 0,
+		"End");
+	//len = sprintf(msg_buffer, "End");
+	//Message_Center_Send("PAGE1", 0, msg_buffer, len);
 	/*HAL_Set_UI_Page1_Msg("End");*/
 	e->State_Bit.flag = 0;
 	e->Error_Bit.flag = 0;

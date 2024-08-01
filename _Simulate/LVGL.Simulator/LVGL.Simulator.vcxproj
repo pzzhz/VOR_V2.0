@@ -62,6 +62,7 @@
     <ClCompile Include="..\..\INTERFACE\UI\other\list.c" />
     <ClCompile Include="..\..\INTERFACE\UI\other\meassage_center.c" />
     <ClCompile Include="..\..\INTERFACE\UI\other\system_function.c" />
+    <ClCompile Include="..\..\INTERFACE\UI\Task\task_manager.c" />
     <ClCompile Include="..\..\INTERFACE\UI\Task\task_stroage.c" />
     <ClCompile Include="..\..\INTERFACE\UI\UI_Component\UI_Btn.c" />
     <ClCompile Include="..\..\INTERFACE\UI\UI_Component\UI_Dropdown.c" />

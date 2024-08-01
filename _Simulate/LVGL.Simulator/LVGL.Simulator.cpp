@@ -31,7 +31,7 @@ extern "C"
 //#include "UI_Parameter_Set.h"
 #include "../../INTERFACE/UI/UI_Parameter/UI_Parameter_Set.h"
 #include "../../INTERFACE/UI/UI_Component/UI_ListBox.h"
-#include "../../INTERFACE/UI/Task/task_stroage.h"
+#include "../../INTERFACE/UI/Task/task_manager.h"
 #include "../../INTERFACE/UI/control/control.h"
 #include "../../INTERFACE/UI/UI_Parameter/UI_Parameter_Cont.h"
 #include "../../INTERFACE/UI/UI_page/page1.h"
@@ -93,6 +93,12 @@ void table_updata(Table_Property* table_Property)
 #if 1
 int main()
 {
+
+    Task_mangager_Init();
+    while (true)
+    {
+
+    }
     lv_init();
 
     if (!lv_win32_init(
@@ -132,7 +138,7 @@ int main()
     lv_btn_create(lv_scr_act());
 
 #endif // 0
-    Task_Stroage_Init();
+    Task_mangager_Init();
     controlInit();
     mainpage_init(lv_scr_act());
     Mode_init(lv_scr_act());

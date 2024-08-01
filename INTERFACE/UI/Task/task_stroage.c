@@ -167,17 +167,6 @@ void Task_Stroage_handle(void)
 // 初始化
 void Task_Stroage_Init()
 {
-#ifndef STM32F40_41xxx
-	HANDLE hThread;
-	DWORD dwThreadId;
-	hThread = CreateThread(NULL,                // 默认安全属性
-		0,                   // 默认堆栈大小
-		Task_Stroage_handle, // 线程函数
-		NULL,                // 传递给线程函数的参数
-		0,                   // 默认创建标志
-		&dwThreadId);        // 线程ID)
-
-#endif // use_windows
 	List* list = (List*)malloc(sizeof(List));
 	/// memset(list, 0, sizeof(List));
 	List_init(list);
