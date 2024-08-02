@@ -7,7 +7,7 @@ extern "C"
 {
 #endif
 #define motor_step 10000 * 10
-#define angle_step (277.8 * 10)
+#define angle_step (277.8 * 5)
     typedef uint8_t (*Slave_Function_CB)(void);
     typedef enum
     {
@@ -20,6 +20,10 @@ extern "C"
     void Slave1_Set_Machine_Cb(Slave_Function_CB cb);
     void tim_f_sin_set(int f);
     void tim_f_set(int f);
+
+    float Slave1_Get_Encode_Angle(void);
+    int32_t Slave1_Get_Encode(void);
+
 #ifdef __cplusplus
 }
 #endif

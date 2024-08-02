@@ -38,6 +38,7 @@ struct
 {
 	Control_flag flag;
 	uint16_t fouce_index;
+	uint8_t isSave_Create;
 	Task_Parameter_Struct src;		//src
 } Control_Save_Task;
 
@@ -69,6 +70,20 @@ uint8_t Task_manager_Req_add(uint32_t handleID,
 	return normal;
 }
 
+uint8_t Task_manager_Req_saveCreate(uint32_t handleID,
+	uint16_t fouce_index,
+	Task_Parameter_Struct info)
+{
+	if (HandleID != handleID)
+		return wrong_handleID;
+	//看看这么检查 fouce_index
+	Control_Save_Task.fouce_index = fouce_index;
+	Control_Save_Task.src = info;
+	Control_Save_Task.isSave_Create = 1;
+	Control_Save_Task.flag = Flag_required;
+	return normal;
+}
+
 uint8_t Task_manager_Req_Save(uint32_t handleID,
 	uint16_t fouce_index,
 	Task_Parameter_Struct info)
@@ -78,6 +93,7 @@ uint8_t Task_manager_Req_Save(uint32_t handleID,
 	//看看这么检查 fouce_index
 	Control_Save_Task.fouce_index = fouce_index;
 	Control_Save_Task.src = info;
+	Control_Save_Task.isSave_Create = 0;
 	Control_Save_Task.flag = Flag_required;
 	return normal;
 }
@@ -181,19 +197,60 @@ void task_manager_Del_Ack()
 				0,
 				"ERROR");
 		}
-		return 0;
+		return;
 	}
 }
 
 void task_manager_Save_Ack()
 {
-	if (Control_Save_Task.flag == Flag_required)
+	if (Control_Save_Task.flag == Flag_required &&
+		Control_Save_Task.isSave_Create == 0)
 	{
 		uint16_t index = Control_Save_Task.fouce_index;
 		uint8_t task_count = Task_Stroage_GetSize();
 		if (Control_Save_Task.fouce_index >= task_count)
 		{
 			Control_Save_Task.flag = Flag_Error;
+		}
+		else
+		{
+			Task_Stroage_Set(Control_Save_Task.src, index);
+			Control_Save_Task.flag = Flag_OKNE;
+		}
+		if (Control_Save_Task.flag == Flag_OKNE)
+		{
+			Message_Center_Send_prinft(task_ID, 0,
+				&Control_Save_Task.src,
+				"Save %d", index);
+		}
+		else
+		{
+			Message_Center_Send_prinft(task_ID, 0,
+				0,
+				"ERROR");
+		}
+	}
+	if (Control_Save_Task.flag == Flag_required &&
+		Control_Save_Task.isSave_Create == 1)
+	{
+		uint16_t index = Control_Save_Task.fouce_index;
+		uint8_t task_count = Task_Stroage_GetSize();
+		if (Control_Save_Task.fouce_index > task_count)
+		{
+			Task_Parameter_Struct* newtask = Task_Stroage_Insert(Control_Save_Task.src, task_count);
+			if (newtask == 0)
+			{
+				Control_Save_Task.flag = Flag_Error;
+			}
+			else
+			{
+				while (Message_Center_Send_prinft(task_ID, 0,
+					newtask,
+					"ADD %d", task_count) != 0)
+				{
+					ControlDelay(5);
+				}
+			}
 		}
 		else
 		{
@@ -246,18 +303,7 @@ void task_manager_Req_Info()
 			0,
 			"ReadState %d", size);
 	}
-	if (Message_Center_Receive_Compare("task", 1, 0,
-		"ReqStrat") == 0)
-	{
-		Message_Center_Send_prinft(“Ctrl”, 1,
-			0,
-			"ReadState %d", size);
-	}
-	if (Message_Center_Receive_Compare("task", 1, 0,
-		"ReqStop") == 0)
-	{
 
-	}
 }
 
 void task_manager_Handle()
@@ -304,7 +350,7 @@ void Task_mangager_Init()
 	static uint64_t taskhandle;
 	ControlThreadCreate(
 		task_manager_thread,
-		8,
+		0,
 		&taskhandle,
 		"task manager",
 		256);

@@ -1,6 +1,8 @@
 #include "BlueTooth.h"
 #include "string.h"
 #include "../../INTERFACE/UI/other/meassage_center.h"
+#include "../../INTERFACE/UI/Task/task_manager.h"
+#include "../../INTERFACE/UI/Task/task_info_struct.h"
 
 void (*SendCb)(uint8_t* buf, uint16_t len) = 0;
 
@@ -49,8 +51,38 @@ void Return_Handle()
 		"ReadState %d", &size) == 1)
 	{
 		uint8_t returnbytes[] = {
-		(uint8_t)size, // 当前任务总数
-		0,          // 第几个在执行
+		(uint8_t)1, // 当前任务总数
+		size,          // 第几个在执行
+		0           // 是否更新
+		};
+		ReturnBytes_Package(returnbytes, sizeof(returnbytes));
+	}
+	if (Message_Center_Receive_Compare("Ctrl", 1, 0,
+		"Strat") == 0)
+	{
+		uint8_t returnbytes[] = {
+		(uint8_t)2, // ID
+		1,          // 成功启动
+		0           // 
+		};
+		ReturnBytes_Package(returnbytes, sizeof(returnbytes));
+	}
+	if (Message_Center_Receive_Compare("Ctrl", 1, 0,
+		"Stop") == 0)
+	{
+		uint8_t returnbytes[] = {
+		(uint8_t)2, // 当前任务总数
+		1,          // 命令成功
+		0           // 是否更新
+		};
+		ReturnBytes_Package(returnbytes, sizeof(returnbytes));
+	}
+	if (Message_Center_Receive_Compare("Ctrl", 1, 0,
+		"CmdError") == 0)
+	{
+		uint8_t returnbytes[] = {
+		(uint8_t)2, // 当前任务总数
+		0,          // cmd fail
 		0           // 是否更新
 		};
 		ReturnBytes_Package(returnbytes, sizeof(returnbytes));
@@ -85,7 +117,9 @@ DecodeFuntionReturn Decode_ReturnSlaveState_Cmd(uint8_t* bytes)
 
 DecodeFuntionReturn Decode_Start_Cmd(uint8_t* bytes)
 {
-
+	const char* stratcmd = "ReqStrat";
+	const char* StopCmd = "ReqStop";
+	const char* cmdpt = 0;
 	const uint8_t ModeId = 0x02;
 	typedef struct
 	{
@@ -97,14 +131,24 @@ DecodeFuntionReturn Decode_Start_Cmd(uint8_t* bytes)
 		return Cmd_no_match;
 	Start_parameter e = {
 		.start = bytes[1] };
-	Message_Center_Send_prinft("task", 1, 0,
-		(e.start) ?
-		"ReqStrat" :
-		"ReqStop");
+	switch (e.start)
+	{
+	case 1:
+		cmdpt = (stratcmd);
+		break;
+	case 2:
+		cmdpt = StopCmd;
+		break;
+	}
+	if (cmdpt != 0)
+		Message_Center_Send_prinft("Ctrl", 1, 0,
+			cmdpt);
+
 }
 
 DecodeFuntionReturn Decode_downloadTask_Cmd(uint8_t* bytes)
 {
+	 Task_Parameter_Struct task;
 	const uint8_t ModeId = 0x03;
 	typedef struct
 	{
@@ -119,29 +163,21 @@ DecodeFuntionReturn Decode_downloadTask_Cmd(uint8_t* bytes)
 		return Cmd_error;
 	if (bytes[0] != ModeId)
 		return Cmd_no_match;
-	Download_parameter e = {
-		.id = bytes[1],
-		.mode = bytes[2],
-		.sec_times = ((uint16_t)bytes[3]) * 256 + (uint16_t)bytes[4],
-		.velocity = bytes[5],
-		.freq_X10 = ((uint16_t)bytes[6]) * 256 + (uint16_t)bytes[7] };
-	int length = 0;    // 获取任务长度
-	if (e.id > length) // 当id小于当前的任务数自动创建任务
-	{
-		for (int i = length; i < e.id; i++) // id是从1开始的 如：当前有1个，那应该在2处开始添加
-		{
-			// 添加任务
-		}
-	}
-	// Task_lisk(e.id)->mode = e.mode;
-	// Task_lisk(e.id)->Set_Time = e.sec_times;
-	// Task_lisk(e.id)->Vel = e.velocity;
-	// Task_lisk(e.id)->Frep_VOR = ((float)e.freq_X10) / 10;
-	// Task_lisk(e.id)->state = 1;
-	// table_show();
-	// table_arrange();
-	// Table_reflush(Task_lisk(e.id)->Table, Task_lisk(e.id));
-	// usart_data_send(e.id, ModeId);  数据包返回
+	uint8_t ID = bytes[1];
+	uint16_t Freq = (((uint16_t)bytes[6]) * 256 + (uint16_t)bytes[7]);
+	task.mode = bytes[2] - 1;
+	task.VOR.Counter = ((uint16_t)bytes[3]) * 256 + (uint16_t)bytes[4];
+	task.VOR.Vel = bytes[5];
+	task.VOR.Freq = Freq / 10.0f;
+
+	uint32_t handleID = 0;
+	Task_manager_Begin_Req(&handleID);
+	Task_manager_Req_saveCreate(handleID, ID, task);
+	Task_manager_End_release(handleID);
+	/*Message_Center_Send_prinft("task", 2,
+		&task,
+		"Set Para %d", ID);*/
+
 	return Cmd_match;
 }
 

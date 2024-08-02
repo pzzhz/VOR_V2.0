@@ -1,11 +1,12 @@
 #include "communication_API.h"
 
 #ifdef STM32F40_41xxx
-#define USE_USB 1
+#define USE_USB 0
 #define USE_BL 1
 #else
 #define USE_USB 0
 #define USE_BL 1
+#include "../serial/serialPort.h"
 #endif
 
 #if USE_USB
@@ -23,7 +24,7 @@ extern USBD_Usr_cb_TypeDef USR_cb;
 #include "BLUETOOTH/BlueTooth.h"
 #include "../HARDWARE/USART/USART3.h"
 #include "../HARDWARE/USART/USART1.h"
-#include "../serial/serialPort.h"
+
 
 #endif
 

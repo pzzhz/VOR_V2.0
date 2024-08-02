@@ -107,6 +107,39 @@ uint8_t Message_Center_Send_prinft(
 	return no_find;
 }
 
+uint8_t Message_Center_Send_prinft_OverWrite(
+	const char* name,
+	uint16_t fun_id,
+	void* source,
+	const char* format,
+	...)
+{
+	if (format == 0)
+		return para_Error;
+	Message_List* node = Top_Node;
+	for (int i = 0; i < 10; i++)
+	{
+		if (node == 0)
+			return no_find;
+		if (node->msg == 0)
+			return no_find;
+		if (node->name == 0)
+			return para_Error;
+		if (strcmp(name, node->name) == 0)
+		{
+			node->funcion_Id = fun_id;
+			va_list args;
+			va_start(args, format);
+			node->source = source;
+			node->msg_len = vsprintf(node->msg, format, args);
+			return okne;
+		}
+		node = node->next;
+	}
+
+	return no_find;
+}
+
 uint8_t Message_Center_Receive_Scanf(
 	const char* name,
 	uint16_t FilterId,
@@ -304,8 +337,9 @@ void Meassage_Center_Add(const char* name)
 		Message_List* end_node = FindEnd();
 		end_node->next = msg;
 	}
+	msg->msg_len = 0;
 	msg->msg_size = 30;
-	msg->name = name;
+	msg->name = (char *)name;
 	msg->funcion_Id = 0;
 	msg->next = 0;
 	isbusy = 0;

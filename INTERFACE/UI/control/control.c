@@ -69,8 +69,51 @@ void control_run_cb_array(UI_Function_struct* function_array,
 	}
 }
 
+uint8_t Ctrl_Get_Begin_Signal(Task_control_info* e)
+{
+	enum return_typed
+	{
+		none,
+		strat,
+		stop
+	};
+	if (e == 0)
+		return 0;
+	uint8_t res = Message_Center_Receive_Compare("Ctrl", 1,
+		0,
+		"ReqShift");
+	if (res == 0)
+	{
+		return (e->State_Bit.IsRunning) ? stop : strat;
+	}
+	if (Message_Center_Receive_Compare("Ctrl", 1, 0,
+		"ReqStrat") == 0)
+	{
+		int taskcount = Task_Stroage_GetSize();
+		Message_Center_Send_prinft("Ctrl", 1,
+			0,
+			(e->State_Bit.IsRunning == 0 &&
+				taskcount != 0) ?
+			"Strat" :
+			"CmdError");
+		return (e->State_Bit.IsRunning) ? none : strat;
+	}
+	if (Message_Center_Receive_Compare("Ctrl", 1, 0,
+		"ReqStop") == 0)
+	{
+		Message_Center_Send_prinft("Ctrl", 1,
+			0,
+			(e->State_Bit.IsRunning) ?
+			"Stop" :
+			"CmdError");
+		return (e->State_Bit.IsRunning) ? stop : none;
+	}
+}
+
 void controlfunction()
 {
+	extern void Task_mangager_Init();
+	extern void Communication_Init();
 	static Task_Parameter_Struct taskarray[15];
 	int flag = 0;
 	Task_control_info e = { 0 };
@@ -83,6 +126,8 @@ void controlfunction()
 	Meassage_Center_Add("PAGE1");
 	Meassage_Center_Add("Ctrl");
 	HAL_API_INIT();
+	Task_mangager_Init();
+	Communication_Init();
 	while (1)
 	{
 		// UI 信息发送
@@ -92,10 +137,15 @@ void controlfunction()
 		// 紧急停机
 		// 启动
 		// UI Table 按键监听和处理
-		HAL_Control_Get_Start_Cmd(&Startflag);
-		if (Startflag == StartCmdBegin)
+		//HAL_Control_Get_Start_Cmd(&Startflag);
+		Startflag = Ctrl_Get_Begin_Signal(&e);
+		if (Startflag == 0x01)
 		{
 			Task_control_Begin(&e);
+		}
+		if (Startflag == 0x02)
+		{
+			Task_control_ReqStop(&e);
 		}
 		control_run_cb_array(control_cb_array, control_cb_array_size, cmd, message, &info); // 给ui发消息？
 		ControlDelay(10);

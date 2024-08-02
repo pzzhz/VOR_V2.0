@@ -7,6 +7,7 @@ void communication_thread()
 	HAL_communication_Init();
 	while (1)
 	{
+		ControlGetTick();
 		HAL_BL_USART_Server();
 		ControlDelay(50);
 	}
@@ -19,5 +20,5 @@ void Communication_Init()
 		0,
 		taskhand,
 		"communication",
-		512);
+		256);
 }

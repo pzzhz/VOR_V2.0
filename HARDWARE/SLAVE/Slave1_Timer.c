@@ -4,19 +4,19 @@
 #include "math.h"
 
 Slave_Function_CB function_cb;
-void TIM4_IRQHandler(void)
+void TIM1_BRK_TIM9_IRQHandler(void)
 {
-    if (TIM4->SR & TIM_IT_Update) // ????????????
+    if (TIM9->SR & TIM_IT_Update) // ????????????
     {
         if (function_cb != 0)
         {
             uint8_t res = function_cb();
             if (res)
-                TIM4->CR1 &= ~TIM_CR1_CEN;
+                TIM9->CR1 &= ~TIM_CR1_CEN;
         }
         // 补停机代码
     }
-    TIM4->SR = (uint16_t)~TIM_IT_Update;
+    TIM9->SR = (uint16_t)~TIM_IT_Update;
 }
 // 当handler返回1时停止状态机
 void Slave1_Set_Machine_Cb(Slave_Function_CB cb)
@@ -24,13 +24,15 @@ void Slave1_Set_Machine_Cb(Slave_Function_CB cb)
     Slave1_IO_Init();
     Slave1_En_IO(1);
     Slave1_Step_Generator_Init(50000, 10);
-    TIM4->CR1 &= ~TIM_CR1_CEN;
+    TIM9->CR1 &= ~TIM_CR1_CEN;
     function_cb = cb;
-    TIM4->CR1 |= TIM_CR1_CEN;
+    TIM9->CR1 |= TIM_CR1_CEN;
 }
 
 void Step_Phase_Set(u32 arr, u32 psc)
 {
+    if (arr == 0 && psc == 0)
+        TIM_Cmd(TIM1, DISABLE);
 #if 1
     // 此部分需手动修改IO口设置
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
@@ -60,6 +62,46 @@ void Step_Phase_Set(u32 arr, u32 psc)
     TIM1->CCR1 = arr / 2 - 1;
     TIM1->CR1 |= TIM_CR1_CEN;
 #endif
+}
+
+void SRV1_Encoder_Init()
+{
+    const uint32_t ARR_VALUE = 2097156;
+    const uint16_t ch1_pin = 5;
+    const uint16_t ch2_pin = 3;
+    RCC->APB1ENR |= (RCC_APB1ENR_TIM2EN);
+    RCC->AHB2ENR |= RCC_AHB1ENR_GPIOBEN | RCC_AHB1ENR_GPIOAEN;
+    // Configure TIM2 in Encoder mode 3 (count on both TI1FP1 and TI2FP2 edges)
+    TIM2->SMCR &= ~TIM_SMCR_SMS;
+    TIM2->SMCR |= TIM_SMCR_SMS_0 | TIM_SMCR_SMS_1; // Encoder mode 3
+
+    // Configure input capture for both channels
+    TIM2->CCMR1 &= ~(TIM_CCMR1_CC1S | TIM_CCMR1_CC2S);
+    TIM2->CCMR1 |= TIM_CCMR1_CC1S_1 | TIM_CCMR1_CC2S_1; // CC1 channel as input, mapped on TI1; CC2 channel as input, mapped on TI2
+
+    // Set the polarity and filter (if needed)
+    TIM2->CCER &= ~(TIM_CCER_CC1P | TIM_CCER_CC2P);    // Non-inverted polarity
+    TIM2->CCMR1 &= ~(TIM_CCMR1_IC1F | TIM_CCMR1_IC2F); // No filter
+
+    // Enable the counter
+    TIM2->CR1 |= TIM_CR1_CEN;
+    // TIM2->SMCR |= 0x03; // use clock input encoder c mode
+
+    // TIM2->CCMR1 |= 0x01;
+    // TIM2->CCMR1 |= (0x01 << 8);
+
+    // TIM2->CCER |= TIM_CCER_CC1E;
+    // TIM2->CCER |= TIM_CCER_CC2E;
+
+    GPIOA->MODER |= (0x02 << ch1_pin * 2);
+    GPIOB->MODER |= (0x02 << ch2_pin * 2);
+
+    GPIOA->AFR[0] |= 0x01 << 20; // set tmr 2 alternate channel
+    GPIOB->AFR[0] |= 0x01 << 12;
+
+    TIM2->ARR = 0xffffffff;
+    TIM2->PSC = 0;
+    TIM2->CR1 |= TIM_CR1_CEN;
 }
 
 void Slave1_Step_Generator_Init(uint32_t arr, uint32_t psc)
@@ -101,22 +143,23 @@ void Slave1_Step_Generator_Init(uint32_t arr, uint32_t psc)
     // Enable the TIM1 counter
     TIM1->CR1 |= TIM_CR1_CEN;
     TIM1->CCR1 = arr / 2;
+    SRV1_Encoder_Init();
 
     TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
     NVIC_InitTypeDef NVIC_InitStructure;
 
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE); /// 使能TIM4时钟
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9, ENABLE); /// 使能TIM9时钟
 
     TIM_TimeBaseInitStructure.TIM_Period = 999;                     // 自动重装载值
-    TIM_TimeBaseInitStructure.TIM_Prescaler = 167;                  // 定时器分频
+    TIM_TimeBaseInitStructure.TIM_Prescaler = 167;                   // 定时器分频
     TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up; // 向上计数模式
     TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 
-    TIM_TimeBaseInit(TIM4, &TIM_TimeBaseInitStructure); // 初始化TIM4
+    TIM_TimeBaseInit(TIM9, &TIM_TimeBaseInitStructure); // 初始化TIM9
 
-    TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
+    TIM_ITConfig(TIM9, TIM_IT_Update, ENABLE);
 
-    NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannel = TIM1_BRK_TIM9_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x00;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x00;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
@@ -178,6 +221,11 @@ void tim_f_sin_set(int f)
     u8 Mins_flag;
     int time_arr, time_psc;
     int a, clk = 84000000, c, y, r = 0, t, i;
+    if (f == 0)
+    {
+        Step_Phase_Set(0, 0);
+        return;
+    }
     if (f < 0)
     {
         f = -f;
@@ -227,6 +275,17 @@ u8 slave_sin_back(void)
 {
 }
 
+int32_t Slave1_Get_Encode()
+{
+    return (int32_t)TIM2->CNT;
+}
+
+float Slave1_Get_Encode_Angle()
+{
+    int32_t count = TIM2->CNT;
+    float angle = count / 67108800.0f * 360 * 8;
+    return angle;
+}
 // void Slave1_CMD(Slave1_CMD_Typed cmd,int freq)
 // {
 

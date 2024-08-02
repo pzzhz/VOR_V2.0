@@ -400,6 +400,11 @@
               <FileType>1</FileType>
               <FilePath>.\system_stm32f4xx.c</FilePath>
             </File>
+            <File>
+              <FileName>CCM_memory_Value.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\CCM_memory_Value.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -429,6 +434,26 @@
               <FileName>Slave1_Timer.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\SLAVE\Slave1_Timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>USART1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\USART\USART1.c</FilePath>
+            </File>
+            <File>
+              <FileName>USART3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\USART\USART3.c</FilePath>
+            </File>
+            <File>
+              <FileName>USART5.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\USART\USART5.c</FilePath>
+            </File>
+            <File>
+              <FileName>can.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\CAN\can.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1318,6 +1343,11 @@
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\other\system_function.c</FilePath>
             </File>
+            <File>
+              <FileName>meassage_center.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\other\meassage_center.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1327,6 +1357,11 @@
               <FileName>task_stroage.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\Task\task_stroage.c</FilePath>
+            </File>
+            <File>
+              <FileName>task_manager.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\Task\task_manager.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1392,6 +1427,31 @@
               <FileName>Slave_Vor_Ctrl.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\implement\Slave_Vor_Ctrl.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>communication</GroupName>
+          <Files>
+            <File>
+              <FileName>BlueTooth.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\BLUETOOTH\BlueTooth.c</FilePath>
+            </File>
+            <File>
+              <FileName>communication.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\communication.c</FilePath>
+            </File>
+            <File>
+              <FileName>communication_API.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\communication_API.c</FilePath>
+            </File>
+            <File>
+              <FileName>jy60.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\mpu\jy60.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1842,6 +1902,11 @@
               <FileType>1</FileType>
               <FilePath>.\system_stm32f4xx.c</FilePath>
             </File>
+            <File>
+              <FileName>CCM_memory_Value.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\CCM_memory_Value.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1871,6 +1936,26 @@
               <FileName>Slave1_Timer.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\SLAVE\Slave1_Timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>USART1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\USART\USART1.c</FilePath>
+            </File>
+            <File>
+              <FileName>USART3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\USART\USART3.c</FilePath>
+            </File>
+            <File>
+              <FileName>USART5.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\USART\USART5.c</FilePath>
+            </File>
+            <File>
+              <FileName>can.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\CAN\can.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2829,6 +2914,11 @@
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\other\system_function.c</FilePath>
             </File>
+            <File>
+              <FileName>meassage_center.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\other\meassage_center.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2838,6 +2928,11 @@
               <FileName>task_stroage.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\Task\task_stroage.c</FilePath>
+            </File>
+            <File>
+              <FileName>task_manager.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\Task\task_manager.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2903,6 +2998,31 @@
               <FileName>Slave_Vor_Ctrl.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\implement\Slave_Vor_Ctrl.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>communication</GroupName>
+          <Files>
+            <File>
+              <FileName>BlueTooth.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\BLUETOOTH\BlueTooth.c</FilePath>
+            </File>
+            <File>
+              <FileName>communication.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\communication.c</FilePath>
+            </File>
+            <File>
+              <FileName>communication_API.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\communication_API.c</FilePath>
+            </File>
+            <File>
+              <FileName>jy60.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\mpu\jy60.c</FilePath>
             </File>
           </Files>
         </Group>

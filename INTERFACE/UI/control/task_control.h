@@ -17,6 +17,8 @@ extern "C"
 #endif // 
 	//void Task_control_handler(Task_control_info* e,Task_Parameter_Struct* TaskArray,uint16_t count);
 	uint8_t Task_control_Begin(Task_control_info *e);
+	uint8_t Task_control_ReqStop(Task_control_info* e);
+
 	void Task_control_handler(Task_control_info* e);
 #ifdef __cplusplus
 }

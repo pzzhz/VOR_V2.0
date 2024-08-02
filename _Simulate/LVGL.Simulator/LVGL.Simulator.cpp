@@ -133,7 +133,7 @@ int main()
     lv_btn_create(lv_scr_act());
 
 #endif // 0
-    Task_mangager_Init();
+    //Task_mangager_Init();
     controlInit();
     mainpage_init(lv_scr_act());
     Mode_init(lv_scr_act());

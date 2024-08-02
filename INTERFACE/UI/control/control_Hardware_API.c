@@ -105,9 +105,18 @@ uint8_t HAL_Control_Get_Start_Cmd(Start_Cmd_Type* cmd)
 	if (Message_Center_Receive_Compare("Ctrl", 1, 0,
 		"ReqStrat") == 0)
 	{
-
+		*cmd = StartCmdBegin;
+		Message_Center_Send_prinft("Ctrl", 1,
+			0,
+			"Strat");
 	}
-
+	if (Message_Center_Receive_Compare("Ctrl", 1, 0,
+		"ReqStop") == 0)
+	{
+		Message_Center_Send_prinft("Ctrl", 1,
+			0,
+			"Stop");
+	}
 	return 0;
 }
 

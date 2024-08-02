@@ -110,10 +110,10 @@ uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 			"CAM_ERROR");
 		//Message_Center_Send("PAGE1", 0, "CAM_ERROR", sizeof("CAM_ERROR") - 1);
 	}
+	uint32_t count;
 	// motor initial
 	while (VOR_flag)
 	{
-		uint32_t count;
 		VOR_flag = HAL_Slave_VOR_Get_State(&count);
 		if (LastCount != count)
 		{
@@ -122,6 +122,14 @@ uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 				0,
 				"Count:%d", count);
 			LastCount = count;
+		}
+		if (e->State_Bit.Exit)			//for exit
+		{
+			Message_Center_Send_prinft(
+				"PAGE1", 0,
+				0,
+				"Stopping %d", count);
+			HAL_Slave_VOR_Stop();
 		}
 		MYPRINTF("%3d", count);
 		// wait motor infinsh

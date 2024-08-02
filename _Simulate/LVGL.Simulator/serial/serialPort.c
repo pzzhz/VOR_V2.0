@@ -6,13 +6,7 @@
 #include <windows.h>
 #include <stdio.h>
 
-#define DebugPrintf(fmt, ...) \
-    do { \
-        char buffer[256]; \
-        snprintf(buffer, sizeof(buffer), fmt, ##__VA_ARGS__); \
-        OutputDebugString(buffer); \
-    } while (0)
-
+extern void OutputDebugPrintf(const char* strOutputString, ...);
 static   HANDLE hSerial = 0;
 static void (*Handle_cb)(uint8_t* dr);
 
@@ -31,8 +25,10 @@ void Serial_Thread()
 {
     STARTUPINFO si = { sizeof(si) };
     PROCESS_INFORMATION pi;
+    if (hSerial != 0)
+        return;
 
-    LPCWSTR portName = L"COM1";
+    LPCWSTR portName = L"COM2";
     hSerial = CreateFile(portName,
         GENERIC_READ | GENERIC_WRITE,
         0,
@@ -41,7 +37,7 @@ void Serial_Thread()
         0,
         0);
     if (hSerial == INVALID_HANDLE_VALUE) {
-        DebugPrintf("Error opening serial port\n");
+        OutputDebugPrintf("Error opening serial port\n");
         return 1;
     }
 
@@ -49,7 +45,7 @@ void Serial_Thread()
     dcbSerialParams.DCBlength = sizeof(dcbSerialParams);
 
     if (!GetCommState(hSerial, &dcbSerialParams)) {
-        DebugPrintf("Error getting state\n");
+        OutputDebugPrintf("Error getting state\n");
         CloseHandle(hSerial);
         return 1;
     }
@@ -60,7 +56,7 @@ void Serial_Thread()
     dcbSerialParams.Parity = NOPARITY;
 
     if (!SetCommState(hSerial, &dcbSerialParams)) {
-        DebugPrintf("Error setting serial port state\n");
+        OutputDebugPrintf("Error setting serial port state\n");
         CloseHandle(hSerial);
         return 1;
     }
@@ -73,7 +69,7 @@ void Serial_Thread()
     timeouts.WriteTotalTimeoutMultiplier = 10;
 
     if (!SetCommTimeouts(hSerial, &timeouts)) {
-        DebugPrintf("Error setting timeouts\n");
+        OutputDebugPrintf("Error setting timeouts\n");
         CloseHandle(hSerial);
         return 1;
     }
@@ -86,7 +82,7 @@ void Serial_Thread()
     while (1)
     {
         if (!ReadFile(hSerial, dataReceived, sizeof(dataReceived), &bytesRead, NULL)) {
-            DebugPrintf("Error reading from serial port\n");
+            OutputDebugPrintf("Error reading from serial port\n");
             CloseHandle(hSerial);
             return 1;
         }

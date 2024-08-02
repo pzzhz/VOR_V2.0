@@ -399,6 +399,11 @@
               <FileType>1</FileType>
               <FilePath>.\hard_test\test_main.c</FilePath>
             </File>
+            <File>
+              <FileName>CCM_memory_Value.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\CCM_memory_Value.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -627,6 +632,16 @@
               <FileType>1</FileType>
               <FilePath>..\implement\Slave_Vor_Ctrl.c</FilePath>
             </File>
+            <File>
+              <FileName>motor_para_cal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\motor_para_cal.c</FilePath>
+            </File>
+            <File>
+              <FileName>Slave_Cont_Ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\Slave_Cont_Ctrl.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -651,6 +666,11 @@
               <FileName>BlueTooth.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\commuication\BLUETOOTH\BlueTooth.c</FilePath>
+            </File>
+            <File>
+              <FileName>meassage_center.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\other\meassage_center.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1115,6 +1135,11 @@
               <FileType>1</FileType>
               <FilePath>.\hard_test\test_main.c</FilePath>
             </File>
+            <File>
+              <FileName>CCM_memory_Value.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\CCM_memory_Value.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1412,6 +1437,16 @@
               <FileType>1</FileType>
               <FilePath>..\implement\Slave_Vor_Ctrl.c</FilePath>
             </File>
+            <File>
+              <FileName>motor_para_cal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\motor_para_cal.c</FilePath>
+            </File>
+            <File>
+              <FileName>Slave_Cont_Ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\Slave_Cont_Ctrl.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1436,6 +1471,11 @@
               <FileName>BlueTooth.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\commuication\BLUETOOTH\BlueTooth.c</FilePath>
+            </File>
+            <File>
+              <FileName>meassage_center.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\other\meassage_center.c</FilePath>
             </File>
           </Files>
         </Group>

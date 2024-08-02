@@ -33,7 +33,7 @@ struct
 	uint16_t fouce_index;
 	Task_Parameter_Struct info;
 	Task_Parameter_Struct* info_pt;
-} Control_Add_Task;
+} Page_Add_Task;
 
 struct
 {
@@ -41,7 +41,7 @@ struct
 	uint16_t fouce_index;
 	Task_Parameter_Struct Set;
 	Task_Parameter_Struct* para;
-} Control_Save_Task;
+} Page_Save_Task;
 
 struct
 {
@@ -49,7 +49,7 @@ struct
 	uint16_t fouce_index;
 	Task_Parameter_Struct info;
 	Task_Parameter_Struct* info_pt;
-} Control_del_Task;
+} Page_del_Task;
 
 // void UI_Page1_Refresh_handle(lv_time_t )
 
@@ -159,14 +159,14 @@ void UI_Task_Btn_ADD_Click_Event(lv_event_t* e)
 {
 	uint32_t handleID;
 	// volatile Control_flag *add_flag = &Control_Add_Task.flag;		//避免汇编只访问reg导致错误
-	uint8_t res = UI_Parameter_Read(&Control_Add_Task.info);
+	uint8_t res = UI_Parameter_Read(&Page_Add_Task.info);
 	if (res == 0)
 		return;
 
 	int fouces_index = UI_Table_Get_Fouces(table_Contain_Property);
-	Control_Add_Task.fouce_index = fouces_index;
+	Page_Add_Task.fouce_index = fouces_index;
 	Task_manager_Begin_Req(&handleID);
-	Task_manager_Req_add(handleID, fouces_index, Control_Add_Task.info);
+	Task_manager_Req_add(handleID, fouces_index, Page_Add_Task.info);
 	Task_manager_End_release(handleID);
 }
 
@@ -220,7 +220,7 @@ void UI_Task_Btn_Del_Click_Event(lv_event_t* e)
 	if (fouces_index < 0)
 		return;
 	Table_Property* item_property = UI_Table_Find_Obj_User_Data(table_Contain_Property, fouces_index);
-	item_property->Updata_Source = &del_templete;
+	item_property->Updata_Source =(void*) &del_templete;
 	LV_LOG_USER("DEL %d", fouces_index);
 	uint32_t handleID;
 	Task_manager_Begin_Req(&handleID);
@@ -252,7 +252,9 @@ void UI_Start_Btn_Clicked_Handle(lv_event_t* e)
 {
 	if (e->code == LV_EVENT_CLICKED)
 	{
-		StartBtnFlag = 1;
+		Message_Center_Send_prinft("Ctrl", 1,
+			0,
+			"ReqShift");
 	}
 }
 
@@ -393,7 +395,12 @@ void UI_Page1_Get_Mechine_Msg()
 		if (strncmp("CAM_ERROR", msgBuffer, 9) == 0)
 		{
 		}
-		Message_Center_Clean_Flag("PAGE1",funid);
+		if (COMPARE("Stopping", msgBuffer) == 0)
+		{
+			lv_obj_t* label = lv_obj_get_child(start_btn, 0);
+			lv_label_set_text_fmt(label, "%s", &msgBuffer[0]);
+		}
+		Message_Center_Clean_Flag("PAGE1", funid);
 	}
 }
 

@@ -22,6 +22,14 @@ extern "C"
 		void* source,
 		const char* format,
 		...);
+
+	uint8_t Message_Center_Send_prinft_OverWrite(
+		const char* name,
+		uint16_t fun_id,
+		void* source,
+		const char* format,
+		...);
+
 	uint8_t Message_Center_Get(
 		const char* name,
 		uint16_t fun_id,

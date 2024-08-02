@@ -53,10 +53,30 @@ uint32_t ControlGetTick()
 	return tick;
 
 #else
-	uint32_t tick = xTaskGetTickCount();
+	uint32_t tick = xTaskGetTickCount()/20;
 	return tick;
 #endif
 }
+
+#ifndef STM32F40_41xxx
+void OutputDebugPrintf(const char* strOutputString, ...)
+{
+#define PUT_PUT_DEBUG_BUF_LEN   1024
+	char strBuffer[PUT_PUT_DEBUG_BUF_LEN] = { 0 };
+	va_list vlArgs;
+	va_start(vlArgs, strOutputString);
+	//vsprintf(strBuffer, sizeof(strBuffer) - 1, strOutputString, vlArgs);  //_vsnprintf_s  _vsnprintf
+	vsprintf(strBuffer, strOutputString, vlArgs);
+	va_end(vlArgs);
+	OutputDebugStringA(strBuffer);  //OutputDebugString    // OutputDebugStringW
+
+}
+#else
+void OutputDebugPrintf(const char* strOutputString, ...)
+{
+
+}
+#endif
 
 long ControlThreadCreate(void* function,	 // set thread code
 	void* e,			 // set parameter

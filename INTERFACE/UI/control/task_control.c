@@ -15,6 +15,7 @@
 #ifndef STM32F40_41xxx
 #include "Windows.h"
 #include <stdio.h>
+
 #else
 #include "FreeRTOS.h"
 #include "task.h"
@@ -22,6 +23,14 @@
 
 #include "control_VOR.h"
 #include "control_CONT.h"
+
+
+#include <windows.h>
+#include <stdio.h>
+ //#include <stdlib.h>
+#include <stdarg.h>
+
+
 
 Task_Parameter_Struct TaskArray[10];
 typedef struct
@@ -31,6 +40,45 @@ typedef struct
 } Task_Control_Status;
 static char msg_buffer[50];
 
+void RK3588_Printf(uint16_t tasksize)
+{
+	/*TaskArray[0].mode = Task_VOR, TaskArray[0].VOR.Counter = 1, TaskArray[0].VOR.Vel = 1, TaskArray[0].VOR.Freq = 1.5f;
+	TaskArray[1].mode = Task_Continue, TaskArray[1].CONT.Sec = 2, TaskArray[1].CONT.Vel = 1;
+	TaskArray[2].mode = Task_OVAR, TaskArray[2].OVAR.Sec = 3, TaskArray[2].OVAR.Vel = 1, TaskArray[2].OVAR.Inc_Degree = 3.3f;
+	TaskArray[3].mode = Task_VHIT, TaskArray[3].VHIT.Counter = 4;
+	TaskArray[4].mode = Task_TC, TaskArray[4].TC.Sec = 5, TaskArray[4].TC.Vel = 1;*/
+	Task_Parameter_Struct* e;
+	OutputDebugPrintf("&%d", tasksize);
+	for (int i = 0;i < tasksize;i++)
+	{
+		e = &TaskArray[i];
+		switch (e->mode)
+		{
+		case Task_VOR:
+			OutputDebugPrintf("&VOR_T%dV%dF%02d", e->VOR.Counter, (int)e->VOR.Vel, (int)(e->VOR.Freq * 10.0f));
+			break;
+		case Task_Continue:
+			OutputDebugPrintf("&CONT_S%dV%d", e->CONT.Sec, (int)e->CONT.Vel);
+			break;
+		case Task_OVAR:
+			OutputDebugPrintf("&OVAR_S%dV%dI%02d", e->OVAR.Sec, (int)e->OVAR.Vel, (int)(e->OVAR.Inc_Degree));
+			break;
+		case Task_VHIT:
+			OutputDebugPrintf("&VHIT_T%d", e->VHIT.Counter);
+			break;
+		case Task_TC:
+			OutputDebugPrintf("&TC_S%dV%d", e->TC.Sec, e->TC.Vel);
+			break;
+
+		default:
+			break;
+		}
+
+
+	}
+	OutputDebugPrintf("@");
+}
+
 void task_interval_handle(int index)
 {
 	const uint32_t waitMillSec = 5000;
@@ -38,14 +86,14 @@ void task_interval_handle(int index)
 	//uint16_t len = sprintf(msg_buffer, "Interval: ID:%d", index);
 	//Message_Center_Send("PAGE1", 0, msg_buffer, len);
 	Message_Center_Send_prinft(
-		"PAGE1", 0,
+		"PAGE1", 0, 0,
 		"Interval: ID:%d", index);
 	/*HAL_Set_UI_Page1_Msg("Interval: ID:%d", index);*/
 	while (remainingTime < waitMillSec)
 	{
 		remainingTime = ControlGetTick() - time;
 		Message_Center_Send_prinft(
-			"PAGE1", 0,
+			"PAGE1", 0, 0,
 			"Interval: Sec:%d", waitMillSec - remainingTime);
 		/*len = sprintf(msg_buffer, "Interval: Sec:%d", waitMillSec - remainingTime);
 		Message_Center_Send("PAGE1", 0, msg_buffer, len);*/
@@ -64,7 +112,18 @@ uint8_t Task_control_Begin(Task_control_info* e)
 	if (e->taskCount == 0 || e->taskCount > 20)
 		return 0;
 	e->taskArray = TaskArray;
+	e->State_Bit.flag = 0;
 	e->State_Bit.Init = 1;
+	return 1;
+}
+
+uint8_t Task_control_ReqStop(Task_control_info* e)
+{
+	if (e->State_Bit.IsRunning == 0)
+	{
+		return 0;
+	}
+	e->State_Bit.Exit = 1;
 	return 1;
 }
 
@@ -73,11 +132,6 @@ void Task_control_handler(Task_control_info* e)
 	if (e == 0)
 		return;
 	uint16_t len = 0;
-	// Task_Parameter_Struct *TaskArray = e->taskArray;
-	// Task_Control_Status TaskControlStatus;
-
-/*Task_Parameter_Struct Task = { .mode = Task_VOR, .VOR.Counter = 5 };
-TaskArray = &Task;*/
 BEGIN_POS:
 	// get all task need to implement
 	while (1)
@@ -97,13 +151,18 @@ BEGIN_POS:
 	}
 
 	e->State_Bit.IsRunning = 1;
+
 	uint16_t task_size = e->taskCount;
+	RK3588_Printf(task_size);
+
 	for (int i = 0; i < task_size; i++)
 	{
 		Task_Parameter_Struct* task = &e->taskArray[i];
+		if (e->State_Bit.Exit)
+			break;
 		task_interval_handle(i);
-		Message_Center_Send_prinft(
-			"PAGE1", 0,
+		Message_Center_Send_prinft_OverWrite(
+			"PAGE1", 0, 0,
 			"Begin:Running %d", i + 1);
 		/*len = sprintf(msg_buffer, "Begin:Running %d", i + 1);
 		Message_Center_Send("PAGE1", 0, msg_buffer, len);*/
@@ -120,7 +179,7 @@ BEGIN_POS:
 			break;
 		}
 	}
-	Message_Center_Send_prinft(
+	Message_Center_Send_prinft_OverWrite(
 		"PAGE1", 0,
 		0,
 		"End");

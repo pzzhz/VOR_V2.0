@@ -25,6 +25,7 @@ extern "C"
     void ControlDelay(uint32_t ms);
     void SaftExitDelay(uint32_t ms, uint8_t e);
     uint32_t ControlGetTick();
+    void OutputDebugPrintf(const char* strOutputString, ...);
     long ControlThreadCreate(void *function,     // set thread code
                              void *e,            // set parameter
                              void *taskhandle_t, // thread instant
