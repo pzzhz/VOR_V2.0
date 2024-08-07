@@ -9,7 +9,7 @@ void communication_thread()
 	{
 		ControlGetTick();
 		HAL_BL_USART_Server();
-		ControlDelay(50);
+		ControlDelay(1);
 	}
 }
 uint32_t taskhand[2];

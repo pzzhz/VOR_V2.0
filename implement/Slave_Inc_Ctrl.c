@@ -99,11 +99,11 @@ uint8_t INC_Machine_Init(float angle, uint32_t Maxcount)
 {
 #ifndef HARDWARE_TEST
 #else
+#endif
     INC_IO_INIT();
     Slave1_Set_Machine_Cb(INC_handler);
     inc_para.state = running;
     inc_para.angleReq = angle;
-#endif
     return 1;
 }
 

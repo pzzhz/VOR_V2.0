@@ -113,7 +113,6 @@ void USART3_IRQHandler(void) // 串口1中断服务程序
         uint8_t dr = USART3->DR;
         if (Interrupt_handle != 0)
             Interrupt_handle(dr);
-						 USART1->DR=dr;
         USART_ClearITPendingBit(USART3, USART_IT_RXNE);
     }
     if (USART_GetITStatus(USART3, USART_IT_TXE))

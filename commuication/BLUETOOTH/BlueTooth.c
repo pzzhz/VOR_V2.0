@@ -5,6 +5,8 @@
 #include "../../INTERFACE/UI/Task/task_manager.h"
 #include "../../INTERFACE/UI/Task/task_info_struct.h"
 
+extern uint8_t HAL_USB_TX(uint8_t* str, uint16_t len);
+
 void (*SendCb)(uint8_t* buf, uint16_t len) = 0;
 
 typedef enum
@@ -34,7 +36,7 @@ void Task_Info_Package(Task_Parameter_Struct e, uint8_t id, uint8_t* buf)
 {
 	uint16_t temp;
 	buf[0] = id;
-	buf[1] = e.mode;
+	buf[1] = e.mode + 1;
 	temp = e.VOR.Counter;
 	buf[2] = ((uint16_t)temp >> 8);
 	buf[3] = temp;
@@ -64,17 +66,37 @@ void Return_Handle()
 	if (Message_Center_Receive_Scanf("task", 1, 0,
 		"ReadState %d %d", &size, &isupdata) == 2)
 	{
-		ControlDelay(5);
-		if (Message_Center_Receive_Scanf("Ctrl", 1, 0,
-			"ReadState %d", &currentCount) == 1)
+		uint8_t flag = 0, count = 0;;
+		while (flag != 1 && count < 10)
+		{
+			count++;
+			flag = Message_Center_Receive_Scanf("Ctrl", 1, 0,
+				"ReadState %d", &currentCount);
+			ControlDelay(5);
+		}
+		if (flag == 1)
 		{
 			uint8_t returnbytes[] = {
-				(uint8_t)1,   // ID
-				size, // 当前任务总数
-				(currentCount == 0xff) ? 0 : currentCount + 1,         // 第几个在执行
-				isupdata      // 是否更新
+				(uint8_t)1,                                    // ID
+				size,                                          // 当前任务总数
+				(currentCount == 0xff) ? 0 : currentCount + 1, // 第几个在执行
+				isupdata                                       // 是否更新
 			};
 			ReturnBytes_Package(returnbytes, sizeof(returnbytes));
+			if (isupdata == 1)
+			{
+				uint8_t returnbytes_task[8];
+				returnbytes_task[0] = 0x04;
+				Task_Parameter_Struct task = { 0 };
+				for (int i = 0; i < size; i++)
+				{
+					if (task_Manager_Get_Para(&task, i))
+					{
+						Task_Info_Package(task, i + 1, &returnbytes_task[1]);
+					}
+					ReturnBytes_Package(returnbytes_task, sizeof(returnbytes_task));
+				}
+			}
 		}
 	}
 	if (Message_Center_Receive_Compare("Ctrl", 1, 0,
@@ -128,12 +150,26 @@ DecodeFuntionReturn Decode_ReturnSlaveState_Cmd(uint8_t* bytes)
 		return Cmd_error;
 	if (bytes[0] != ModeId)
 		return Cmd_no_match;
-
-	Message_Center_Send_prinft("task", 1, 0,
-		"ReqReadState");
-	Message_Center_Send_prinft("Ctrl", 1,
-		0,
-		"ReqReadState");
+	uint8_t flag = 1, count = 0;
+	while (flag != 0 && count < 10)
+	{
+		count++;
+		flag = Message_Center_Send_prinft("task", 1,
+			0,
+			"ReqReadState");
+		if (flag != 0)
+			ControlDelay(1);
+	}
+	flag = 1, count = 0;
+	while (flag != 0 && count < 10)
+	{
+		count++;
+		flag = Message_Center_Send_prinft("Ctrl", 1,
+			0,
+			"ReqReadState");
+		if (flag != 0)
+			ControlDelay(1);
+	}
 
 	return Cmd_match;
 }
@@ -213,18 +249,20 @@ DecodeFuntionReturn Decode_UploadTask_Cmd(uint8_t* bytes)
 		return Cmd_error;
 	if (bytes[0] != ModeId)
 		return Cmd_no_match;
-	uint8_t ReadID = bytes[1];
+	uint8_t ReadID = bytes[1] - 1;
 	Task_Parameter_Struct task;
-	uint8_t buf[7] = { 0 };
+	uint8_t buf[8] = { 0 };
+	buf[0] = 0x04;
 #ifndef HARDWARE_TEST
+	OutputDebugPrintf("\r\n[ss] %d", ReadID);
 	if (task_Manager_Get_Para(&task, ReadID))
 	{
-		Task_Info_Package(task, ReadID, buf);
+		Task_Info_Package(task, ReadID + 1, &buf[1]);
 	}
 #endif
 #ifndef STM32F40_41xxx
 	uint32_t id = GetCurrentThreadId();
-	OutputDebugPrintf("\r\nID %ld\r\n", id);
+	//OutputDebugPrintf("\r\nID %ld\r\n", id);
 #endif
 	ReturnBytes_Package(buf, sizeof(buf));
 	return Cmd_match;
@@ -245,7 +283,7 @@ DecodeFuntionReturn Decode_Deleta_Cmd(uint8_t* bytes)
 		uint8_t Id;
 	} Delate_parameter;
 	Delate_parameter e = {
-		.Id = bytes[1] };
+		.Id = bytes[1]-1 };
 	uint8_t buf[] = {
 		0x05,
 		0x00,
@@ -304,6 +342,7 @@ void usart_protocol_decoding(uint8_t* bytes)
 		return;
 #if 1
 	uint8_t* buf = &receiveBuf[2];
+	//    HAL_USB_TX(buf, 11);
 #else
 	uint8_t* buf = &bytes[2];
 #endif

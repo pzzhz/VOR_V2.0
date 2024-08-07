@@ -191,6 +191,16 @@
 "..\obj\communication.o"
 "..\obj\communication_api.o"
 "..\obj\jy60.o"
+"..\obj\usbd_core.o"
+"..\obj\usbd_ioreq.o"
+"..\obj\usbd_req.o"
+"..\obj\usb_core.o"
+"..\obj\usb_dcd.o"
+"..\obj\usb_dcd_int.o"
+"..\obj\usb_bsp.o"
+"..\obj\usbd_desc.o"
+"..\obj\usbd_usr.o"
+"..\obj\usbd_cdc_core.o"
 --library_type=microlib --strict --scatter "..\OBJ\template.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

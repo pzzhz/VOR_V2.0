@@ -24,6 +24,7 @@ void Slave1_Set_Machine_Cb(Slave_Function_CB cb)
     Slave1_IO_Init();
     Slave1_En_IO(1);
     Slave1_Step_Generator_Init(50000, 10);
+    // Slave_server_Init();
     TIM9->CR1 &= ~TIM_CR1_CEN;
     function_cb = cb;
     TIM9->CR1 |= TIM_CR1_CEN;
@@ -104,6 +105,33 @@ void SRV1_Encoder_Init()
     TIM2->CR1 |= TIM_CR1_CEN;
 }
 
+void Slave_server_Init()
+{
+     TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
+    NVIC_InitTypeDef NVIC_InitStructure;
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9, ENABLE); /// 使能TIM9时钟
+
+    TIM_TimeBaseInitStructure.TIM_Period = 999; // 自动重装载值
+#ifdef HARDWARE_TEST
+    TIM_TimeBaseInitStructure.TIM_Prescaler = 167; // 定时器分频
+#else
+    TIM_TimeBaseInitStructure.TIM_Prescaler = 168 * 2 - 1; // 定时器分频
+#endif
+    TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up; // 向上计数模式
+    TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+
+    TIM_TimeBaseInit(TIM9, &TIM_TimeBaseInitStructure); // 初始化TIM9
+
+    TIM_ITConfig(TIM9, TIM_IT_Update, ENABLE);
+
+    NVIC_InitStructure.NVIC_IRQChannel = TIM1_BRK_TIM9_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x00;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x00;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+}
+
 void Slave1_Step_Generator_Init(uint32_t arr, uint32_t psc)
 {
     RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
@@ -144,30 +172,8 @@ void Slave1_Step_Generator_Init(uint32_t arr, uint32_t psc)
     TIM1->CR1 |= TIM_CR1_CEN;
     TIM1->CCR1 = arr / 2;
     SRV1_Encoder_Init();
-
-    TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
-    NVIC_InitTypeDef NVIC_InitStructure;
-
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9, ENABLE); /// 使能TIM9时钟
-
-    TIM_TimeBaseInitStructure.TIM_Period = 999; // 自动重装载值
-#ifdef HARDWARE_TEST
-    TIM_TimeBaseInitStructure.TIM_Prescaler = 167; // 定时器分频
-#else
-    TIM_TimeBaseInitStructure.TIM_Prescaler = 168 * 2 - 1; // 定时器分频
-#endif
-    TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up; // 向上计数模式
-    TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-
-    TIM_TimeBaseInit(TIM9, &TIM_TimeBaseInitStructure); // 初始化TIM9
-
-    TIM_ITConfig(TIM9, TIM_IT_Update, ENABLE);
-
-    NVIC_InitStructure.NVIC_IRQChannel = TIM1_BRK_TIM9_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x00;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x00;
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&NVIC_InitStructure);
+    Slave_server_Init();
+   
 }
 
 void tim_f_set(int f)

@@ -15,6 +15,11 @@ void SerialPort_SendBuf(uint8_t* buf, uint16_t len)
     DWORD bytesWritten;
     if (hSerial == 0)
         return;
+    OutputDebugPrintf("\r\n [BL]<- ");
+    for (int i = 0;i < len;i++)
+        OutputDebugPrintf(".%02X", buf[i]);
+    OutputDebugPrintf("\r\n");
+    
     if (!WriteFile(hSerial, buf, len, &bytesWritten, NULL)) {
         CloseHandle(hSerial);
         return 1;
@@ -76,7 +81,7 @@ void Serial_Thread()
 
     char dataToSend[] = "Hello, Serial Port!";
     DWORD bytesWritten;
-    char dataReceived[20];
+    uint8_t dataReceived[20];
     DWORD bytesRead;
     int count = 0;
     while (1)
@@ -88,12 +93,17 @@ void Serial_Thread()
         }
         if (bytesRead)
         {
+            OutputDebugPrintf("\r\n [BL]--> ");
             count = 0;
             while (bytesRead--)
             {
+                uint32_t hex = dataReceived[count];
+                OutputDebugPrintf("_%02X", hex);
                 if (Handle_cb)
                     Handle_cb(dataReceived[count++]);
+                Sleep(1);
             }
+            OutputDebugPrintf("\r\n");
         }
     }
 

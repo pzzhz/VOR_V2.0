@@ -4,7 +4,10 @@
 #include "stdarg.h"
 #include "stdio.h"
 
+#include "lvgl/lvgl.h"
+
 #define COMPARE(a,b) strncmp(a,b,Message_Center_Get_Str_Len(a,50))
+#define MYPRINTF(...) printf(  __VA_ARGS__)
 
 struct _Message_List
 {
@@ -113,6 +116,7 @@ uint8_t Message_Center_Send_prinft(
 			va_start(args, format);
 			node->source = source;
 			node->msg_len = vsprintf(node->msg, format, args);
+			MYPRINTF("\r\n-->[nw %s %d] %s", name, fun_id, node->msg);
 			return okne;
 		}
 		node = node->next;
@@ -146,6 +150,7 @@ uint8_t Message_Center_Send_prinft_OverWrite(
 			va_start(args, format);
 			node->source = source;
 			node->msg_len = vsprintf(node->msg, format, args);
+			MYPRINTF("\r\n-->[ow %s %d] %s", name, fun_id, node->msg);
 			return okne;
 		}
 		node = node->next;
@@ -213,6 +218,7 @@ uint8_t Message_Center_Receive_Compare(
 			if (COMPARE(str1, node->msg) != 0)
 				return stringNoMatch;
 			node->msg_len = 0;
+			MYPRINTF("\r\n->[Rc %s %d]", name, FilterId);
 			return okne;
 		}
 		node = node->next;
@@ -250,6 +256,7 @@ uint8_t Message_Center_Get(
 			if (source != 0)
 				*source = (void*)node->source;
 			memcpy(msg, node->msg, msgLen);
+			MYPRINTF("\r\n->[nc %s %d] %s", name, fun_id, node->msg);
 			//node->msg_len = 0;
 			return okne;
 		}
@@ -278,6 +285,7 @@ uint8_t Message_Center_Clean_Flag(
 				return msg_empty;
 			if (fun_id != node->funcion_Id)
 				return Filte_Id_None;
+			MYPRINTF("\r\n->[c %s %d]", name, fun_id);
 			node->msg_len = 0;
 			return okne;
 		}

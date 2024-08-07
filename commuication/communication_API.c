@@ -1,7 +1,7 @@
 #include "communication_API.h"
 
 #ifdef STM32F40_41xxx
-#define USE_USB 0
+#define USE_USB 1
 #define USE_BL 1
 #else
 #define USE_USB 0
@@ -15,7 +15,7 @@
 #include "usb_conf.h"
 #include "usbd_cdc_core.h"
 
-USB_OTG_CORE_HANDLE USB_OTG_dev;
+extern USB_OTG_CORE_HANDLE USB_OTG_dev;
 extern USBD_Usr_cb_TypeDef USR_cb;
 #endif
 
@@ -42,73 +42,84 @@ extern USBD_Usr_cb_TypeDef USR_cb;
 
 void HAL_communication_Bl_Init(void)
 {
-	// ´®¿Ú init
+    // ´®¿Ú init
 }
 
 // yj-60 init
 void HAL_communication_Mpu_Init(void)
 {
 #if USE_MPU
-	JY60_Init();
+    JY60_Init();
 #endif
 }
 
-void Hal_Rk3588_Printf(         )
+void Hal_Rk3588_Printf()
 {
 }
 
 uint8_t HAL_MPU_Get_Angle(float *angle)
 {
 #if USE_MPU
-	return JY60_Get_Inc(angle);
+    return JY60_Get_Inc(angle);
 #else
-	return 0;
+    return 0;
 #endif
 }
 
 uint8_t HAL_BL_USART_INIT(void)
 {
-	extern void usart_protocol_InterruptHandle(uint8_t dr);
+    extern void usart_protocol_InterruptHandle(uint8_t dr);
 #if USE_BL
 #ifdef STM32F40_41xxx
-	USART3_INIT(9600,
-				usart_protocol_InterruptHandle);
-	usart_protocol_init(USART3_Send_Package);
+    USART3_INIT(9600,
+                usart_protocol_InterruptHandle);
+    usart_protocol_init(USART3_Send_Package);
 #else
-	SerialPort_Init(usart_protocol_InterruptHandle);
-	usart_protocol_init(SerialPort_SendBuf);
+    SerialPort_Init(usart_protocol_InterruptHandle);
+    usart_protocol_init(SerialPort_SendBuf);
 #endif // STM32F40_41xxx
 
 #endif
-	return 1;
+    return 1;
 }
 
 uint8_t HAL_BL_USART_Server(void)
 {
 #if USE_BL
-	usart_protocol_decoding(0);
+    usart_protocol_decoding(0);
 #endif
-	return 1;
+    return 1;
 }
 
 uint8_t HAL_USB_INIT()
 {
 #if USE_USB
-	USBD_Init(&USB_OTG_dev,
-			  USB_OTG_FS_CORE_ID,
-			  &USR_desc,
-			  &USBD_CDC_cb,
-			  &USR_cb);
+    USBD_Init(&USB_OTG_dev,
+              USB_OTG_FS_CORE_ID,
+              &USR_desc,
+              &USBD_CDC_cb,
+              &USR_cb);
 #endif
-	return 1;
+    return 1;
+}
+
+uint8_t HAL_USB_TX(uint8_t *str, uint16_t len)
+{
+#ifdef STM32F40_41xxx
+
+
+    extern void usbd_cdc_senddata(void *pdev, uint8_t *str, uint16_t len);
+    usbd_cdc_senddata(&USB_OTG_dev, str, len);
+#endif // STM32F40_41xxx
 }
 
 void HAL_communication_Init(void)
 {
 #ifdef STM32F40_41xxx
-USART1_INIT(115200,0);
+    USART1_INIT(115200, 0);
 #endif
-	HAL_communication_Mpu_Init();
-	HAL_communication_Bl_Init();
-	HAL_BL_USART_INIT();
+    HAL_communication_Mpu_Init();
+    HAL_communication_Bl_Init();
+    HAL_BL_USART_INIT();
+//    HAL_USB_INIT();
 }
