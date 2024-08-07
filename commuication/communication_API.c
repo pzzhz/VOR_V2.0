@@ -25,7 +25,6 @@ extern USBD_Usr_cb_TypeDef USR_cb;
 #include "../HARDWARE/USART/USART3.h"
 #include "../HARDWARE/USART/USART1.h"
 
-
 #endif
 
 #define USE_MPU 1
@@ -54,7 +53,11 @@ void HAL_communication_Mpu_Init(void)
 #endif
 }
 
-uint8_t HAL_MPU_Get_Angle(float* angle)
+void Hal_Rk3588_Printf(         )
+{
+}
+
+uint8_t HAL_MPU_Get_Angle(float *angle)
 {
 #if USE_MPU
 	return JY60_Get_Inc(angle);
@@ -68,8 +71,9 @@ uint8_t HAL_BL_USART_INIT(void)
 	extern void usart_protocol_InterruptHandle(uint8_t dr);
 #if USE_BL
 #ifdef STM32F40_41xxx
-	USART1_INIT(9600,
-		usart_protocol_InterruptHandle);
+	USART3_INIT(9600,
+				usart_protocol_InterruptHandle);
+	usart_protocol_init(USART3_Send_Package);
 #else
 	SerialPort_Init(usart_protocol_InterruptHandle);
 	usart_protocol_init(SerialPort_SendBuf);
@@ -91,15 +95,19 @@ uint8_t HAL_USB_INIT()
 {
 #if USE_USB
 	USBD_Init(&USB_OTG_dev,
-		USB_OTG_FS_CORE_ID,
-		&USR_desc,
-		&USBD_CDC_cb,
-		&USR_cb);
+			  USB_OTG_FS_CORE_ID,
+			  &USR_desc,
+			  &USBD_CDC_cb,
+			  &USR_cb);
 #endif
+	return 1;
 }
 
 void HAL_communication_Init(void)
 {
+#ifdef STM32F40_41xxx
+USART1_INIT(115200,0);
+#endif
 	HAL_communication_Mpu_Init();
 	HAL_communication_Bl_Init();
 	HAL_BL_USART_INIT();

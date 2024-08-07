@@ -3,13 +3,13 @@
 #include "../other/system_function.h"
 #include "../other/meassage_center.h"
 
-
 #include "string.h"
 
-#define compara(a,b) strncmp(a,b,(sizeof(a)-1)) 
+
+#define compara(a, b) strncmp(a, b, (Message_Center_Get_Str_Len(a,50)))
 static char receiveBuf[50];
 static uint32_t HandleID;
-static uint8_t isbusy;
+static uint8_t isbusy, isupdata;
 
 #define task_ID "task"
 
@@ -20,11 +20,12 @@ typedef enum
 	Flag_Error
 } Control_flag;
 
-typedef enum {
+typedef enum
+{
 	normal,
 	wrong_handleID,
 	wrong_para
-}error_type;
+} error_type;
 
 struct
 {
@@ -39,7 +40,7 @@ struct
 	Control_flag flag;
 	uint16_t fouce_index;
 	uint8_t isSave_Create;
-	Task_Parameter_Struct src;		//src
+	Task_Parameter_Struct src; // src
 } Control_Save_Task;
 
 struct
@@ -57,13 +58,15 @@ struct
 	uint16_t swap2;
 } Control_move_Task;
 
+
+
 uint8_t Task_manager_Req_add(uint32_t handleID,
 	uint16_t fouce_index,
 	Task_Parameter_Struct info)
 {
 	if (HandleID != handleID)
 		return wrong_handleID;
-	//看看这么检查 fouce_index
+	// 看看这么检查 fouce_index
 	Control_Add_Task.fouce_index = fouce_index;
 	Control_Add_Task.info = info;
 	Control_Add_Task.flag = Flag_required;
@@ -76,7 +79,7 @@ uint8_t Task_manager_Req_saveCreate(uint32_t handleID,
 {
 	if (HandleID != handleID)
 		return wrong_handleID;
-	//看看这么检查 fouce_index
+	// 看看这么检查 fouce_index
 	Control_Save_Task.fouce_index = fouce_index;
 	Control_Save_Task.src = info;
 	Control_Save_Task.isSave_Create = 1;
@@ -90,7 +93,7 @@ uint8_t Task_manager_Req_Save(uint32_t handleID,
 {
 	if (HandleID != handleID)
 		return wrong_handleID;
-	//看看这么检查 fouce_index
+	// 看看这么检查 fouce_index
 	Control_Save_Task.fouce_index = fouce_index;
 	Control_Save_Task.src = info;
 	Control_Save_Task.isSave_Create = 0;
@@ -103,7 +106,9 @@ uint8_t Task_manager_Req_Del(uint32_t handleID,
 {
 	if (HandleID != handleID)
 		return wrong_handleID;
-	//看看这么检查 fouce_index
+	if (fouce_index >= Task_Stroage_GetSize())
+		return wrong_para;
+	// 看看这么检查 fouce_index
 	Control_del_Task.fouce_index = fouce_index;
 	Control_del_Task.flag = Flag_required;
 	return 0;
@@ -128,7 +133,7 @@ uint8_t Task_manager_Begin_Req(uint32_t* handleID)
 	{
 		_okne,
 		_isbusy
-	}return_type;
+	} return_type;
 	if (isbusy)
 		return _isbusy;
 	HandleID++;
@@ -142,7 +147,7 @@ uint8_t Task_manager_End_release()
 	{
 		_okne,
 		_error
-	}return_type;
+	} return_type;
 	if (isbusy == 0)
 		return _error;
 	isbusy = 0;
@@ -154,6 +159,7 @@ void task_manager_Add_Ack()
 {
 	if (Control_Add_Task.flag == Flag_required)
 	{
+		isupdata = 1;
 		uint16_t index = Control_Add_Task.fouce_index;
 		Control_Add_Task.info_pt = Task_Stroage_Insert(Control_Add_Task.info, index);
 		if (Control_Add_Task.info_pt != 0)
@@ -180,6 +186,7 @@ void task_manager_Del_Ack()
 {
 	if (Control_del_Task.flag == Flag_required)
 	{
+		isupdata = 1;
 		uint16_t index = Control_del_Task.fouce_index;
 		if (Task_Stroage_delByID(index))
 			Control_del_Task.flag = Flag_OKNE; // 让参数继续运行
@@ -206,6 +213,7 @@ void task_manager_Save_Ack()
 	if (Control_Save_Task.flag == Flag_required &&
 		Control_Save_Task.isSave_Create == 0)
 	{
+		isupdata = 1;
 		uint16_t index = Control_Save_Task.fouce_index;
 		uint8_t task_count = Task_Stroage_GetSize();
 		if (Control_Save_Task.fouce_index >= task_count)
@@ -233,9 +241,10 @@ void task_manager_Save_Ack()
 	if (Control_Save_Task.flag == Flag_required &&
 		Control_Save_Task.isSave_Create == 1)
 	{
+		isupdata = 1;
 		uint16_t index = Control_Save_Task.fouce_index;
 		uint8_t task_count = Task_Stroage_GetSize();
-		if (Control_Save_Task.fouce_index > task_count)
+		if (Control_Save_Task.fouce_index >= task_count)
 		{
 			Task_Parameter_Struct* newtask = Task_Stroage_Insert(Control_Save_Task.src, task_count);
 			if (newtask == 0)
@@ -276,6 +285,7 @@ void task_manager_Move_Ack()
 {
 	if (Control_move_Task.flag == Flag_required)
 	{
+		isupdata = 1;
 		Task_Stroage_MoveByID(Control_move_Task.swap1, Control_move_Task.swap2);
 		Control_move_Task.flag = Flag_OKNE;
 		if (Control_move_Task.flag == Flag_OKNE)
@@ -301,9 +311,14 @@ void task_manager_Req_Info()
 		uint16_t size = Task_Stroage_GetSize();
 		Message_Center_Send_prinft(task_ID, 1,
 			0,
-			"ReadState %d", size);
+			"ReadState %d %d", size, isupdata);
+		isupdata = 0;
 	}
+}
 
+uint8_t task_Manager_Get_Para(Task_Parameter_Struct* e, uint16_t index)
+{
+	return Task_Stroage_Get(e, index);
 }
 
 void task_manager_Handle()
@@ -322,14 +337,11 @@ void task_parameter_init()
 	Control_Add_Task.flag = Flag_OKNE;
 }
 
-
-
 void Task_Ack_Req(uint8_t flag, uint16_t ID)
 {
-	//ADD id:1 
+	// ADD id:1
 	if (compara("ADD", receiveBuf) == 0)
 	{
-
 	}
 }
 
@@ -356,4 +368,3 @@ void Task_mangager_Init()
 		256);
 	Meassage_Center_Add(task_ID);
 }
-

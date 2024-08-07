@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-30 14:37:06
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-07-31 14:30:42
+ * @LastEditTime: 2024-08-02 18:24:00
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\HARDWARE\USART\USART5.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -29,9 +29,8 @@ void USART1_INIT(
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE); // 使能UART5时钟
 
     // 串口1对应引脚复用映射
-    GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1); // GPIOA9复用为UART5
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);  // GPIOA9复用为UART5
     GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1); // GPIOA10复用为UART5
-
 
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;        //
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;      // 复用功能
@@ -40,8 +39,7 @@ void USART1_INIT(
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;      // 上拉
     GPIO_Init(GPIOA, &GPIO_InitStructure);            //
 
-
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;        // GPIOA9与GPIOA10
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;         // GPIOA9与GPIOA10
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;      // 复用功能
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; // 速度50MHz
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;    // 推挽复用输出
@@ -73,20 +71,20 @@ static char printf_buf[100];
 static uint16_t send_index, send_len;
 uint8_t USART1_FIFO_Send(uint8_t *dr)
 {
-    if (send_len)
-    {
-        *dr = printf_buf[send_index++];
-    }
     if (send_index >= send_len)
     {
         send_index = 0;
         send_len = 0;
         return 0;
     }
+    if (send_len)
+    {
+        *dr = printf_buf[send_index++];
+    }
     return 1;
 }
-static double ss = 9.95f;
-uint8_t USART1_PRINTF(char *string, uint16_t size)
+
+uint8_t USART1_Send_Package(char *string, uint16_t size)
 {
     if (send_len)
         return 0;

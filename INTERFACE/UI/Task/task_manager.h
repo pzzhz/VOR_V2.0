@@ -26,6 +26,8 @@ extern "C"
 
 	uint8_t Task_manager_Begin_Req(uint32_t* handleID);
 
+	uint8_t task_Manager_Get_Para(Task_Parameter_Struct* e, uint16_t index);
+
 	uint8_t Task_manager_End_release();
 
 	uint8_t Task_manager_ADD_GetResult(uint32_t handleID, void* pt);

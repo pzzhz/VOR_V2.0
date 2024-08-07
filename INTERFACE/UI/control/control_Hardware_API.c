@@ -35,6 +35,9 @@ struct
 uint8_t HAL_Incline_Init(uint32_t time, float angle)
 {
 	inc_info.Setangle = angle;
+#ifdef STM32F40_41xxx
+
+#endif
 	return 1;
 }
 
@@ -46,6 +49,8 @@ uint8_t HAL_Incline_Get_State(float* angle)
 		return 1;
 	inc_info.Currentangle += (inc_info.Setangle - inc_info.Currentangle) * 0.05f;
 	*angle = inc_info.Currentangle;
+#endif
+#ifdef STM32F40_41xxx
 #endif
 
 	return 0;

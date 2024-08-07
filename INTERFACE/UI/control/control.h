@@ -69,6 +69,7 @@ extern "C"
 		uint8_t *message;
 		Task_Parameter_Struct *taskArray;
 		uint16_t taskCount;
+		uint16_t currentCount;
 	} Task_control_info;
 	void controlInit(void);
 	// 0 代表无返回信息

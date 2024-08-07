@@ -10,15 +10,14 @@
       <TargetName>release</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pArmCC>5060061::V5.06 update 1 (build 61)::ARMCC</pArmCC>
-      <pCCUsed>5060061::V5.06 update 1 (build 61)::ARMCC</pCCUsed>
+      <pCCUsed>5060960::V5.06 update 7 (build 960)::ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F407ZG</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F4xx_DFP.2.17.1</PackID>
-          <PackURL>https://www.keil.com/pack/</PackURL>
+          <PackID>Keil.STM32F4xx_DFP.2.15.0</PackID>
+          <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x100000) IRAM(0x20000000,0x20000) IRAM2(0x10000000,0x10000) CPUTYPE("Cortex-M4") FPU2 CLOCK(168000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
@@ -338,7 +337,7 @@
             <v6WtE>0</v6WtE>
             <v6Rtti>0</v6Rtti>
             <VariousControls>
-              <MiscControls>--diag_suppress=68  --diag_suppress=111  --diag_suppress=550  --diag_suppress=188  --diag_suppress=167  --diag_suppress=668 --diag_suppress=1035</MiscControls>
+              <MiscControls>--diag_suppress=68  --diag_suppress=111  --diag_suppress=550  --diag_suppress=188  --diag_suppress=167  --diag_suppress=668 --diag_suppress=1035 --diag_suppress=1295 --diag_suppress=1</MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
               <IncludePath>..\FREERTOS\source\include;..\CORE;..\USER;..\HARDWARE\LCD;..\FWLIB\inc;..\HARDWARE\TOUCH;..\INTERFACE\LVGL\lvgl;..\INTERFACE\LVGL\lvgl\lsrc;..\INTERFACE\LVGL\lvgl\src\core;..\INTERFACE\LVGL\lvgl\src\draw;..\INTERFACE\LVGL\lvgl\src\font;..\INTERFACE\LVGL\lvgl\src\hal;..\INTERFACE\LVGL\lvgl\src\misc;..\INTERFACE\LVGL\lvgl\src\theme;..\INTERFACE\LVGL\lvgl\src\widgets;..\INTERFACE\LVGL\lvgl\src\extra;..\INTERFACE\LVGL\lvgl\src\extra\layouts;..\INTERFACE\LVGL\lvgl\src\extra\layout\flex;..\INTERFACE\LVGL\lv_port;..\INTERFACE\LVGL\lvgl\src\extra\layouts\flex;..\INTERFACE\LVGL\lvgl\src\extra\layouts\grid;..\INTERFACE\LVGL\lvgl\src\extra\libs;..\INTERFACE\LVGL\lvgl\src\extra\others;..\INTERFACE\LVGL\lvgl\src\extra\themes;..\INTERFACE\LVGL\lvgl\src\extra\widgets;..\INTERFACE\LVGL\lvgl\src\extra\themes\basic;..\INTERFACE\LVGL\lvgl\src\extra\libs\qrcode;..\HARDWARE\SYSTEM\sys;..\HARDWARE\SYSTEM\delay;..\HARDWARE\SYSTEM\usart;..\FREERTOS;..\FREERTOS\source\portable\rvds\ARM_CM4F;..\INTERFACE\LVGL;..\INTERFACE\UI;..\INTERFACE\UI\control</IncludePath>
@@ -454,6 +453,16 @@
               <FileName>can.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\CAN\can.c</FilePath>
+            </File>
+            <File>
+              <FileName>IR.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IR_Sense\IR.c</FilePath>
+            </File>
+            <File>
+              <FileName>INC_CTRl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\INC\INC_CTRl.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1328,6 +1337,11 @@
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\control\control_CONT.c</FilePath>
             </File>
+            <File>
+              <FileName>control_OVAR.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\control\control_OVAR.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1418,6 +1432,11 @@
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\UI_Parameter\UI_Parameter_Vor.c</FilePath>
             </File>
+            <File>
+              <FileName>UI_Parameter_Ovar.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\UI_Parameter\UI_Parameter_Ovar.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1427,6 +1446,26 @@
               <FileName>Slave_Vor_Ctrl.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\implement\Slave_Vor_Ctrl.c</FilePath>
+            </File>
+            <File>
+              <FileName>Slave_OVAR_Ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\Slave_OVAR_Ctrl.c</FilePath>
+            </File>
+            <File>
+              <FileName>Slave_Inc_Ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\Slave_Inc_Ctrl.c</FilePath>
+            </File>
+            <File>
+              <FileName>motor_para_cal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\motor_para_cal.c</FilePath>
+            </File>
+            <File>
+              <FileName>Slave_Cont_Ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\Slave_Cont_Ctrl.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1455,6 +1494,61 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>USB</GroupName>
+          <Files>
+            <File>
+              <FileName>usbd_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_Device_Library\Core\src\usbd_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_ioreq.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_Device_Library\Core\src\usbd_ioreq.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_req.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_Device_Library\Core\src\usbd_req.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_OTG_Driver\src\usb_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_dcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_OTG_Driver\src\usb_dcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_dcd_int.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_OTG_Driver\src\usb_dcd_int.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_bsp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\USB_APP\usb_bsp.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_desc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\USB_APP\usbd_desc.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_usr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\USB_APP\usbd_usr.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_cdc_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_Device_Library\Class\cdc\src\usbd_cdc_core.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
@@ -1468,8 +1562,8 @@
         <TargetCommonOption>
           <Device>STM32F407ZG</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F4xx_DFP.2.17.1</PackID>
-          <PackURL>https://www.keil.com/pack/</PackURL>
+          <PackID>Keil.STM32F4xx_DFP.2.15.0</PackID>
+          <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x100000) IRAM(0x20000000,0x20000) IRAM2(0x10000000,0x10000) CPUTYPE("Cortex-M4") FPU2 CLOCK(168000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
@@ -1956,6 +2050,16 @@
               <FileName>can.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\CAN\can.c</FilePath>
+            </File>
+            <File>
+              <FileName>IR.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IR_Sense\IR.c</FilePath>
+            </File>
+            <File>
+              <FileName>INC_CTRl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\INC\INC_CTRl.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2899,6 +3003,11 @@
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\control\control_CONT.c</FilePath>
             </File>
+            <File>
+              <FileName>control_OVAR.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\control\control_OVAR.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2989,6 +3098,11 @@
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\UI_Parameter\UI_Parameter_Vor.c</FilePath>
             </File>
+            <File>
+              <FileName>UI_Parameter_Ovar.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\UI_Parameter\UI_Parameter_Ovar.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2998,6 +3112,26 @@
               <FileName>Slave_Vor_Ctrl.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\implement\Slave_Vor_Ctrl.c</FilePath>
+            </File>
+            <File>
+              <FileName>Slave_OVAR_Ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\Slave_OVAR_Ctrl.c</FilePath>
+            </File>
+            <File>
+              <FileName>Slave_Inc_Ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\Slave_Inc_Ctrl.c</FilePath>
+            </File>
+            <File>
+              <FileName>motor_para_cal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\motor_para_cal.c</FilePath>
+            </File>
+            <File>
+              <FileName>Slave_Cont_Ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\Slave_Cont_Ctrl.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3023,6 +3157,61 @@
               <FileName>jy60.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\commuication\mpu\jy60.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>USB</GroupName>
+          <Files>
+            <File>
+              <FileName>usbd_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_Device_Library\Core\src\usbd_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_ioreq.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_Device_Library\Core\src\usbd_ioreq.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_req.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_Device_Library\Core\src\usbd_req.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_OTG_Driver\src\usb_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_dcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_OTG_Driver\src\usb_dcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_dcd_int.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_OTG_Driver\src\usb_dcd_int.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_bsp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\USB_APP\usb_bsp.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_desc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\USB_APP\usbd_desc.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_usr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\USB_APP\usbd_usr.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_cdc_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\commuication\USB\STM32_USB_Device_Library\Class\cdc\src\usbd_cdc_core.c</FilePath>
             </File>
           </Files>
         </Group>

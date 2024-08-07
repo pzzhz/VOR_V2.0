@@ -52,7 +52,7 @@ uint8_t motor_speed_cal(uint8_t InitFlag, float *motor_speed, Speed_Cal_Struct *
         if (par->motor.speed < par->motor.sps)
         {
             par->motor.speed = par->motor.acc * par->motor.esccape;
-            *motor_speed = par->motor.speed;
+           
         }
     }
     else if (par->motor.esccape > par->motor.down_tag)
@@ -60,10 +60,11 @@ uint8_t motor_speed_cal(uint8_t InitFlag, float *motor_speed, Speed_Cal_Struct *
         if (par->motor.speed > 0 && par->motor.esccape < par->motor.end_tag)
         {
             par->motor.speed = (par->motor.end_tag - par->motor.esccape) * par->motor.acc;
-            *motor_speed = par->motor.speed;
+           
         }
         else
             return 0;
     }
+		 *motor_speed = par->motor.speed;
     return 1;
 }

@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-24 14:38:21
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-08-02 11:16:25
+ * @LastEditTime: 2024-08-05 11:34:25
  * @FilePath: \USER\hard_test\test_main.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -21,6 +21,7 @@
 
 extern void slave_test(void);
 extern uint8_t CONT_Machine_Init(float vel, uint32_t MillSec);
+extern uint8_t Zero_Machine_Init(float vel, uint32_t MillSec);
 double ss = 9.95f;
 char *srs = "%.2f %d ";
 void main()
@@ -38,6 +39,7 @@ void main()
     //    USART1_INIT(9600, 0);
     Communication_Init();
     HAL_communication_Init();
+    Zero_Machine_Init(20,50);
     vTaskStartScheduler();
     // //    USART5_INIT(9600, jy60_decode);
     // while (1)

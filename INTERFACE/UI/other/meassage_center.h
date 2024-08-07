@@ -8,7 +8,11 @@ extern "C"
 {
 #endif //
 
-#define COMPARE(a,b) strncmp(a,b,sizeof(a)-1)
+
+
+	uint16_t  Message_Center_Get_Str_Len(
+		const char* str, 
+		uint16_t maxlen);
 
 	uint8_t Message_Center_Send(
 		const char* name,
@@ -57,6 +61,8 @@ extern "C"
 
 	void Meassage_Center_Add(const char* name);
 	void Message_Center_Init();
+
+
 #ifdef __cplusplus
 }
 #endif //

@@ -23,6 +23,7 @@ extern "C"
 
     float Slave1_Get_Encode_Angle(void);
     int32_t Slave1_Get_Encode(void);
+    void Slave1_Set_Encode(uint32_t cnt);
 
 #ifdef __cplusplus
 }

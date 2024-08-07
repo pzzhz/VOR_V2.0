@@ -9,7 +9,8 @@
 #include "../../UI/control/control_Hardware_API.h"
 #include "string.h"
 
-
+uint16_t  Get_Str_Len(const char* str, uint16_t maxlen);
+#define COMPARE(a,b) strncmp(a,b,Get_Str_Len(a,50))
 static Table_Contain_Property* table_Contain_Property;
 lv_timer_t Page1_timer;
 lv_obj_t* parent_box;
@@ -52,6 +53,18 @@ struct
 } Page_del_Task;
 
 // void UI_Page1_Refresh_handle(lv_time_t )
+ 
+static uint16_t  Get_Str_Len(const char* str, uint16_t maxlen)
+{
+	int i = 0;
+	for (; i < maxlen; i++)
+	{
+		if (str[i] == 0)
+		{
+			return (i == 0) ? 0 : i - 1;
+		}
+	}
+}
 
 void Set_table_Cell_Text(lv_obj_t* obj, Task_Parameter_Struct* e)
 {
@@ -68,7 +81,7 @@ void Set_table_Cell_Text(lv_obj_t* obj, Task_Parameter_Struct* e)
 		sprintf(strs, "%.1f/hz", e->VOR.Freq);
 		// sprintf(strs, "%.1f/hz", lv_tick_get() / 1000.0f);
 		lv_table_set_cell_value_fmt(obj, 0, 2, "%s", strs);
-		sprintf(strs, "%.1faps", e->VOR.Vel);
+		sprintf(strs, "%.1f°/s", e->VOR.Vel);
 		lv_table_set_cell_value_fmt(obj, 0, 3, "%s", strs);
 		break;
 	case Task_Continue:
@@ -76,9 +89,19 @@ void Set_table_Cell_Text(lv_obj_t* obj, Task_Parameter_Struct* e)
 			lv_table_set_cell_value_fmt(obj, 0, 1, "%ds/%ds", CurrentCount, e->CONT.Sec);
 		else
 			lv_table_set_cell_value_fmt(obj, 0, 1, "%ds", e->CONT.Sec);
-		sprintf(strs, "%.1faps", e->CONT.Vel);
+		sprintf(strs, "%.1f°/s", e->CONT.Vel);
 		lv_table_set_cell_value_fmt(obj, 0, 2, "%s", strs);
 		lv_table_set_cell_value_fmt(obj, 0, 3, " ");
+		break;
+	case Task_OVAR:
+		if (*item_property->ID == CurrentTask)
+			lv_table_set_cell_value_fmt(obj, 0, 1, "%d/%d", CurrentCount, (int)e->OVAR.Sec);
+		else
+			lv_table_set_cell_value_fmt(obj, 0, 1, "%d", (int)e->OVAR.Sec);
+		sprintf(strs, "%.1f°", e->OVAR.Inc_Degree);
+		lv_table_set_cell_value_fmt(obj, 0, 2, "%s", strs);
+		sprintf(strs, "%.1f°/s", e->OVAR.Vel);
+		lv_table_set_cell_value_fmt(obj, 0, 3, "%s", strs);
 		break;
 	}
 }
@@ -90,9 +113,9 @@ void ui1_(Table_Property* p)
 	if (p->Updata_Source)
 	{
 		Task_Parameter_Struct* task_info = p->Updata_Source;
-		const char mode_name_array[4][10] = { "NULL","VOR", "CONT" };
+		const char mode_name_array[4][6] = { "NULL","VOR", "CONT","OVAR" };
 		uint16_t array_index = task_info->mode + 1;
-		if (array_index > 0x04)
+		if (array_index >= 0x04)
 		{
 			array_index = 0;
 		}
@@ -220,7 +243,7 @@ void UI_Task_Btn_Del_Click_Event(lv_event_t* e)
 	if (fouces_index < 0)
 		return;
 	Table_Property* item_property = UI_Table_Find_Obj_User_Data(table_Contain_Property, fouces_index);
-	item_property->Updata_Source =(void*) &del_templete;
+	item_property->Updata_Source = (void*)&del_templete;
 	LV_LOG_USER("DEL %d", fouces_index);
 	uint32_t handleID;
 	Task_manager_Begin_Req(&handleID);
@@ -331,8 +354,8 @@ void UI_Page1_Get_Souce_Updata()
 			if (sscanf(msgBuffer, "DEL %d", &del_index) == 1)
 			{
 				UI_Task_Btn_Del_Callback(del_index);
-			};
-		}
+	};
+}
 		if (COMPARE("Save", msgBuffer) == 0)
 		{
 #if 0

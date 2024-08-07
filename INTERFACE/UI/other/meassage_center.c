@@ -4,6 +4,8 @@
 #include "stdarg.h"
 #include "stdio.h"
 
+#define COMPARE(a,b) strncmp(a,b,Message_Center_Get_Str_Len(a,50))
+
 struct _Message_List
 {
 	char* msg;
@@ -35,6 +37,18 @@ static char msg_array[10][30];
 static Message_List* Top_Node;
 static uint8_t List_Updateing;
 static uint16_t isUseID;
+
+uint16_t  Message_Center_Get_Str_Len(const char* str, uint16_t maxlen)
+{
+	int i = 0;
+	for (; i < maxlen; i++)
+	{
+		if (str[i] == 0)
+		{
+			return (i == 0) ? 0 : i - 1;
+		}
+	}
+}
 
 uint8_t Message_Center_Send(
 	const char* name,
@@ -158,7 +172,7 @@ uint8_t Message_Center_Receive_Scanf(
 	{
 		va_list args;
 		va_start(args, format);
-		res = vsscanf(RecBuf,format, args);
+		res = vsscanf(RecBuf, format, args);
 		Message_Center_Clean_Flag(name, FilterId);
 		va_end(args);
 	}
@@ -276,7 +290,7 @@ uint8_t Message_Center_Clean_Flag(
 Message_List* Get_new_list()
 {
 	const uint16_t mask = 0x01;
-	for (int i = 0;i < 10;i++)
+	for (int i = 0; i < 10; i++)
 	{
 		uint16_t res = isUseID & (mask << i);
 		if (res == 0)
@@ -297,7 +311,7 @@ void release_list(Message_List* e)
 		//Ã»Ð´ºÃ
 	}
 	const uint16_t mask = 0x01;
-	for (int i = 0;i < 10;i++)
+	for (int i = 0; i < 10; i++)
 	{
 		if (e == &array[i])
 		{
@@ -339,7 +353,7 @@ void Meassage_Center_Add(const char* name)
 	}
 	msg->msg_len = 0;
 	msg->msg_size = 30;
-	msg->name = (char *)name;
+	msg->name = (char*)name;
 	msg->funcion_Id = 0;
 	msg->next = 0;
 	isbusy = 0;

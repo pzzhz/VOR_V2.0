@@ -42,6 +42,7 @@ int UI_Table_Get_Fouces(Table_Contain_Property* table_Contain_Property)
 void UI_Table_Set_Fouces(Table_Contain_Property* table_Contain_Property, int index)
 {
 	table_Contain_Property->hightLight_index = index;
+	lv_obj_invalidate(table_Contain_Property->obj);
 }
 
 typedef struct {

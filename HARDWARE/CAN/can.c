@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-13 11:18:33
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-07-29 14:33:51
+ * @LastEditTime: 2024-08-02 18:13:02
  * @FilePath: \USERd:\workfile\项目3 vor\software\vor-pjt\template\HARDWARE\CAN\can.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -329,9 +329,9 @@ static void can_rx_msg(uint8_t fifox, uint32_t *id, uint8_t *ide, uint8_t *rtr, 
  */
 void CAN2_RX0_IRQHandler(void)
 {
-    uint8_t rxbuf[8];
-    uint32_t id;
-    uint8_t ide, rtr, len;
+    // uint8_t rxbuf[8];
+    // uint32_t id;
+    // uint8_t ide, rtr, len;
     CanRxMsg msg = {0};
     can_rx_msg(0, &msg.StdId, &msg.IDE, &msg.RTR, &msg.DLC, msg.Data);
     if (can_rx_handler != 0)

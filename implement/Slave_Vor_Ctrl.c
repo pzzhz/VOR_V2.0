@@ -96,6 +96,7 @@ uint8_t VOR_Machine_Init(float freq, float vel, uint32_t count)
 uint8_t VOR_Machine_Stop(void)
 {
     vor_para.counterReq = vor_para.CurrentCounter + 1;
+    return 1;
 }
 
 uint8_t VOR_Machine_Get_Count(uint32_t *counterReq, uint32_t *CurrentCounter)

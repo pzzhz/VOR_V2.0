@@ -95,7 +95,6 @@ void table_updata(Table_Property* table_Property)
 int main()
 {
     lv_init();
-    Communication_Init();
     if (!lv_win32_init(
         GetModuleHandleW(NULL),
         SW_SHOW,

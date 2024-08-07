@@ -66,7 +66,7 @@ void Step_Phase_Set(u32 arr, u32 psc)
 
 void SRV1_Encoder_Init()
 {
-    const uint32_t ARR_VALUE = 2097156;
+    // const uint32_t ARR_VALUE = 2097156;
     const uint16_t ch1_pin = 5;
     const uint16_t ch2_pin = 3;
     RCC->APB1ENR |= (RCC_APB1ENR_TIM2EN);
@@ -150,8 +150,12 @@ void Slave1_Step_Generator_Init(uint32_t arr, uint32_t psc)
 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9, ENABLE); /// 使能TIM9时钟
 
-    TIM_TimeBaseInitStructure.TIM_Period = 999;                     // 自动重装载值
-    TIM_TimeBaseInitStructure.TIM_Prescaler = 167;                   // 定时器分频
+    TIM_TimeBaseInitStructure.TIM_Period = 999; // 自动重装载值
+#ifdef HARDWARE_TEST
+    TIM_TimeBaseInitStructure.TIM_Prescaler = 167; // 定时器分频
+#else
+    TIM_TimeBaseInitStructure.TIM_Prescaler = 168 * 2 - 1; // 定时器分频
+#endif
     TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up; // 向上计数模式
     TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 
@@ -266,18 +270,26 @@ void tim_f_sin_set(int f)
 }
 uint8_t Slave_Back(int Tag_Pos)
 {
+    return 1;
 }
 
 u8 Slave_Back_spd(int Tag_Pos, int spd)
 {
+    return 1;
 }
 u8 slave_sin_back(void)
 {
+    return 1;
 }
 
 int32_t Slave1_Get_Encode()
 {
     return (int32_t)TIM2->CNT;
+}
+
+void Slave1_Set_Encode(uint32_t cnt)
+{
+    TIM2->CNT = cnt;
 }
 
 float Slave1_Get_Encode_Angle()

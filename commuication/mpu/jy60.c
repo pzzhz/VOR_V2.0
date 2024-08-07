@@ -2,13 +2,14 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-30 11:37:02
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-07-31 11:23:37
+ * @LastEditTime: 2024-08-05 09:47:14
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\commuication\mpu\jy60.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 #include "jy60.h"
 #include "math.h"
-//#include "..\HARDWARE\USART\USART5.h"
+#include "string.h"
+// #include "..\HARDWARE\USART\USART5.h"
 
 static uint8_t isupdata;
 
@@ -102,16 +103,18 @@ void jy60_decode(uint8_t dr)
 
 uint8_t JY60_Get_Inc(float *angle)
 {
+    if (isupdata == 0)
+        return 0;
     if (angle != 0)
         *angle = jy60.inc;
+    isupdata = 0;
     return 1;
 }
 
 void JY60_Init(void)
 {
-#ifdef  STM32F40_41xxx
+#ifdef STM32F40_41xxx
     USART5_INIT(9600, jy60_decode);
 
 #endif //  STM32F40_41xxx
-
 }

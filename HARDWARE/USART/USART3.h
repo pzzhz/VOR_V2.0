@@ -11,6 +11,7 @@ extern "C"
         void (*handle)(uint8_t dr));
 
     uint8_t USART3_PRINTF(char *string, uint16_t size);
+    uint8_t USART3_Send_Package(char *string, uint16_t size);
 
 #ifdef __cplusplus
 }

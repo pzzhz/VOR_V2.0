@@ -98,6 +98,12 @@
     <ClCompile Include="serial\serialPort.c">
       <Filter>UI\commuication</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\INTERFACE\UI\control\control_OVAR.c">
+      <Filter>UI\control\mode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INTERFACE\UI\UI_Parameter\UI_Parameter_Ovar.c">
+      <Filter>UI\UI_Parameter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LVGL.Simulator.rc" />

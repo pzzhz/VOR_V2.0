@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-30 14:37:06
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-07-31 10:56:44
+ * @LastEditTime: 2024-08-02 18:28:20
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\HARDWARE\USART\USART5.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -73,19 +73,29 @@ static char printf_buf[100];
 static uint16_t send_index, send_len;
 uint8_t USART3_FIFO_Send(uint8_t *dr)
 {
-    if (send_len)
-    {
-        *dr = printf_buf[send_index++];
-    }
     if (send_index >= send_len)
     {
         send_index = 0;
         send_len = 0;
         return 0;
     }
+    if (send_len)
+    {
+        *dr = printf_buf[send_index++];
+    }
     return 1;
 }
-static double ss = 9.95f;
+
+uint8_t USART3_Send_Package(char *string, uint16_t size)
+{
+    if (send_len)
+        return 0;
+    memcpy(printf_buf, string, size);
+    send_len = size;
+    USART_ITConfig(USART3, USART_IT_TXE, ENABLE); // 开启相关中断
+    return 1;
+}
+
 uint8_t USART3_PRINTF(char *string, uint16_t size)
 {
     if (send_len)
@@ -103,6 +113,7 @@ void USART3_IRQHandler(void) // 串口1中断服务程序
         uint8_t dr = USART3->DR;
         if (Interrupt_handle != 0)
             Interrupt_handle(dr);
+						 USART1->DR=dr;
         USART_ClearITPendingBit(USART3, USART_IT_RXNE);
     }
     if (USART_GetITStatus(USART3, USART_IT_TXE))
@@ -110,10 +121,12 @@ void USART3_IRQHandler(void) // 串口1中断服务程序
         uint8_t dr;
         if (USART3_FIFO_Send(&dr))
         {
+						USART1->DR=dr;
             USART3->DR = dr;
         }
         else
         {
+						 USART1->DR=0xaa;
             USART_ITConfig(USART3, USART_IT_TXE, DISABLE);
         }
     }

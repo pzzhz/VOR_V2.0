@@ -1,6 +1,7 @@
 #include "BlueTooth.h"
 #include "string.h"
 #include "../../INTERFACE/UI/other/meassage_center.h"
+#include "../../INTERFACE/UI/other/system_function.h"
 #include "../../INTERFACE/UI/Task/task_manager.h"
 #include "../../INTERFACE/UI/Task/task_info_struct.h"
 
@@ -27,9 +28,22 @@ DecodeFuntionReturn(*decodingFuntion[DecodingFuntion_Length])(uint8_t* bytes) = 
 };
 
 static uint8_t receiveBuf[20];
-uint8_t isupdata;
+uint8_t BLisupdata;
 
-
+void Task_Info_Package(Task_Parameter_Struct e, uint8_t id, uint8_t* buf)
+{
+	uint16_t temp;
+	buf[0] = id;
+	buf[1] = e.mode;
+	temp = e.VOR.Counter;
+	buf[2] = ((uint16_t)temp >> 8);
+	buf[3] = temp;
+	temp = e.VOR.Vel;
+	buf[4] = temp & 0xff;
+	temp = e.VOR.Freq * 10;
+	buf[5] = ((uint16_t)temp >> 8);
+	buf[6] = (temp);
+}
 
 void ReturnBytes_Package(uint8_t* buf, uint16_t len)
 {
@@ -46,24 +60,30 @@ void ReturnBytes_Package(uint8_t* buf, uint16_t len)
 
 void Return_Handle()
 {
-	int size;
+	static int size, isupdata = 0, currentCount;
 	if (Message_Center_Receive_Scanf("task", 1, 0,
-		"ReadState %d", &size) == 1)
+		"ReadState %d %d", &size, &isupdata) == 2)
 	{
-		uint8_t returnbytes[] = {
-		(uint8_t)1, // 当前任务总数
-		size,          // 第几个在执行
-		0           // 是否更新
-		};
-		ReturnBytes_Package(returnbytes, sizeof(returnbytes));
+		ControlDelay(5);
+		if (Message_Center_Receive_Scanf("Ctrl", 1, 0,
+			"ReadState %d", &currentCount) == 1)
+		{
+			uint8_t returnbytes[] = {
+				(uint8_t)1,   // ID
+				size, // 当前任务总数
+				(currentCount == 0xff) ? 0 : currentCount + 1,         // 第几个在执行
+				isupdata      // 是否更新
+			};
+			ReturnBytes_Package(returnbytes, sizeof(returnbytes));
+		}
 	}
 	if (Message_Center_Receive_Compare("Ctrl", 1, 0,
 		"Strat") == 0)
 	{
 		uint8_t returnbytes[] = {
-		(uint8_t)2, // ID
-		1,          // 成功启动
-		0           // 
+			(uint8_t)2, // ID
+			1,          // 成功启动
+			0           //
 		};
 		ReturnBytes_Package(returnbytes, sizeof(returnbytes));
 	}
@@ -71,9 +91,9 @@ void Return_Handle()
 		"Stop") == 0)
 	{
 		uint8_t returnbytes[] = {
-		(uint8_t)2, // 当前任务总数
-		1,          // 命令成功
-		0           // 是否更新
+			(uint8_t)2, // 当前任务总数
+			1,          // 命令成功
+			0           // 是否更新
 		};
 		ReturnBytes_Package(returnbytes, sizeof(returnbytes));
 	}
@@ -81,9 +101,9 @@ void Return_Handle()
 		"CmdError") == 0)
 	{
 		uint8_t returnbytes[] = {
-		(uint8_t)2, // 当前任务总数
-		0,          // cmd fail
-		0           // 是否更新
+			(uint8_t)2, // 当前任务总数
+			0,          // cmd fail
+			0           // 是否更新
 		};
 		ReturnBytes_Package(returnbytes, sizeof(returnbytes));
 	}
@@ -97,7 +117,7 @@ void Return_Handle()
 DecodeFuntionReturn Decode_ReturnSlaveState_Cmd(uint8_t* bytes)
 {
 	const uint8_t ModeId = 0x01;
-	uint8_t res = 0;
+	// uint8_t res = 0;
 	typedef struct
 	{
 		uint8_t Task_Count;
@@ -110,6 +130,9 @@ DecodeFuntionReturn Decode_ReturnSlaveState_Cmd(uint8_t* bytes)
 		return Cmd_no_match;
 
 	Message_Center_Send_prinft("task", 1, 0,
+		"ReqReadState");
+	Message_Center_Send_prinft("Ctrl", 1,
+		0,
 		"ReqReadState");
 
 	return Cmd_match;
@@ -143,12 +166,12 @@ DecodeFuntionReturn Decode_Start_Cmd(uint8_t* bytes)
 	if (cmdpt != 0)
 		Message_Center_Send_prinft("Ctrl", 1, 0,
 			cmdpt);
-
+	return Cmd_match;
 }
 
 DecodeFuntionReturn Decode_downloadTask_Cmd(uint8_t* bytes)
 {
-	 Task_Parameter_Struct task;
+	Task_Parameter_Struct task;
 	const uint8_t ModeId = 0x03;
 	typedef struct
 	{
@@ -171,9 +194,11 @@ DecodeFuntionReturn Decode_downloadTask_Cmd(uint8_t* bytes)
 	task.VOR.Freq = Freq / 10.0f;
 
 	uint32_t handleID = 0;
+#ifndef HARDWARE_TEST
 	Task_manager_Begin_Req(&handleID);
 	Task_manager_Req_saveCreate(handleID, ID, task);
 	Task_manager_End_release(handleID);
+#endif
 	/*Message_Center_Send_prinft("task", 2,
 		&task,
 		"Set Para %d", ID);*/
@@ -189,12 +214,27 @@ DecodeFuntionReturn Decode_UploadTask_Cmd(uint8_t* bytes)
 	if (bytes[0] != ModeId)
 		return Cmd_no_match;
 	uint8_t ReadID = bytes[1];
-	// usart_data_send(ReadID, ModeId);
+	Task_Parameter_Struct task;
+	uint8_t buf[7] = { 0 };
+#ifndef HARDWARE_TEST
+	if (task_Manager_Get_Para(&task, ReadID))
+	{
+		Task_Info_Package(task, ReadID, buf);
+	}
+#endif
+#ifndef STM32F40_41xxx
+	uint32_t id = GetCurrentThreadId();
+	OutputDebugPrintf("\r\nID %ld\r\n", id);
+#endif
+	ReturnBytes_Package(buf, sizeof(buf));
 	return Cmd_match;
 }
+
 extern short Table_Choose;
+
 DecodeFuntionReturn Decode_Deleta_Cmd(uint8_t* bytes)
 {
+	uint32_t handleID;
 	const uint8_t ModeId = 0x05;
 	if (bytes == 0)
 		return Cmd_error;
@@ -206,20 +246,17 @@ DecodeFuntionReturn Decode_Deleta_Cmd(uint8_t* bytes)
 	} Delate_parameter;
 	Delate_parameter e = {
 		.Id = bytes[1] };
-	int length = 0; // Task_lisk_length();
-	uint8_t isSuccess = 0;
-	if (e.Id < length)
-	{
-		// Table_Choose = e.Id; // 设置删除的行
-		// table_set(list_Delate, 1);
-		isSuccess = 1;
-	}
-	uint8_t returnbytes[3] = {
-		ModeId,
-		isSuccess,
-		(uint8_t)0 // 返回长度
-	}; // cmd id + 启动成功返回
-	// Usart_Send_Bytes(returnbytes, sizeof(returnbytes));
+	uint8_t buf[] = {
+		0x05,
+		0x00,
+	};
+#ifndef HARDWARE_TEST
+	Task_manager_Begin_Req(&handleID);
+	if (Task_manager_Req_Del(handleID, e.Id) == 0)
+		buf[1] = 0x01;
+	Task_manager_End_release(handleID);
+#endif
+	ReturnBytes_Package(buf, sizeof(buf));
 	return Cmd_match;
 }
 
@@ -229,7 +266,7 @@ void usart_protocol_InterruptHandle(uint8_t dr) // 串口1中断服务程序
 	const uint8_t match_tail = 0xfc;
 	static uint8_t bytes[11];
 	static uint16_t current_Index;
-	if (isupdata)
+	if (BLisupdata)
 		return;
 	switch (current_Index)
 	{
@@ -246,7 +283,7 @@ void usart_protocol_InterruptHandle(uint8_t dr) // 串口1中断服务程序
 		{
 			bytes[current_Index] = dr;
 			memcpy(receiveBuf, bytes, sizeof(bytes));
-			isupdata = 1;
+			BLisupdata = 1;
 		}
 		current_Index = 0;
 		break;
@@ -263,7 +300,7 @@ void usart_protocol_InterruptHandle(uint8_t dr) // 串口1中断服务程序
 void usart_protocol_decoding(uint8_t* bytes)
 {
 	Return_Handle();
-	if (isupdata == 0)
+	if (BLisupdata == 0)
 		return;
 #if 1
 	uint8_t* buf = &receiveBuf[2];
@@ -280,11 +317,11 @@ void usart_protocol_decoding(uint8_t* bytes)
 			}
 		}
 	}
-	isupdata = 0;
+	BLisupdata = 0;
 }
 
 void usart_protocol_init(void (*cb)(uint8_t* buf, uint16_t len))
 {
-	isupdata = 0;
+	BLisupdata = 0;
 	SendCb = cb;
 }
