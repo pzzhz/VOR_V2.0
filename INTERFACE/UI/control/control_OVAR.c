@@ -58,8 +58,8 @@ uint8_t hal_Slave_OVAR_Get_State(uint32_t *remainingSec)
 uint8_t hal_Slave_OVAR_Stop(void)
 {
 #ifndef STM32F40_41xxx
-	uint32_t currentCount = vor_info.Freq * (ControlGetTick() - vor_info.time) / 1000.0f;
-	vor_info.SetCount = currentCount + 1;
+    uint32_t currentSec = (ControlGetTick() - ovar_info.time) / 1000.0f;
+    ovar_info.SetSec = currentSec + 1;
 #else
 	OVAR_Machine_Stop();
 #endif // !STM32F40_41xxx
