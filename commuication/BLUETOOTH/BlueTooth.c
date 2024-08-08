@@ -60,6 +60,7 @@ void ReturnBytes_Package(uint8_t* buf, uint16_t len)
 		SendCb(sendbuf, 11);
 }
 
+
 void Return_Handle()
 {
 	static int size, isupdata = 0, currentCount;
@@ -150,7 +151,9 @@ DecodeFuntionReturn Decode_ReturnSlaveState_Cmd(uint8_t* bytes)
 		return Cmd_error;
 	if (bytes[0] != ModeId)
 		return Cmd_no_match;
-	uint8_t flag = 1, count = 0;
+
+	Message_Center_Read_prinft("task", 0, 0);
+	/*uint8_t flag = 1, count = 0;
 	while (flag != 0 && count < 10)
 	{
 		count++;
@@ -169,7 +172,7 @@ DecodeFuntionReturn Decode_ReturnSlaveState_Cmd(uint8_t* bytes)
 			"ReqReadState");
 		if (flag != 0)
 			ControlDelay(1);
-	}
+	}*/
 
 	return Cmd_match;
 }

@@ -3,17 +3,27 @@
 
 #include "stdarg.h"
 #include "stdio.h"
+#include "stdlib.h"
 
-#include "lvgl/lvgl.h"
 
 #define COMPARE(a,b) strncmp(a,b,Message_Center_Get_Str_Len(a,50))
 #define MYPRINTF(...) printf(  __VA_ARGS__)
 
+struct _funciont_list
+{
+	function_cb cb;
+	struct _funciont_list* next;
+};
+typedef struct _funciont_list funciont_list;
+
+#define cb_size 10
 struct _Message_List
 {
 	char* msg;
 	char* name;
 	void* source;
+	function_cb cb[cb_size];
+	function_cb Readcb[cb_size];
 	uint16_t msg_size;
 	uint16_t funcion_Id;
 	uint16_t msg_len;
@@ -32,7 +42,8 @@ typedef enum
 	msg_too_long,
 	Filte_Id_None,
 	para_Error,
-	stringNoMatch
+	stringNoMatch,
+	memory_malloc_fail
 }Meassage_Return;
 
 static Message_List array[10];
@@ -53,34 +64,129 @@ uint16_t  Message_Center_Get_Str_Len(const char* str, uint16_t maxlen)
 	}
 }
 
-uint8_t Message_Center_Send(
-	const char* name,
-	uint16_t fun_id,
-	void* source,
-	char* msg,
-	uint16_t msgLen)
+//uint8_t Message_Center_Send(
+//	const char* name,
+//	uint16_t fun_id,
+//	void* source,
+//	char* msg,
+//	uint16_t msgLen)
+//{
+//	if (msg == 0)
+//		return para_Error;
+//	Message_List* node = Top_Node;
+//	for (int i = 0; i < 10; i++)
+//	{
+//		if (node == 0)
+//			return no_find;
+//		if (node->msg == 0)
+//			return no_find;
+//		if (node->name == 0)
+//			return para_Error;
+//		if (strcmp(name, node->name) == 0)
+//		{
+//			if (node->msg_len)
+//				return msg_full;
+//			if (node->msg_size < msgLen)
+//				return msg_too_long;
+//			node->funcion_Id = fun_id;
+//			memcpy(node->msg, msg, msgLen);
+//			node->source = source;
+//			node->msg_len = msgLen;
+//			return okne;
+//		}
+//		node = node->next;
+//	}
+//
+//	return no_find;
+//}
+
+unsigned char crc8(const unsigned char* data, unsigned int length) {
+	unsigned char crc = 0x00;  // CRC-8初始化值
+	unsigned int i, j;
+
+	for (i = 0; i < length; i++) {
+		crc ^= data[i];
+		for (j = 0; j < 8; j++) {
+			if (crc & 0x80) {
+				crc = (crc << 1) ^ 0x07;  // CRC-8多项式：0x07
+			}
+			else {
+				crc <<= 1;
+			}
+		}
+	}
+
+	return crc;
+}
+
+uint8_t Src_Package(uint8_t* traget, uint8_t traget_len, uint8_t* src, uint8_t len)
 {
-	if (msg == 0)
-		return para_Error;
+	enum errorTyped
+	{
+		okne,
+		NoRoom
+	};
+	if (traget_len < len + 4)
+		return NoRoom;
+	traget[0] = '#';
+	traget[1] = len;
+	traget[len + 2] = crc8(src, len);
+	traget[len + 3] = '$';
+	memcpy(&traget[2], src, len);
+}
+
+uint8_t Message_Center_Add_Send_CB(
+	const char* name,
+	function_cb cb
+)
+{
 	Message_List* node = Top_Node;
 	for (int i = 0; i < 10; i++)
 	{
 		if (node == 0)
 			return no_find;
-		if (node->msg == 0)
+		if (node->name == 0)
+			return para_Error;
+		if (strcmp(name, node->name) == 0)
+		{
+			for (int i = 0;i < cb_size;i++)
+			{
+				if (node->cb[i] == 0)
+				{
+					node->cb[i] = cb;
+					break;
+				}
+			}
+			return okne;
+		}
+		node = node->next;
+	}
+
+	return no_find;
+}
+
+uint8_t Message_Center_Add_Read_CB(
+	const char* name,
+	function_cb cb
+)
+{
+	Message_List* node = Top_Node;
+	for (int i = 0; i < 10; i++)
+	{
+		if (node == 0)
 			return no_find;
 		if (node->name == 0)
 			return para_Error;
 		if (strcmp(name, node->name) == 0)
 		{
-			if (node->msg_len)
-				return msg_full;
-			if (node->msg_size < msgLen)
-				return msg_too_long;
-			node->funcion_Id = fun_id;
-			memcpy(node->msg, msg, msgLen);
-			node->source = source;
-			node->msg_len = msgLen;
+			for (int i = 0;i < cb_size;i++)
+			{
+				if (node->Readcb[i] == 0)
+				{
+					node->Readcb[i] = cb;
+					break;
+				}
+			}
 			return okne;
 		}
 		node = node->next;
@@ -91,8 +197,8 @@ uint8_t Message_Center_Send(
 
 uint8_t Message_Center_Send_prinft(
 	const char* name,
-	uint16_t fun_id,
-	void* source,
+	uint8_t* Src,
+	uint8_t SrcSize,
 	const char* format,
 	...)
 {
@@ -109,14 +215,21 @@ uint8_t Message_Center_Send_prinft(
 			return para_Error;
 		if (strcmp(name, node->name) == 0)
 		{
-			if (node->msg_len)
-				return msg_full;
-			node->funcion_Id = fun_id;
+			char* string = malloc(40);
+			memset(string, 0, 50);
+			if (string == 0)
+				return memory_malloc_fail;
 			va_list args;
 			va_start(args, format);
-			node->source = source;
-			node->msg_len = vsprintf(node->msg, format, args);
-			MYPRINTF("\r\n-->[nw %s %d] %s", name, fun_id, node->msg);
+			uint16_t stringLen = vsprintf(string, format, args);
+			va_end(args);
+			for (int i = 0;i < cb_size;i++)
+			{
+				if (node->cb[i] != 0)
+				{
+					node->cb[i](string, stringLen, Src, SrcSize);
+				}
+			}
 			return okne;
 		}
 		node = node->next;
@@ -125,13 +238,17 @@ uint8_t Message_Center_Send_prinft(
 	return no_find;
 }
 
-uint8_t Message_Center_Send_prinft_OverWrite(
+uint8_t Message_Center_Read_prinft(
 	const char* name,
-	uint16_t fun_id,
-	void* source,
+	uint8_t* Src,
+	uint8_t SrcSize,
 	const char* format,
 	...)
 {
+	char* string = malloc(40);
+	memset(string, 0, 50);
+	if (string == 0)
+		return memory_malloc_fail;
 	if (format == 0)
 		return para_Error;
 	Message_List* node = Top_Node;
@@ -145,12 +262,17 @@ uint8_t Message_Center_Send_prinft_OverWrite(
 			return para_Error;
 		if (strcmp(name, node->name) == 0)
 		{
-			node->funcion_Id = fun_id;
 			va_list args;
 			va_start(args, format);
-			node->source = source;
-			node->msg_len = vsprintf(node->msg, format, args);
-			MYPRINTF("\r\n-->[ow %s %d] %s", name, fun_id, node->msg);
+			uint16_t stringLen = vsprintf(string, format, args);
+			va_end(args);
+			for (int i = 0;i < cb_size;i++)
+			{
+				if (node->cb[i] != 0)
+				{
+					node->Readcb[i](string, stringLen, Src, SrcSize);
+				}
+			}
 			return okne;
 		}
 		node = node->next;
@@ -159,6 +281,40 @@ uint8_t Message_Center_Send_prinft_OverWrite(
 	return no_find;
 }
 
+//uint8_t Message_Center_Send_prinft_OverWrite(
+//	const char* name,
+//	uint16_t fun_id,
+//	void* source,
+//	const char* format,
+//	...)
+//{
+//	if (format == 0)
+//		return para_Error;
+//	Message_List* node = Top_Node;
+//	for (int i = 0; i < 10; i++)
+//	{
+//		if (node == 0)
+//			return no_find;
+//		if (node->msg == 0)
+//			return no_find;
+//		if (node->name == 0)
+//			return para_Error;
+//		if (strcmp(name, node->name) == 0)
+//		{
+//			node->funcion_Id = fun_id;
+//			va_list args;
+//			va_start(args, format);
+//			node->source = source;
+//			node->msg_len = vsprintf(node->msg, format, args);
+//			MYPRINTF("\r\n-->[ow %s %d] %s", name, fun_id, node->msg);
+//			return okne;
+//		}
+//		node = node->next;
+//	}
+//
+//	return no_find;
+//}
+/*
 uint8_t Message_Center_Receive_Scanf(
 	const char* name,
 	uint16_t FilterId,
@@ -183,7 +339,7 @@ uint8_t Message_Center_Receive_Scanf(
 	}
 	return res;
 }
-
+*/
 //0 match
 uint8_t Message_Center_Receive_Compare(
 	const char* name,
@@ -225,7 +381,7 @@ uint8_t Message_Center_Receive_Compare(
 	}
 	return no_find;
 }
-
+/*
 uint8_t Message_Center_Get(
 	const char* name,
 	uint16_t fun_id,
@@ -264,7 +420,7 @@ uint8_t Message_Center_Get(
 	}
 
 	return no_find;
-}
+}*/
 
 uint8_t Message_Center_Clean_Flag(
 	const char* name,
@@ -364,6 +520,7 @@ void Meassage_Center_Add(const char* name)
 	msg->name = (char*)name;
 	msg->funcion_Id = 0;
 	msg->next = 0;
+	memset(msg->cb, 0, sizeof(function_cb) * cb_size);
 	isbusy = 0;
 }
 
