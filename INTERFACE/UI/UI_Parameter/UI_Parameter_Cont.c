@@ -51,7 +51,7 @@ static void handler(UI_Dropdown_Struct* e)
 	LV_LOG_USER("ss %d", e->Click_Index);
 }
 
-static UI_Dropdown_Struct dropdown_Vel2, dropdown_vel2;
+static UI_Dropdown_Struct dropdown_Vel2;
 static UI_parameter_CONT Obj;
 
 static uint8_t UI_Get(Task_Parameter_Struct* e);
@@ -78,7 +78,7 @@ UI_Parameter_Handler Continue_init(lv_obj_t* parent)
 	   .y = 0,
 	   .Item = Cont_VelItem,
 	   .parent = context_box,
-	   .handle = handler,
+	   .handle = (myhander)handler,
 	   .Label_Str = "Vel"
 	};
 	dropdown_Vel2 = dropdown_Vel;

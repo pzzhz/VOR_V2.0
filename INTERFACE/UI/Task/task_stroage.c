@@ -7,6 +7,7 @@
 #include <stdio.h>
 #else
 #include "stdlib.h"
+#include "string.h"
 #endif // use_windows
 
 // 定义链表节点结构

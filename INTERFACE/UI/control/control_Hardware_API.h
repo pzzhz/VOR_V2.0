@@ -27,7 +27,7 @@ extern "C"
 		StartCmdStop
 	} Start_Cmd_Type;
 
-	uint8_t HAL_Incline_Init(uint32_t time, float angle);
+	uint8_t HAL_Incline_Init(float angle, uint32_t time);
 	uint8_t HAL_Incline_Get_State(float *angle);
 
 	uint8_t HAL_CAM_Init(void);

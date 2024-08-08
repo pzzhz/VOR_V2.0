@@ -106,6 +106,7 @@ uint8_t Ctrl_Get_Begin_Signal(Task_control_info *e)
                                    (e->State_Bit.IsRunning) ? "Stop" : "CmdError");
         return (e->State_Bit.IsRunning) ? stop : none;
     }
+    return 0;
 }
 
 void Ctrl_Read_State_Ack(Task_control_info *e)
@@ -128,12 +129,12 @@ void controlfunction()
 {
     extern void Task_mangager_Init();
     extern void Communication_Init();
-    static Task_Parameter_Struct taskarray[15];
-    int flag = 0;
+    // static Task_Parameter_Struct taskarray[15];
+    // int flag = 0;
     Task_control_info e = {0};
     Task_Parameter_Struct info;
     Start_Cmd_Type Startflag = StartCmdNone;
-    uint8_t nowState = 0;
+    // uint8_t nowState = 0;
     char message[50], cmd[50] = {""};
     memset(control_cb_array, 0, sizeof(control_cb_array));
     thread_create(Task_control_handler, &e, &task_ctrl_thread, 1000);

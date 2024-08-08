@@ -6,18 +6,18 @@
 
 #include "lvgl/lvgl.h"
 
-#define COMPARE(a,b) strncmp(a,b,Message_Center_Get_Str_Len(a,50))
-#define MYPRINTF(...) printf(  __VA_ARGS__)
+#define COMPARE(a, b) strncmp(a, b, Message_Center_Get_Str_Len(a, 50))
+#define MYPRINTF(...) printf(__VA_ARGS__)
 
 struct _Message_List
 {
-	char* msg;
-	char* name;
-	void* source;
+	char *msg;
+	char *name;
+	void *source;
 	uint16_t msg_size;
 	uint16_t funcion_Id;
 	uint16_t msg_len;
-	struct _Message_List* next;
+	struct _Message_List *next;
 };
 
 typedef struct _Message_List Message_List;
@@ -33,15 +33,15 @@ typedef enum
 	Filte_Id_None,
 	para_Error,
 	stringNoMatch
-}Meassage_Return;
+} Meassage_Return;
 
 static Message_List array[10];
 static char msg_array[10][30];
-static Message_List* Top_Node;
-static uint8_t List_Updateing;
+static Message_List *Top_Node;
+// static uint8_t List_Updateing;
 static uint16_t isUseID;
 
-uint16_t  Message_Center_Get_Str_Len(const char* str, uint16_t maxlen)
+uint16_t Message_Center_Get_Str_Len(const char *str, uint16_t maxlen)
 {
 	int i = 0;
 	for (; i < maxlen; i++)
@@ -51,18 +51,19 @@ uint16_t  Message_Center_Get_Str_Len(const char* str, uint16_t maxlen)
 			return (i == 0) ? 0 : i - 1;
 		}
 	}
+	return 0;
 }
 
 uint8_t Message_Center_Send(
-	const char* name,
+	const char *name,
 	uint16_t fun_id,
-	void* source,
-	char* msg,
+	void *source,
+	char *msg,
 	uint16_t msgLen)
 {
 	if (msg == 0)
 		return para_Error;
-	Message_List* node = Top_Node;
+	Message_List *node = Top_Node;
 	for (int i = 0; i < 10; i++)
 	{
 		if (node == 0)
@@ -90,15 +91,15 @@ uint8_t Message_Center_Send(
 }
 
 uint8_t Message_Center_Send_prinft(
-	const char* name,
+	const char *name,
 	uint16_t fun_id,
-	void* source,
-	const char* format,
+	void *source,
+	const char *format,
 	...)
 {
 	if (format == 0)
 		return para_Error;
-	Message_List* node = Top_Node;
+	Message_List *node = Top_Node;
 	for (int i = 0; i < 10; i++)
 	{
 		if (node == 0)
@@ -126,15 +127,15 @@ uint8_t Message_Center_Send_prinft(
 }
 
 uint8_t Message_Center_Send_prinft_OverWrite(
-	const char* name,
+	const char *name,
 	uint16_t fun_id,
-	void* source,
-	const char* format,
+	void *source,
+	const char *format,
 	...)
 {
 	if (format == 0)
 		return para_Error;
-	Message_List* node = Top_Node;
+	Message_List *node = Top_Node;
 	for (int i = 0; i < 10; i++)
 	{
 		if (node == 0)
@@ -160,14 +161,14 @@ uint8_t Message_Center_Send_prinft_OverWrite(
 }
 
 uint8_t Message_Center_Receive_Scanf(
-	const char* name,
+	const char *name,
 	uint16_t FilterId,
-	void** source,
-	const char* format,
+	void **source,
+	const char *format,
 	...)
 {
 	static uint8_t RecBuf[50];
-	void* pt = 0;
+	// void *pt = 0;
 	uint32_t res = 0;
 	uint8_t flag = Message_Center_Get(
 		name, FilterId,
@@ -184,19 +185,19 @@ uint8_t Message_Center_Receive_Scanf(
 	return res;
 }
 
-//0 match
+// 0 match
 uint8_t Message_Center_Receive_Compare(
-	const char* name,
+	const char *name,
 	uint16_t FilterId,
-	void** source,
-	const char* str1)
+	void **source,
+	const char *str1)
 {
 	static uint8_t RecBuf[50];
-	uint16_t funid = 0;
-	void* pt = 0;
-	uint32_t res = 0;
+	// uint16_t funid = 0;
+	// void *pt = 0;
+	// uint32_t res = 0;
 
-	Message_List* node = Top_Node;
+	Message_List *node = Top_Node;
 	for (int i = 0; i < 10; i++)
 	{
 		if (node == 0)
@@ -214,7 +215,7 @@ uint8_t Message_Center_Receive_Compare(
 			if (FilterId != node->funcion_Id)
 				return Filte_Id_None;
 			if (source != 0)
-				*source = (void*)node->source;
+				*source = (void *)node->source;
 			if (COMPARE(str1, node->msg) != 0)
 				return stringNoMatch;
 			node->msg_len = 0;
@@ -227,15 +228,15 @@ uint8_t Message_Center_Receive_Compare(
 }
 
 uint8_t Message_Center_Get(
-	const char* name,
+	const char *name,
 	uint16_t fun_id,
-	void** source,
-	char* msg,
+	void **source,
+	char *msg,
 	uint16_t msgLen)
 {
 	if (msg == 0)
 		return para_Error;
-	Message_List* node = Top_Node;
+	Message_List *node = Top_Node;
 	for (int i = 0; i < 10; i++)
 	{
 		if (node == 0)
@@ -254,10 +255,10 @@ uint8_t Message_Center_Get(
 				return Filte_Id_None;
 			//*fun_id = node->funcion_Id;
 			if (source != 0)
-				*source = (void*)node->source;
+				*source = (void *)node->source;
 			memcpy(msg, node->msg, msgLen);
 			MYPRINTF("\r\n->[nc %s %d] %s", name, fun_id, node->msg);
-			//node->msg_len = 0;
+			// node->msg_len = 0;
 			return okne;
 		}
 		node = node->next;
@@ -267,10 +268,10 @@ uint8_t Message_Center_Get(
 }
 
 uint8_t Message_Center_Clean_Flag(
-	const char* name,
+	const char *name,
 	uint16_t fun_id)
 {
-	Message_List* node = Top_Node;
+	Message_List *node = Top_Node;
 	for (int i = 0; i < 10; i++)
 	{
 		if (node == 0)
@@ -295,7 +296,7 @@ uint8_t Message_Center_Clean_Flag(
 	return no_find;
 }
 
-Message_List* Get_new_list()
+Message_List *Get_new_list()
 {
 	const uint16_t mask = 0x01;
 	for (int i = 0; i < 10; i++)
@@ -312,27 +313,27 @@ Message_List* Get_new_list()
 	return 0;
 }
 
-void release_list(Message_List* e)
+void release_list(Message_List *e)
 {
 	while (1)
 	{
-		//Ã»Ð´ºÃ
+		
 	}
-	const uint16_t mask = 0x01;
-	for (int i = 0; i < 10; i++)
-	{
-		if (e == &array[i])
-		{
-			isUseID &= ~(mask << 1);
-			return;
-		}
-	}
-	return;
+	// const uint16_t mask = 0x01;
+	// for (int i = 0; i < 10; i++)
+	// {
+	// 	if (e == &array[i])
+	// 	{
+	// 		isUseID &= ~(mask << 1);
+	// 		return;
+	// 	}
+	// }
+	// return;
 }
 
-static Message_List* FindEnd()
+static Message_List *FindEnd()
 {
-	Message_List* head = Top_Node;
+	Message_List *head = Top_Node;
 	for (int i = 0; i < 10; i++)
 	{
 		if (head == 0)
@@ -344,24 +345,25 @@ static Message_List* FindEnd()
 	return 0;
 }
 
-void Meassage_Center_Add(const char* name)
+void Meassage_Center_Add(const char *name)
 {
 	volatile static uint8_t isbusy = 0;
-	while (isbusy);
+	while (isbusy)
+		;
 	isbusy = 1;
-	Message_List* msg = Get_new_list();
+	Message_List *msg = Get_new_list();
 	if (Top_Node == 0)
 	{
 		Top_Node = msg;
 	}
 	else
 	{
-		Message_List* end_node = FindEnd();
+		Message_List *end_node = FindEnd();
 		end_node->next = msg;
 	}
 	msg->msg_len = 0;
 	msg->msg_size = 30;
-	msg->name = (char*)name;
+	msg->name = (char *)name;
 	msg->funcion_Id = 0;
 	msg->next = 0;
 	isbusy = 0;
@@ -372,5 +374,3 @@ void Message_Center_Init()
 	isUseID = 0;
 	Top_Node = 0;
 }
-
-

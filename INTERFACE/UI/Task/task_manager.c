@@ -347,7 +347,6 @@ void Task_Ack_Req(uint8_t flag, uint16_t ID)
 
 void task_manager_thread()
 {
-	int string[1000];
 	Task_Stroage_Init();
 	task_parameter_init();
 	while (1)

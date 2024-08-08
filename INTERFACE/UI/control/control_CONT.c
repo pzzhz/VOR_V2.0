@@ -2,12 +2,13 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-22 16:00:07
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-07-27 18:23:30
+ * @LastEditTime: 2024-08-08 11:12:42
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\INTERFACE\UI\control\control_VOR.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 #include "control_CONT.h"
 #include "control_Hardware_API.h"
+#include "../other/system_function.h"
 #include "control.h"
 #include "stdint.h"
 #define use_windows
@@ -71,7 +72,6 @@ uint8_t HAL_Slave_CONT_Get_State(uint32_t *remainingSec)
 
 uint8_t ContControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 {
-    const uint32_t begin_time = 10000;
     // begin noice ui
     uint32_t begin_tick = ControlGetTick();
     uint32_t counter_up = ControlGetTick() - begin_tick;
@@ -102,4 +102,5 @@ uint8_t ContControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
     }
     MYPRINTF("\r\n vor end");
     e->UI_para.state = end;
+    return 0;
 }

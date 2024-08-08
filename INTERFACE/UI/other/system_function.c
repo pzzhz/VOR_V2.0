@@ -7,6 +7,7 @@
  * @Description: è¿™æ˜¯é»˜è?¤è?¾ç½®,è¯·è?¾ç½®`customMade`, æ‰“å¼€koroFileHeaderæŸ¥çœ‹é…ç½® è¿›è?Œè?¾ç½®: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 #include "system_function.h"
+#include "string.h"
 #ifndef STM32F40_41xxx
 #include "Windows.h"
 #include <stdio.h>

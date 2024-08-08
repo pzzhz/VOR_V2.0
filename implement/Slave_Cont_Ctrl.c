@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-24 14:44:19
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-08-02 14:07:17
+ * @LastEditTime: 2024-08-08 11:05:33
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\implement\Slave_Vor_Ctrl.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -85,7 +85,6 @@ static uint8_t CONT_handler(void)
 
 uint8_t CONT_Machine_Init(float vel, uint32_t MillSec)
 {
-    float speed;
 #if 0
     Slave1_Set_Machine_Cb(CONT_handler);
     cont_para.Tick = 0;
@@ -97,6 +96,7 @@ uint8_t CONT_Machine_Init(float vel, uint32_t MillSec)
     cont_para.vel = vel;
     cont_para.vel = vel;
     cont_para.MillSecReq = MillSec;
+    Slave1_Step_Generator_Init(50000, 10);
     Slave1_Set_Machine_Cb(CONT_handler);
     cont_para.Tick = 0;
     cont_para.state = running;
@@ -108,6 +108,7 @@ uint8_t Cont_Machine_Stop(void)
 {
     cont_para.CurrentMillSec = 0;
     cont_para.state = back;
+    return 0;
 }
 #define abs(n) ((n > 0) ? (n) : (-(n)))
 void Cont_Back_init(float tragetPos, float sps, float accMs)

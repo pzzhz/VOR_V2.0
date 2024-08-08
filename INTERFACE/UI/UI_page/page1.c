@@ -16,8 +16,8 @@ lv_timer_t Page1_timer;
 lv_obj_t* parent_box;
 lv_obj_t* parent_bo2[10];
 lv_obj_t* start_btn;
-int16_t CurrentTask = -1, Interval_ID = -1;
-int16_t CurrentCount = -1, Interval_RemainingSec = -1;
+int CurrentTask = -1, Interval_ID = -1;
+int CurrentCount = -1, Interval_RemainingSec = -1;
 uint8_t parent_bo2_index = 0;
 static char msgBuffer[50];
 static int touch_counter = 0;
@@ -64,11 +64,12 @@ static uint16_t  Get_Str_Len(const char* str, uint16_t maxlen)
 			return (i == 0) ? 0 : i - 1;
 		}
 	}
+	return 0;
 }
 
 void Set_table_Cell_Text(lv_obj_t* obj, Task_Parameter_Struct* e)
 {
-	static uint8_t times;
+	// static uint8_t times;
 	char strs[25];
 	Table_Property* item_property = UI_Table_Get_Property(obj);
 	switch (e->mode)

@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-24 10:26:50
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-08-02 18:13:47
+ * @LastEditTime: 2024-08-08 11:51:43
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\INTERFACE\UI\control\task_control.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -32,7 +32,7 @@ typedef struct
     uint16_t currentTaskIndex;
     uint32_t remainingTime;
 } Task_Control_Status;
-static char msg_buffer[50];
+// static char msg_buffer[50];
 
 static Task_control_info *running_state;
 
@@ -136,7 +136,7 @@ void Task_control_handler(Task_control_info *e)
     if (e == 0)
         return;
     running_state = e;
-    uint16_t len = 0;
+    // uint16_t len = 0;
 BEGIN_POS:
     // get all task need to implement
     while (1)
