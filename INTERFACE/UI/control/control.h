@@ -29,13 +29,13 @@ extern "C"
 		runing,
 		end,
 	} task_runing;
-	//typedef enum
-	//{
-	//	CMD_add,
-	//	CMD_Move,
-	//	CMD_Del,
-	//	CMD_Set,
-	//} CMD_Enum;
+	typedef enum
+	{
+		CMD_add,
+		CMD_Move,
+		CMD_Del,
+		CMD_Set,
+	} CMD_Enum;
 
 	typedef struct
 	{
@@ -66,30 +66,25 @@ extern "C"
 			uint32_t sec;
 			task_runing state;
 		} UI_para;
-		uint8_t ismessageUpdata;
-		uint8_t message[50];
-		Task_Parameter_Struct* taskArray;
+		uint8_t *message;
+		Task_Parameter_Struct *taskArray;
 		uint16_t taskCount;
 		uint16_t currentCount;
-		uint16_t taskRemainSec;
 	} Task_control_info;
 	void controlInit(void);
 	// 0 代表无返回信息
-	typedef uint8_t(*UI_function)(uint8_t* cmd, uint8_t* meassage, Task_control_info* e);
+	typedef uint8_t (*UI_function)(uint8_t *cmd, uint8_t *meassage, Task_control_info *e);
 	typedef struct
 	{
 		UI_function cb;
 		uint8_t message[50];
 	} UI_Function_struct;
-	uint8_t Control_Set_cb(UI_Function_struct* function_array,
-		uint16_t index,
-		UI_function cb);
-	uint8_t Control_Remove_cb(UI_Function_struct* function_array,
-		uint16_t index,
-		UI_function cb);
-
-	uint8_t Ctrl_Msg_Printf(const char* format,
-		...);
+	uint8_t Control_Set_cb(UI_Function_struct *function_array,
+						   uint16_t index,
+						   UI_function cb);
+	uint8_t Control_Remove_cb(UI_Function_struct *function_array,
+							  uint16_t index,
+							  UI_function cb);
 
 	extern UI_Function_struct control_cb_array[control_cb_array_size];
 #ifdef __cplusplus

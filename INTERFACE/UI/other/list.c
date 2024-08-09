@@ -147,7 +147,7 @@ void move(List* list, int fromIndex, int toIndex) {
 // 移动节点
 Node* FindNode(List* list, short INDEX) {
     Node* temp = list->head;
-    Node* next = NULL;
+    // Node* next = NULL;
     short Counter = 0;
     while (temp != NULL)
     {
@@ -164,8 +164,8 @@ Node* FindNode(List* list, short INDEX) {
 // 移动节点
 Node* FindNodeByInstant(List* list, void* Instatnt) {
     Node* temp = list->head;
-    Node* next = NULL;
-    short Counter = 0;
+    // Node* next = NULL;
+    // short Counter = 0;
     while (temp != NULL)
     {
         if (temp == NULL)
@@ -211,7 +211,7 @@ void DelNodeByInstant(List* list, void* Instatnt) {
 void ID_UPdata(List* list)
 {
     Node* temp = list->head;
-    Node* next = NULL;
+    // Node* next = NULL;
     int Counter = 0;
     while (temp != NULL)
     {

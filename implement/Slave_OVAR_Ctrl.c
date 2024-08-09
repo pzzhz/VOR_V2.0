@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-24 14:44:19
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-08-05 14:08:45
+ * @LastEditTime: 2024-08-08 11:05:59
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\implement\Slave_Vor_Ctrl.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -85,7 +85,7 @@ static uint8_t OVAR_handler(void)
 
 uint8_t OVAR_Machine_Init(float vel, uint32_t MillSec)
 {
-    float speed;
+
 #if 0
     Slave1_Set_Machine_Cb(CONT_handler);
     ovar_para.Tick = 0;
@@ -98,6 +98,8 @@ uint8_t OVAR_Machine_Init(float vel, uint32_t MillSec)
     ovar_para.MillSecReq = MillSec;
     ovar_para.Tick = 0;
     ovar_para.state = running;
+		  Slave1_Step_Generator_Init(50000, 10);
+    Slave1_Step_Generator_Init(50000, 10);
     Slave1_Set_Machine_Cb(OVAR_handler);
 #endif
     return 1;
@@ -107,7 +109,9 @@ uint8_t OVAR_Machine_Stop(void)
 {
     ovar_para.CurrentMillSec = 0;
     ovar_para.state = back;
+    return 0;
 }
+
 #define abs(n) ((n > 0) ? (n) : (-(n)))
 void OVAR_Back_init(float tragetPos, float sps, float accMs)
 {
@@ -127,7 +131,7 @@ void OVAR_Back_init(float tragetPos, float sps, float accMs)
 uint8_t OVAR_Machine_Get_Count(uint32_t *MillSecReq, uint32_t *CurrentMillSec)
 {
     if (ovar_para.state == end)
-        return 0; 
+        return 0;
     if (MillSecReq != 0)
         *MillSecReq = ovar_para.MillSecReq;
     if (CurrentMillSec != 0)

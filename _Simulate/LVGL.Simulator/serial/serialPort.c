@@ -29,7 +29,6 @@ void SerialPort_SendBuf(uint8_t* buf, uint16_t len)
 void Serial_Thread()
 {
     STARTUPINFO si = { sizeof(si) };
-    PROCESS_INFORMATION pi;
     if (hSerial != 0)
         return;
 
@@ -43,7 +42,7 @@ void Serial_Thread()
         0);
     if (hSerial == INVALID_HANDLE_VALUE) {
         OutputDebugPrintf("Error opening serial port\n");
-        return 1;
+        return ;
     }
 
     DCB dcbSerialParams = { 0 };
@@ -52,7 +51,7 @@ void Serial_Thread()
     if (!GetCommState(hSerial, &dcbSerialParams)) {
         OutputDebugPrintf("Error getting state\n");
         CloseHandle(hSerial);
-        return 1;
+        return ;
     }
 
     dcbSerialParams.BaudRate = CBR_9600;
@@ -63,7 +62,7 @@ void Serial_Thread()
     if (!SetCommState(hSerial, &dcbSerialParams)) {
         OutputDebugPrintf("Error setting serial port state\n");
         CloseHandle(hSerial);
-        return 1;
+        return ;
     }
 
     COMMTIMEOUTS timeouts = { 0 };
@@ -76,7 +75,7 @@ void Serial_Thread()
     if (!SetCommTimeouts(hSerial, &timeouts)) {
         OutputDebugPrintf("Error setting timeouts\n");
         CloseHandle(hSerial);
-        return 1;
+        return ;
     }
 
     char dataToSend[] = "Hello, Serial Port!";
@@ -89,7 +88,7 @@ void Serial_Thread()
         if (!ReadFile(hSerial, dataReceived, sizeof(dataReceived), &bytesRead, NULL)) {
             OutputDebugPrintf("Error reading from serial port\n");
             CloseHandle(hSerial);
-            return 1;
+            return ;
         }
         if (bytesRead)
         {
@@ -108,7 +107,7 @@ void Serial_Thread()
     }
 
     CloseHandle(hSerial);
-    return 0;
+    return ;
 }
 void SerialPort_Init(void (*cb)(uint8_t* dr))
 {

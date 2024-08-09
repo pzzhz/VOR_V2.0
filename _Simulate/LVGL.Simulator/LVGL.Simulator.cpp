@@ -135,7 +135,7 @@ int main()
     //Task_mangager_Init();
     controlInit();
     mainpage_init(lv_scr_act());
-  
+    Mode_init(lv_scr_act());
 
     while (!lv_win32_quit_signal)
     {

@@ -20,16 +20,21 @@ extern "C"
 #else
 #define MYPRINTF(...)
 #endif
-	
+	typedef enum
+	{
+		StartCmdNone,
+		StartCmdBegin,
+		StartCmdStop
+	} Start_Cmd_Type;
 
-	uint8_t HAL_Incline_Init(uint32_t time, float angle);
+	uint8_t HAL_Incline_Init(float angle, uint32_t time);
 	uint8_t HAL_Incline_Get_State(float *angle);
 
 	uint8_t HAL_CAM_Init(void);
 	uint8_t HAL_CAM_REC_Set(uint8_t flag);
 	uint8_t HAL_CAM_SET_Set(void);
 
-	//uint8_t HAL_Control_Get_Start_Cmd(Start_Cmd_Type *cmd);
+	uint8_t HAL_Control_Get_Start_Cmd(Start_Cmd_Type *cmd);
 	uint8_t HAL_Set_UI_Page1_Msg(const char *format, ...);
 	uint16_t HAL_Task_GetArray(Task_Parameter_Struct *taskarray, uint16_t arraySize);
 

@@ -18,6 +18,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "lv_conf.h"
+#include "../INTERFACE/UI/other/system_function.h"
 
 volatile int idex = 0;
 int *pt = (int *)0x20001000;
@@ -72,7 +73,7 @@ void LVGL_HANDLER()
 	{
 		touch_sever(1, NULL);
 		lv_task_handler();
-		delay_ms(5);
+		ControlDelay(5);
 	}
 }
 

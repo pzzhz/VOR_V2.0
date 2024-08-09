@@ -107,10 +107,10 @@ uint8_t HAL_USB_TX(uint8_t *str, uint16_t len)
 {
 #ifdef STM32F40_41xxx
 
-
     extern void usbd_cdc_senddata(void *pdev, uint8_t *str, uint16_t len);
     usbd_cdc_senddata(&USB_OTG_dev, str, len);
 #endif // STM32F40_41xxx
+    return 0;
 }
 
 void HAL_communication_Init(void)
@@ -121,5 +121,5 @@ void HAL_communication_Init(void)
     HAL_communication_Mpu_Init();
     HAL_communication_Bl_Init();
     HAL_BL_USART_INIT();
-//    HAL_USB_INIT();
+    //    HAL_USB_INIT();
 }

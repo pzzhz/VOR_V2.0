@@ -23,8 +23,8 @@ void Slave1_Set_Machine_Cb(Slave_Function_CB cb)
 {
     Slave1_IO_Init();
     Slave1_En_IO(1);
-    Slave1_Step_Generator_Init(50000, 10);
-    // Slave_server_Init();
+    // Slave1_Step_Generator_Init(50000, 10);
+    Slave_server_Init();
     TIM9->CR1 &= ~TIM_CR1_CEN;
     function_cb = cb;
     TIM9->CR1 |= TIM_CR1_CEN;
@@ -105,9 +105,9 @@ void SRV1_Encoder_Init()
     TIM2->CR1 |= TIM_CR1_CEN;
 }
 
-void Slave_server_Init()
+void Slave_server_Init(void)
 {
-     TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
     NVIC_InitTypeDef NVIC_InitStructure;
 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM9, ENABLE); /// Ê¹ÄÜTIM9Ê±ÖÓ
@@ -173,7 +173,6 @@ void Slave1_Step_Generator_Init(uint32_t arr, uint32_t psc)
     TIM1->CCR1 = arr / 2;
     SRV1_Encoder_Init();
     Slave_server_Init();
-   
 }
 
 void tim_f_set(int f)

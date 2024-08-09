@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-25 14:38:08
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-07-31 09:25:19
+ * @LastEditTime: 2024-08-08 10:47:54
  * @FilePath: \USER  d:\workfile\项目3 vor\software\VOR_V2.0\INTERFACE\UI\control\control_Hardware_API.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -23,7 +23,6 @@
 #define use_simluate 0
 #if use_simluate
 
-
 #endif //  use_simluate
 struct
 {
@@ -33,16 +32,16 @@ struct
     float Currentangle;
 } inc_info;
 
-uint8_t HAL_Incline_Init(uint32_t time, float angle)
+uint8_t HAL_Incline_Init(float angle, uint32_t time)
 {
     inc_info.Setangle = angle;
 #ifdef STM32F40_41xxx
-    INC_Machine_Init(0, angle);
+    INC_Machine_Init(angle, 0);
 
 #endif
     return 1;
 }
-
+// 1 running
 uint8_t HAL_Incline_Get_State(float *angle)
 {
 #if use_simluate
@@ -51,10 +50,11 @@ uint8_t HAL_Incline_Get_State(float *angle)
         return 1;
     inc_info.Currentangle += (inc_info.Setangle - inc_info.Currentangle) * 0.05f;
     *angle = inc_info.Currentangle;
+    return 0;
 #endif
 #ifdef STM32F40_41xxx
+    return INC_Machine_Get_Count(0, angle);
 #endif
-
     return 0;
 }
 
@@ -68,6 +68,7 @@ uint8_t HAL_CAM_Init()
     // buf[0] 04  cam Led Flush
 
 #endif
+    return 0;
 }
 // 0 发生错误 1 正常
 uint8_t HAL_CAM_REC_Set(uint8_t flag)
@@ -100,7 +101,32 @@ uint8_t HAL_CAM_SET_Set(void)
     return res;
 }
 
-
+uint8_t HAL_Control_Get_Start_Cmd(Start_Cmd_Type *cmd)
+{
+    extern uint8_t UI_Start_Btn_Get_CMD(void);
+    uint8_t ui_flag = UI_Start_Btn_Get_CMD();
+    *cmd = StartCmdNone;
+    if (ui_flag == 1)
+    {
+        *cmd = StartCmdBegin;
+    }
+    if (Message_Center_Receive_Compare("Ctrl", 1, 0,
+                                       "ReqStrat") == 0)
+    {
+        *cmd = StartCmdBegin;
+        Message_Center_Send_prinft("Ctrl", 1,
+                                   0,
+                                   "Strat");
+    }
+    if (Message_Center_Receive_Compare("Ctrl", 1, 0,
+                                       "ReqStop") == 0)
+    {
+        Message_Center_Send_prinft("Ctrl", 1,
+                                   0,
+                                   "Stop");
+    }
+    return 0;
+}
 
 uint8_t HAL_Set_UI_Page1_Msg(const char *format, ...)
 {
@@ -129,4 +155,5 @@ uint8_t HAL_API_INIT(void)
 {
     HAL_CAM_Init();
     HAL_CAM_SET_Set();
+    return 0;
 }
