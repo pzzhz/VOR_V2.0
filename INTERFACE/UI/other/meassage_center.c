@@ -52,6 +52,13 @@ static Message_List* Top_Node;
 static uint8_t List_Updateing;
 static uint16_t isUseID;
 
+uint8_t Message_Center_Get(
+	const char* name,
+	uint16_t fun_id,
+	void** source,
+	char* msg,
+	uint16_t msgLen);
+
 uint16_t  Message_Center_Get_Str_Len(const char* str, uint16_t maxlen)
 {
 	int i = 0;
@@ -195,6 +202,16 @@ uint8_t Message_Center_Add_Read_CB(
 	return no_find;
 }
 
+void* message_malloc(size_t size)
+{
+	return malloc(size);
+}
+
+void message_free(void* pt)
+{
+	return free(pt);
+}
+
 uint8_t Message_Center_Send_prinft(
 	const char* name,
 	uint8_t* Src,
@@ -216,9 +233,9 @@ uint8_t Message_Center_Send_prinft(
 		if (strcmp(name, node->name) == 0)
 		{
 			char* string = malloc(40);
-			memset(string, 0, 50);
 			if (string == 0)
 				return memory_malloc_fail;
+			memset(string, 0, 40);
 			va_list args;
 			va_start(args, format);
 			uint16_t stringLen = vsprintf(string, format, args);
@@ -230,6 +247,7 @@ uint8_t Message_Center_Send_prinft(
 					node->cb[i](string, stringLen, Src, SrcSize);
 				}
 			}
+			free(string);
 			return okne;
 		}
 		node = node->next;
@@ -238,6 +256,7 @@ uint8_t Message_Center_Send_prinft(
 	return no_find;
 }
 
+//when return 0 means cmd is match
 uint8_t Message_Center_Read_prinft(
 	const char* name,
 	uint8_t* Src,
@@ -245,10 +264,6 @@ uint8_t Message_Center_Read_prinft(
 	const char* format,
 	...)
 {
-	char* string = malloc(40);
-	memset(string, 0, 50);
-	if (string == 0)
-		return memory_malloc_fail;
 	if (format == 0)
 		return para_Error;
 	Message_List* node = Top_Node;
@@ -262,17 +277,60 @@ uint8_t Message_Center_Read_prinft(
 			return para_Error;
 		if (strcmp(name, node->name) == 0)
 		{
+			char* string = malloc(40);
+			if (string == 0)
+				return memory_malloc_fail;
+			memset(string, 0, 40);
 			va_list args;
 			va_start(args, format);
 			uint16_t stringLen = vsprintf(string, format, args);
 			va_end(args);
 			for (int i = 0;i < cb_size;i++)
 			{
-				if (node->cb[i] != 0)
+				if (node->Readcb[i] != 0)
 				{
-					node->Readcb[i](string, stringLen, Src, SrcSize);
+					if (node->Readcb[i](string, stringLen, Src, SrcSize) == 0)
+					{
+						free(string);
+						return okne;
+					}
 				}
 			}
+			free(string);
+			return no_find;
+		}
+		node = node->next;
+	}
+
+	return no_find;
+}
+
+uint8_t Message_Center_Send_prinft_OverWrite(
+	const char* name,
+	uint16_t fun_id,
+	void* source,
+	const char* format,
+	...)
+{
+	//if (format == 0)
+	return para_Error;
+	Message_List* node = Top_Node;
+	for (int i = 0; i < 10; i++)
+	{
+		if (node == 0)
+			return no_find;
+		if (node->msg == 0)
+			return no_find;
+		if (node->name == 0)
+			return para_Error;
+		if (strcmp(name, node->name) == 0)
+		{
+			node->funcion_Id = fun_id;
+			va_list args;
+			va_start(args, format);
+			node->source = source;
+			node->msg_len = vsprintf(node->msg, format, args);
+			MYPRINTF("\r\n-->[ow %s %d] %s", name, fun_id, node->msg);
 			return okne;
 		}
 		node = node->next;
@@ -281,40 +339,6 @@ uint8_t Message_Center_Read_prinft(
 	return no_find;
 }
 
-//uint8_t Message_Center_Send_prinft_OverWrite(
-//	const char* name,
-//	uint16_t fun_id,
-//	void* source,
-//	const char* format,
-//	...)
-//{
-//	if (format == 0)
-//		return para_Error;
-//	Message_List* node = Top_Node;
-//	for (int i = 0; i < 10; i++)
-//	{
-//		if (node == 0)
-//			return no_find;
-//		if (node->msg == 0)
-//			return no_find;
-//		if (node->name == 0)
-//			return para_Error;
-//		if (strcmp(name, node->name) == 0)
-//		{
-//			node->funcion_Id = fun_id;
-//			va_list args;
-//			va_start(args, format);
-//			node->source = source;
-//			node->msg_len = vsprintf(node->msg, format, args);
-//			MYPRINTF("\r\n-->[ow %s %d] %s", name, fun_id, node->msg);
-//			return okne;
-//		}
-//		node = node->next;
-//	}
-//
-//	return no_find;
-//}
-/*
 uint8_t Message_Center_Receive_Scanf(
 	const char* name,
 	uint16_t FilterId,
@@ -325,6 +349,7 @@ uint8_t Message_Center_Receive_Scanf(
 	static uint8_t RecBuf[50];
 	void* pt = 0;
 	uint32_t res = 0;
+	return 0xff;
 	uint8_t flag = Message_Center_Get(
 		name, FilterId,
 		source,
@@ -339,7 +364,7 @@ uint8_t Message_Center_Receive_Scanf(
 	}
 	return res;
 }
-*/
+
 //0 match
 uint8_t Message_Center_Receive_Compare(
 	const char* name,
@@ -381,7 +406,7 @@ uint8_t Message_Center_Receive_Compare(
 	}
 	return no_find;
 }
-/*
+
 uint8_t Message_Center_Get(
 	const char* name,
 	uint16_t fun_id,
@@ -420,7 +445,7 @@ uint8_t Message_Center_Get(
 	}
 
 	return no_find;
-}*/
+}
 
 uint8_t Message_Center_Clean_Flag(
 	const char* name,

@@ -168,8 +168,9 @@ void task_manager_Add_Ack()
 			Control_Add_Task.flag = Flag_Error;
 		if (Control_Add_Task.flag == Flag_OKNE)
 		{
-			Message_Center_Send_prinft(task_ID, 0,
+			Message_Center_Send_prinft(task_ID,
 				Control_Add_Task.info_pt,
+				sizeof(Control_Add_Task.info_pt),
 				"ADD %d", index);
 		}
 		else
@@ -227,8 +228,9 @@ void task_manager_Save_Ack()
 		}
 		if (Control_Save_Task.flag == Flag_OKNE)
 		{
-			Message_Center_Send_prinft(task_ID, 0,
+			Message_Center_Send_prinft(task_ID,
 				&Control_Save_Task.src,
+				sizeof(Task_Parameter_Struct *),
 				"Save %d", index);
 		}
 		else
@@ -246,6 +248,7 @@ void task_manager_Save_Ack()
 		uint8_t task_count = Task_Stroage_GetSize();
 		if (Control_Save_Task.fouce_index >= task_count)
 		{
+			//uint8_t count_need_create = Control_Save_Task.fouce_index - task_count;
 			Task_Parameter_Struct* newtask = Task_Stroage_Insert(Control_Save_Task.src, task_count);
 			if (newtask == 0)
 			{
@@ -253,12 +256,12 @@ void task_manager_Save_Ack()
 			}
 			else
 			{
-				while (Message_Center_Send_prinft(task_ID, 0,
+				/*while (Message_Center_Send_prinft(task_ID, 0,
 					newtask,
 					"ADD %d", task_count) != 0)
 				{
 					ControlDelay(5);
-				}
+				}*/
 			}
 		}
 		else
@@ -303,17 +306,17 @@ void task_manager_Move_Ack()
 	}
 }
 
-void task_manager_Req_Info()
+uint8_t task_manager_Read_Info(uint8_t* msg, uint16_t msg_size,
+	uint8_t* src, uint16_t SrcSize)
 {
-	if (Message_Center_Receive_Compare("task", 1, 0,
-		"ReqReadState") == 0)
+	if (sscanf(msg, "ReqReadState") == 0)
 	{
 		uint16_t size = Task_Stroage_GetSize();
-		Message_Center_Send_prinft(task_ID, 1,
-			0,
-			"ReadState %d %d", size, isupdata);
+		sprintf(src, "ReadState %d %d", size, isupdata);
 		isupdata = 0;
+		return 0;
 	}
+	return 1;
 }
 
 uint8_t task_Manager_Get_Para(Task_Parameter_Struct* e, uint16_t index)
@@ -327,7 +330,7 @@ void task_manager_Handle()
 	task_manager_Del_Ack();
 	task_manager_Save_Ack();
 	task_manager_Move_Ack();
-	task_manager_Req_Info();
+	//task_manager_Req_Info();//
 }
 
 void task_parameter_init()
@@ -350,6 +353,7 @@ void task_manager_thread()
 	int string[1000];
 	Task_Stroage_Init();
 	task_parameter_init();
+	Message_Center_Add_Read_CB("task", task_manager_Read_Info);
 	while (1)
 	{
 		task_manager_Handle();

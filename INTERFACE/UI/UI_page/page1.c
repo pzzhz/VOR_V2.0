@@ -16,6 +16,7 @@ lv_timer_t Page1_timer;
 lv_obj_t* parent_box;
 lv_obj_t* parent_bo2[10];
 lv_obj_t* start_btn;
+lv_obj_t* Msg_Label;
 int16_t CurrentTask = -1, Interval_ID = -1;
 int16_t CurrentCount = -1, Interval_RemainingSec = -1;
 uint8_t parent_bo2_index = 0;
@@ -53,7 +54,7 @@ struct
 } Page_del_Task;
 
 // void UI_Page1_Refresh_handle(lv_time_t )
- 
+
 static uint16_t  Get_Str_Len(const char* str, uint16_t maxlen)
 {
 	int i = 0;
@@ -268,6 +269,13 @@ void UI_Task_Btn_Init(lv_obj_t* parent)
 	lv_obj_add_event_cb(btn[3], UI_Task_Btn_Del_Click_Event, LV_EVENT_CLICKED, 0);
 	// parent_bo2 = lv_label_create(parent);
 }
+char string[50];
+void UI_Task_Msg_Init(lv_obj_t* parent)
+{
+	Msg_Label = lv_label_create(parent);
+	lv_obj_align_to(Msg_Label, start_btn, LV_ALIGN_OUT_BOTTOM_LEFT, -100, 0);
+	lv_label_set_text(Msg_Label, string);
+}
 
 static uint8_t StartBtnFlag;
 
@@ -299,6 +307,11 @@ void UI_Start_Btn_Init(lv_obj_t* parent)
 	lv_obj_add_event_cb(btn, UI_Start_Btn_Clicked_Handle, LV_EVENT_CLICKED, 0);
 }
 
+void UI_page1_Mouse_name(lv_obj_t* parent)
+{
+	
+}
+
 uint8_t UI_Start_Btn_Get_CMD(void)
 {
 	uint8_t flag = StartBtnFlag;
@@ -327,105 +340,185 @@ void UI_Page1_Set_Msg_Finish(void)
 	Page1_meassege_flag = 1;
 }
 
+struct
+{
+	enum {
+		cmd_none,
+		cmd_add,
+		cmd_move,
+		cmd_del,
+		cmd_save
+	}cmd_typed;
+	Task_Parameter_Struct* task;
+	uint16_t task_id;
+	uint16_t task_id2;
+	uint8_t isvaild;
+	uint16_t error_counter;
+}task_msg;
+
+void UI_Page1_Send_ADD_Cmd(uint8_t* msg, uint16_t msg_size,
+	uint8_t* src, uint16_t SrcSize)
+{
+	if (task_msg.isvaild)
+		return;
+	if (Msg_COMPARE("ADD", msg))
+	{
+		int index = 0;
+		if (sscanf(msg, "ADD %d", &index) == 1 &&
+			SrcSize == sizeof(void*))
+		{
+			task_msg.isvaild = 1;
+			task_msg.cmd_typed = cmd_add;
+			task_msg.task_id = index;
+			task_msg.task = src;
+		}
+	}
+	if (Msg_COMPARE("DEL", msg))
+	{
+		int index = 0;
+		if (sscanf(msg, "DEL %d", &index) == 1)
+		{
+			task_msg.cmd_typed = cmd_del;
+			task_msg.task_id = index;
+			task_msg.isvaild = 1;
+		}
+	}
+	if (Msg_COMPARE("Save", msg))
+	{
+		int index = 0;
+		if (sscanf(msg, "Save %d", &index) == 1 &&
+			SrcSize == sizeof(Task_Parameter_Struct*))
+		{
+			/*task_msg.cmd_typed = cmd_save;
+			task_msg.task = src;
+			task_msg.task_id = index;
+			task_msg.isvaild = 1;*/
+		}
+	}
+	if (Msg_COMPARE("Move", msg))
+	{
+		int id = 0, id2 = 0;
+		if (sscanf(msg, "Move %d %d", &id, &id2) == 2)
+		{
+			task_msg.cmd_typed = cmd_move;
+			task_msg.task_id = id;
+			task_msg.task_id2 = id2;
+			task_msg.isvaild = 1;
+		}
+	}
+
+}
+
 void UI_Page1_Get_Souce_Updata()
 {
-	uint16_t funid = 0;
-	void* pt = 0;
-	uint8_t flag = Message_Center_Get(
-		"task", funid,
-		&pt,
-		msgBuffer, sizeof(msgBuffer));
-	if (flag == 0)
+	if (task_msg.isvaild)
 	{
-		if (COMPARE("ADD", msgBuffer) == 0)
+		uint8_t cmdTpyed = task_msg.cmd_typed;
+		if (cmdTpyed == cmd_add)
 		{
-			if (pt == 0)
-				return;
-			Task_Parameter_Struct* task_pt = pt;
-			int add_index = 0;
-			if (sscanf(msgBuffer, "ADD %d", &add_index) == 1)
-			{
-				UI_Task_Btn_ADD_Callback(add_index, task_pt);
-			};
+			UI_Task_Btn_ADD_Callback(task_msg.task_id,
+				task_msg.task);
 		}
-		if (COMPARE("DEL", msgBuffer) == 0)
+		if (cmdTpyed == cmd_move)
 		{
-			int del_index = 0;
-			if (sscanf(msgBuffer, "DEL %d", &del_index) == 1)
-			{
-				UI_Task_Btn_Del_Callback(del_index);
-	};
-}
-		if (COMPARE("Save", msgBuffer) == 0)
-		{
-#if 0
-			int _index = 0;
-			if (sscanf(msgBuffer, "Save %d", &del_index) == 1)
-			{
-				//UI_Task_Btn_Save_Callback(del_index);
-			};
-#endif
+			UI_Task_Btn_Move_Callback(task_msg.task_id,
+				task_msg.task_id2);
 		}
-		if (COMPARE("Move", msgBuffer) == 0)
+		if (cmdTpyed == cmd_del)
 		{
-			int swap1 = 0, swap2;
-			if (sscanf(msgBuffer, "Move %d %d", &swap1, &swap2) == 2)
-			{
-				UI_Task_Btn_Move_Callback(swap1, swap2);
-			};
+			UI_Task_Btn_Del_Callback(task_msg.task_id);
 		}
-		Message_Center_Clean_Flag("task", funid);
-
+		task_msg.isvaild = 0;
 	}
+	//	uint16_t funid = 0;
+	//	void* pt = 0;
+	//	uint8_t flag = Message_Center_Get(
+	//		"task", funid,
+	//		&pt,
+	//		msgBuffer, sizeof(msgBuffer));
+	//	if (flag == 0)
+	//	{
+	//		if (COMPARE("ADD", msgBuffer) == 0)
+	//		{
+	//			if (pt == 0)
+	//				return;
+	//			Task_Parameter_Struct* task_pt = pt;
+	//			int add_index = 0;
+	//			if (sscanf(msgBuffer, "ADD %d", &add_index) == 1)
+	//			{
+	//				UI_Task_Btn_ADD_Callback(add_index, task_pt);
+	//			};
+	//		}
+	//		if (COMPARE("DEL", msgBuffer) == 0)
+	//		{
+	//			int del_index = 0;
+	//			if (sscanf(msgBuffer, "DEL %d", &del_index) == 1)
+	//			{
+	//				UI_Task_Btn_Del_Callback(del_index);
+	//			};
+	//		}
+	//		if (COMPARE("Save", msgBuffer) == 0)
+	//		{
+	//#if 0
+	//			int _index = 0;
+	//			if (sscanf(msgBuffer, "Save %d", &del_index) == 1)
+	//			{
+	//				//UI_Task_Btn_Save_Callback(del_index);
+	//			};
+	//#endif
+	//		}
+	//		if (COMPARE("Move", msgBuffer) == 0)
+	//		{
+	//			int swap1 = 0, swap2;
+	//			if (sscanf(msgBuffer, "Move %d %d", &swap1, &swap2) == 2)
+	//			{
+	//				UI_Task_Btn_Move_Callback(swap1, swap2);
+	//			};
+	//		}
+	//		Message_Center_Clean_Flag("task", funid);
+	//
+	//	}
 }
 
-void UI_Page1_Get_Mechine_Msg()
+void UI_Page1_Btn_Refulsh()
 {
-	uint16_t funid = 0;
-	uint8_t flag = Message_Center_Get(
-		"PAGE1", funid, 0,
-		msgBuffer, sizeof(msgBuffer));
-	if (flag == 0)
+	const int mallocSize = 40;
+	char* str = message_malloc(mallocSize);
+	if (str == 0)
+		return;
+
+	memset(str, 0, mallocSize);
+	Message_Center_Read_prinft("Ctrl", str, mallocSize, "run_State?");
+	if (Msg_COMPARE("isStart", str))
 	{
-		if (strncmp("Begin", msgBuffer, 5) == 0)
-		{
-			lv_obj_t* label = lv_obj_get_child(start_btn, 0);
-			// start:ON
-			lv_label_set_text_fmt(label, "%s", &msgBuffer[6]);
-			if (sscanf(msgBuffer, "Begin:Running %d", &CurrentTask) != 0)
-				CurrentTask--;
-		}
-		if (strncmp("End", msgBuffer, 3) == 0)
-		{
-			lv_obj_t* label = lv_obj_get_child(start_btn, 0);
-			lv_label_set_text_fmt(label, "Start");
-			CurrentTask = -1; // 清除掉残余指示
-		}
-		if (strncmp("Count", msgBuffer, 5) == 0)
-		{
-			sscanf(msgBuffer, "Count:%d", &CurrentCount);
-		}
-		if (strncmp("Interval: ID:", msgBuffer, 13) == 0)
-		{
-			sscanf(msgBuffer, "Interval: ID:%d", &Interval_ID);
-		}
-		if (strncmp("Interval: Sec:", msgBuffer, 13) == 0)
-		{
-			sscanf(msgBuffer, "Interval: Sec:%d", &Interval_RemainingSec);
-			lv_obj_t* label = lv_obj_get_child(start_btn, 0);
-			lv_label_set_text_fmt(label, "Interval: Sec:%d", Interval_RemainingSec / 1000);
-		}
-		if (strncmp("CAM_ERROR", msgBuffer, 9) == 0)
-		{
-		}
-		if (COMPARE("Stopping", msgBuffer) == 0)
-		{
-			lv_obj_t* label = lv_obj_get_child(start_btn, 0);
-			lv_label_set_text_fmt(label, "%s", &msgBuffer[0]);
-		}
-		Message_Center_Clean_Flag("PAGE1", funid);
+		lv_obj_t* label = lv_obj_get_child(start_btn, 0);
+		// start:ON
+		lv_label_set_text_fmt(label, "%s", "STOP");
 	}
+	if (Msg_COMPARE("isStop", str))
+	{
+		lv_obj_t* label = lv_obj_get_child(start_btn, 0);
+		// start:ON
+		lv_label_set_text_fmt(label, "%s", "START");
+	}
+	message_free(str);
 }
+
+void UI_Page1_Msg_Refulsh()
+{
+	const int mallocSize = 40;
+	char* str = message_malloc(mallocSize);
+	if (str == 0)
+		return;
+	memset(str, 0, mallocSize);
+	if (Message_Center_Read_prinft("Ctrl", str, mallocSize, "Msg?") == 0)
+	{
+		lv_label_set_text(Msg_Label, str);
+		lv_obj_invalidate(Msg_Label);
+	}
+	free(str);
+}
+
 
 void UI_Page1_Respone_Updata_Msg(uint8_t flag, uint16_t ID)
 {
@@ -435,55 +528,26 @@ void UI_Page1_Respone_Updata_Msg(uint8_t flag, uint16_t ID)
 	}
 }
 
+void UI_Page1_Timer_UIupdata_handle(lv_timer_t* t)
+{
+	UI_Page1_Btn_Refulsh();
+	UI_Page1_Msg_Refulsh();
+}
+
 void UI_Page1_Timer_handle(lv_timer_t* t)
 {
-
-	UI_Page1_Get_Mechine_Msg();
 	UI_Page1_Get_Souce_Updata();
-	//if (Page1_meassege_flag && Page1_meassege[0] != 0)
-	//{
-	//	if (strncmp("Begin", Page1_meassege, 5) == 0)
-	//	{
-	//		lv_obj_t* label = lv_obj_get_child(start_btn, 0);
-	//		// start:ON
-	//		lv_label_set_text_fmt(label, "%s", &Page1_meassege[6]);
-	//		if (sscanf(Page1_meassege, "Begin:Running %d", &CurrentTask) != 0)
-	//			CurrentTask--;
-	//	}
-	//	if (strncmp("End", Page1_meassege, 3) == 0)
-	//	{
-	//		lv_obj_t* label = lv_obj_get_child(start_btn, 0);
-	//		lv_label_set_text_fmt(label, "Start");
-	//		CurrentTask = -1; // 清除掉残余指示
-	//	}
-	//	if (strncmp("Count", Page1_meassege, 5) == 0)
-	//	{
-	//		sscanf(Page1_meassege, "Count:%d", &CurrentCount);
-	//	}
-	//	if (strncmp("Interval: ID:", Page1_meassege, 13) == 0)
-	//	{
-	//		sscanf(Page1_meassege, "Interval: ID:%d", &Interval_ID);
-	//	}
-	//	if (strncmp("Interval: Sec:", Page1_meassege, 13) == 0)
-	//	{
-	//		sscanf(Page1_meassege, "Interval: Sec:%d", &Interval_RemainingSec);
-	//		lv_obj_t* label = lv_obj_get_child(start_btn, 0);
-	//		lv_label_set_text_fmt(label, "Interval: Sec:%d", Interval_RemainingSec / 1000);
-	//	}
-	//	if (strncmp("CAM_ERROR", Page1_meassege, 9) == 0)
-	//	{
-	//	}
-	//	Page1_meassege_flag = 0;
-	//}
 }
 
 void mainpage_init(lv_obj_t* parent)
 {
 	parent_box = parent;
 	table_Contain_Property = UI_ListBox_Create(parent);
+	//参数设置
+	Mode_init(parent);
 	// UI_Table_Create(list5, 0);
-	UI_Task_Btn_Init(parent);
 	// 加4个按键
+	UI_Task_Btn_Init(parent);
 
 	// 加后台
 
@@ -491,10 +555,13 @@ void mainpage_init(lv_obj_t* parent)
 
 	// 启动按键
 	UI_Start_Btn_Init(parent);
+	UI_Task_Msg_Init(parent);
 
 	// meassage
-
+	Message_Center_Add_Send_CB("task", UI_Page1_Send_ADD_Cmd);
 	// 加参数进入接口
 	//Control_Set_cb(control_cb_array, control_cb_array_size, Control_btn_communication);
 	lv_timer_create(UI_Page1_Timer_handle, 5, 0);
+	lv_timer_create(UI_Page1_Timer_UIupdata_handle, 100, 0);
+
 }

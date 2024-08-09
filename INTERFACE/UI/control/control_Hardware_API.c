@@ -100,32 +100,7 @@ uint8_t HAL_CAM_SET_Set(void)
     return res;
 }
 
-uint8_t HAL_Control_Get_Start_Cmd(Start_Cmd_Type *cmd)
-{
-    extern uint8_t UI_Start_Btn_Get_CMD(void);
-    uint8_t ui_flag = UI_Start_Btn_Get_CMD();
-    *cmd = StartCmdNone;
-    if (ui_flag == 1)
-    {
-        *cmd = StartCmdBegin;
-    }
-    if (Message_Center_Receive_Compare("Ctrl", 1, 0,
-                                       "ReqStrat") == 0)
-    {
-        *cmd = StartCmdBegin;
-        Message_Center_Send_prinft("Ctrl", 1,
-                                   0,
-                                   "Strat");
-    }
-    if (Message_Center_Receive_Compare("Ctrl", 1, 0,
-                                       "ReqStop") == 0)
-    {
-        Message_Center_Send_prinft("Ctrl", 1,
-                                   0,
-                                   "Stop");
-    }
-    return 0;
-}
+
 
 uint8_t HAL_Set_UI_Page1_Msg(const char *format, ...)
 {
