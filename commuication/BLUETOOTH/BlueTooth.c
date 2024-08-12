@@ -60,7 +60,6 @@ void ReturnBytes_Package(uint8_t* buf, uint16_t len)
 		SendCb(sendbuf, 11);
 }
 
-
 void Return_Handle()
 {
 	//static int size, isupdata = 0, currentCount;

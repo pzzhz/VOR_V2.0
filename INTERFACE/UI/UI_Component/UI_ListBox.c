@@ -143,8 +143,8 @@ void UI_Table_Clean_event(lv_event_t* e)
 {
 	lv_event_code_t code = e->code;
 	List* head = e->user_data;
-	List2* _head = (List2*)head;
-	lv_obj_t* table = e->current_target;
+	// List2* _head = (List2*)head;
+	// lv_obj_t* table = e->current_target;
 	int index = 0;
 	if (code == LV_EVENT_DELETE)
 	{
@@ -165,8 +165,8 @@ void UI_Table_Clean_event(lv_event_t* e)
 static void Tabels_Touch_handler(lv_event_t* e)
 {
 	static Table_Property* table_Property2;
-	Node* pt = e->user_data;
-	List* head = e->user_data;
+	// Node* pt = e->user_data;
+	// List* head = e->user_data;
 	lv_event_code_t code = e->code;
 	lv_obj_t* table = e->current_target;
 	lv_obj_t* table_container = lv_obj_get_parent(table);

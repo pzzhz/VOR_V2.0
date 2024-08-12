@@ -2,12 +2,13 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-22 16:00:07
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-07-27 18:23:30
+ * @LastEditTime: 2024-08-12 17:28:27
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\INTERFACE\UI\control\control_VOR.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 #include "control_CONT.h"
 #include "control_Hardware_API.h"
+#include "../other/system_function.h"
 #include "control.h"
 #include "stdint.h"
 #define use_windows
@@ -17,59 +18,59 @@
 #else
 #include "../implement/Slave_Cont_Ctrl.h"
 #endif // use_windows
- // 无UI控制
+       // 无UI控制
 // 返回message
 
 struct
 {
-	uint32_t time;
-	uint32_t SetSec;
-	float Vel;
+    uint32_t time;
+    uint32_t SetSec;
+    float Vel;
 } Cont_info;
 
-uint8_t HAL_Slave_CONT_Init(Task_Parameter_Struct* e)
+uint8_t HAL_Slave_CONT_Init(Task_Parameter_Struct *e)
 {
 #ifndef STM32F40_41xxx
-	Cont_info.time = ControlGetTick();
-	Cont_info.SetSec = e->CONT.Sec;
+    Cont_info.time = ControlGetTick();
+    Cont_info.SetSec = e->CONT.Sec;
 #else
-	CONT_Machine_Init(e->CONT.Vel, e->CONT.Sec);
+    CONT_Machine_Init(e->CONT.Vel, e->CONT.Sec);
 #endif // !STM32F40_41xxx
 
-	return 1;
+    return 1;
 }
 
 uint8_t HAL_Slave_CONT_Stop(void)
 {
 #ifndef STM32F40_41xxx
-	uint32_t currentSec = (ControlGetTick() - Cont_info.time) / 1000.0f;
-	Cont_info.SetSec = currentSec + 1;
+    uint32_t currentSec = (ControlGetTick() - Cont_info.time) / 1000.0f;
+    Cont_info.SetSec = currentSec + 1;
 #else
-	Cont_Machine_Stop();
+    Cont_Machine_Stop();
 #endif // !STM32F40_41xxx
-	return 1;
+    return 1;
 }
 
-uint8_t HAL_Slave_CONT_Get_State(uint32_t* remainingSec)
+uint8_t HAL_Slave_CONT_Get_State(uint32_t *remainingSec)
 {
 #ifndef STM32F40_41xxx
-	uint32_t currentSec = (ControlGetTick() - Cont_info.time) / 1000.0f;
-	if (currentSec < Cont_info.SetSec)
-	{
-		*remainingSec = Cont_info.SetSec - currentSec;
-		return 1;
-	}
-	*remainingSec = 0;
-	return 0;
+    uint32_t currentSec = (ControlGetTick() - Cont_info.time) / 1000.0f;
+    if (currentSec < Cont_info.SetSec)
+    {
+        *remainingSec = Cont_info.SetSec - currentSec;
+        return 1;
+    }
+    *remainingSec = 0;
+    return 0;
 #else
-	uint32_t MillSecReq = 0, CurrentMillSec = 0;
-	uint8_t res = Cont_Machine_Get_Count(&MillSecReq, &CurrentMillSec);
-	*remainingSec = MillSecReq - CurrentMillSec;
-	return res;
+    uint32_t MillSecReq = 0, CurrentMillSec = 0;
+    uint8_t res = Cont_Machine_Get_Count(&MillSecReq, &CurrentMillSec);
+    *remainingSec = MillSecReq - CurrentMillSec;
+    return res;
 #endif // !STM32F40_41xxx
 }
 
-uint8_t ContControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
+uint8_t ContControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 {
 	const uint32_t begin_time = 10000;
 	// begin noice ui

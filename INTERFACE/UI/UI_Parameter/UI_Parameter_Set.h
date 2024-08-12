@@ -6,7 +6,8 @@
 extern "C"
 {
 
-#endif // 
+#endif // 7
+    typedef void (*myhander)(void *e);
     typedef struct
     {
         uint8_t(*Get)(Task_Parameter_Struct* e);

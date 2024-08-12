@@ -2,12 +2,13 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-22 16:00:07
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-07-29 14:56:23
+ * @LastEditTime: 2024-08-08 11:11:54
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\INTERFACE\UI\control\control_VOR.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 #include "control_VOR.h"
 #include "control_Hardware_API.h"
+#include "../other/system_function.h"
 #include "control.h"
 #include "stdint.h"
 #define use_windows
@@ -17,7 +18,7 @@
 #else
 #include "../implement/Slave_Vor_Ctrl.h"
 #endif // use_windows
- // 无UI控制
+	   // 无UI控制
 // 返回message
 
 struct
@@ -28,7 +29,7 @@ struct
 	float Freq;
 } vor_info;
 
-uint8_t HAL_Slave_VOR_Init(Task_Parameter_Struct* e)
+uint8_t HAL_Slave_VOR_Init(Task_Parameter_Struct *e)
 {
 #ifndef STM32F40_41xxx
 	vor_info.time = ControlGetTick();
@@ -53,7 +54,7 @@ uint8_t HAL_Slave_VOR_Stop(void)
 	return 1;
 }
 
-uint8_t HAL_Slave_VOR_Get_State(uint32_t* remainingCount)
+uint8_t HAL_Slave_VOR_Get_State(uint32_t *remainingCount)
 {
 #ifndef STM32F40_41xxx
 	uint32_t currentCount = vor_info.Freq * (ControlGetTick() - vor_info.time) / 1000.0f;
@@ -72,16 +73,15 @@ uint8_t HAL_Slave_VOR_Get_State(uint32_t* remainingCount)
 #endif // !STM32F40_41xxx
 }
 
-uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
+uint8_t VorControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 {
-	const uint32_t begin_time = 10000;
 	// begin noice ui
 	uint32_t begin_tick = ControlGetTick();
 	uint32_t counter_up = ControlGetTick() - begin_tick;
 	e->UI_para.state = ready;
 	MYPRINTF("\r\n vor begin");
 	MYPRINTF("\r\n");
-	// HAL_Incline_Init(1, 1.0f);
+	// 
 	// uint8_t inc_flag = 0;
 	// 启动部分
 	// while (inc_flag == 0)

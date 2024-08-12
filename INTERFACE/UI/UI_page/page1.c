@@ -54,7 +54,7 @@ struct
 } Page_del_Task;
 
 // void UI_Page1_Refresh_handle(lv_time_t )
-
+ 
 static uint16_t  Get_Str_Len(const char* str, uint16_t maxlen)
 {
 	int i = 0;
@@ -69,7 +69,7 @@ static uint16_t  Get_Str_Len(const char* str, uint16_t maxlen)
 
 void Set_table_Cell_Text(lv_obj_t* obj, Task_Parameter_Struct* e)
 {
-	static uint8_t times;
+	// static uint8_t times;
 	char strs[25];
 	Table_Property* item_property = UI_Table_Get_Property(obj);
 	switch (e->mode)
@@ -305,11 +305,6 @@ void UI_Start_Btn_Init(lv_obj_t* parent)
 	lv_label_set_text(label, "start");		/*Set the labels text*/
 	lv_obj_align(btn, LV_ALIGN_TOP_RIGHT, 0, 0);
 	lv_obj_add_event_cb(btn, UI_Start_Btn_Clicked_Handle, LV_EVENT_CLICKED, 0);
-}
-
-void UI_page1_Mouse_name(lv_obj_t* parent)
-{
-	
 }
 
 uint8_t UI_Start_Btn_Get_CMD(void)

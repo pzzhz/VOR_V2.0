@@ -86,7 +86,7 @@ static UI_parameter_Set_Type mode_set;
 
 static void handler(UI_Dropdown_Struct* e)
 {
-	uint8_t flags = 1;
+	// uint8_t flags = 1;
 	lv_obj_t* obj = e->dropdown;
 	char* str = mode_set.Mode.str;
 	lv_dropdown_get_selected_str(obj, str, 10);
@@ -157,7 +157,7 @@ void Mode_init(lv_obj_t* parent)
 	   .y = 0,
 	   .Item = Set_item,
 	   .parent = context_box,
-	   .handle = handler,
+	   .handle = (myhander)handler,
 	   .Label_Str = "mode"
 	};
 	Mode_dropdown = dropdown;

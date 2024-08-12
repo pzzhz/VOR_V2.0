@@ -23,7 +23,7 @@
  *  STATIC PROTOTYPES
  **********************/
 
-static bool touchpad_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data);
+static void touchpad_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data);
 
 
 u8 Touch_active_flag=ENABLE;
@@ -96,7 +96,7 @@ void touch_sever(unsigned char mode,unsigned short Pos_XY[3])
 
 /* Will be called by the library to read the touchpad */
 
-static bool touchpad_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data)
+static void touchpad_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data)
 {
 		static uint16_t last_x = 0;
 		static uint16_t last_y = 0;
@@ -116,7 +116,7 @@ static bool touchpad_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data)
 			data->state = LV_INDEV_STATE_REL;
 		}
     /*Return `false` because we are not buffering and no more data to read*/
-    return false;
+    return ;
 }
 // static bool touchpad_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data)
 // {

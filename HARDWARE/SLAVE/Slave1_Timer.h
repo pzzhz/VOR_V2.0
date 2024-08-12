@@ -20,7 +20,7 @@ extern "C"
     void Slave1_Set_Machine_Cb(Slave_Function_CB cb);
     void tim_f_sin_set(int f);
     void tim_f_set(int f);
-
+    void Slave_server_Init(void);
     float Slave1_Get_Encode_Angle(void);
     int32_t Slave1_Get_Encode(void);
     void Slave1_Set_Encode(uint32_t cnt);

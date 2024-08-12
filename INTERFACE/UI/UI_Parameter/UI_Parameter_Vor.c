@@ -64,6 +64,8 @@ void handler(UI_Dropdown_Struct* e)
     LV_LOG_USER("ss %d", e->Click_Index);
 }
 
+
+
 static UI_Dropdown_Struct dropdown_Vel2, dropdown_vel2;
 static UI_parameter_VOR Obj;
 
@@ -91,7 +93,7 @@ UI_Parameter_Handler VOR_init(lv_obj_t* parent)
        .y = 0,
        .Item = Vor_FreqItem,
        .parent = context_box,
-       .handle = handler,
+       .handle = (myhander)handler,
        .Label_Str = "Freq"
     };
     dropdown_Vel2 = dropdown_freq;
@@ -109,7 +111,7 @@ UI_Parameter_Handler VOR_init(lv_obj_t* parent)
        .y = 80,
        .Item = Vor_VelItem,
        .parent = context_box,
-       .handle = handler,
+       .handle = (myhander)handler,
        .Label_Str = "Vel"
     };
     dropdown_vel2 = dropdown_vel;
