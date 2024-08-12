@@ -236,7 +236,7 @@ void UI_Task_Btn_Del_Callback(uint16_t fouces_index)
 {
 	UI_Table_Clean(table_Contain_Property->list, fouces_index, 0);
 }
-
+ 
 void UI_Task_Btn_Del_Click_Event(lv_event_t* e)
 {
 	static const Task_Parameter_Struct del_templete = { .mode = 0xff };
