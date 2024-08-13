@@ -118,7 +118,7 @@ uint8_t VorControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 		}
 		if (e->State_Bit.Exit)			//for exit
 		{
-			Ctrl_Msg_Printf("%d:VOR Stopping", count);
+			Ctrl_Msg_Printf("%d:VOR Stopping", e->currentCount);
 			HAL_Slave_VOR_Stop();
 		}
 		MYPRINTF("%3d", count);

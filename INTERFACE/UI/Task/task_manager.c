@@ -9,7 +9,7 @@
 #define compara(a, b) strncmp(a, b, (Message_Center_Get_Str_Len(a,50)))
 static char receiveBuf[50];
 static uint32_t HandleID;
-static uint8_t isbusy, isupdata;
+static uint8_t isbusy, isupdata = 1;
 
 #define task_ID "task"
 
@@ -230,7 +230,7 @@ void task_manager_Save_Ack()
 		{
 			Message_Center_Send_prinft(task_ID,
 				&Control_Save_Task.src,
-				sizeof(Task_Parameter_Struct *),
+				sizeof(Task_Parameter_Struct*),
 				"Save %d", index);
 		}
 		else
@@ -248,21 +248,29 @@ void task_manager_Save_Ack()
 		uint8_t task_count = Task_Stroage_GetSize();
 		if (Control_Save_Task.fouce_index >= task_count)
 		{
-			//uint8_t count_need_create = Control_Save_Task.fouce_index - task_count;
-			Task_Parameter_Struct* newtask = Task_Stroage_Insert(Control_Save_Task.src, task_count);
-			if (newtask == 0)
+			while (Control_Save_Task.fouce_index >= task_count)
 			{
-				Control_Save_Task.flag = Flag_Error;
-			}
-			else
-			{
-				/*while (Message_Center_Send_prinft(task_ID, 0,
-					newtask,
-					"ADD %d", task_count) != 0)
+				Task_Parameter_Struct* newtask = Task_Stroage_Insert(Control_Save_Task.src, 0xffff);
+				if (newtask == 0)
 				{
-					ControlDelay(5);
-				}*/
+					Control_Save_Task.flag = Flag_Error;
+				}
+				else
+				{
+					uint8_t time = 0;
+					Message_Center_Send_prinft(task_ID, newtask,
+						sizeof(newtask),
+						"ADD %d", task_count);
+					/*{
+						ControlDelay(5);
+						time++;
+					}*/
+				}
+				task_count = Task_Stroage_GetSize();
+
 			}
+			Control_Save_Task.flag = Flag_OKNE;
+			//uint8_t count_need_create = Control_Save_Task.fouce_index - task_count;
 		}
 		else
 		{

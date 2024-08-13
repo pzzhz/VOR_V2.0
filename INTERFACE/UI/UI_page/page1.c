@@ -354,8 +354,8 @@ struct
 void UI_Page1_Send_ADD_Cmd(uint8_t* msg, uint16_t msg_size,
 	uint8_t* src, uint16_t SrcSize)
 {
-	if (task_msg.isvaild)
-		return;
+	//if (task_msg.isvaild)
+	//	return;
 	if (Msg_COMPARE("ADD", msg))
 	{
 		int index = 0;
