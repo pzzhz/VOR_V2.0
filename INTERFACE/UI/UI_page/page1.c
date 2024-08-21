@@ -17,10 +17,12 @@ lv_obj_t* parent_box;
 lv_obj_t* parent_bo2[10];
 lv_obj_t* start_btn;
 lv_obj_t* Msg_Label;
+lv_obj_t* MouseNameTextArea;
+char MouseNameTextArea_textSource[50];
 int16_t CurrentTask = -1, Interval_ID = -1;
 int16_t CurrentCount = -1, Interval_RemainingSec = -1;
 uint8_t parent_bo2_index = 0;
-static char msgBuffer[50];
+//static char msgBuffer[50];
 static int touch_counter = 0;
 #define Read_Flag(n) (*((volatile) & n))
 typedef enum
@@ -54,7 +56,7 @@ struct
 } Page_del_Task;
 
 // void UI_Page1_Refresh_handle(lv_time_t )
- 
+
 static uint16_t  Get_Str_Len(const char* str, uint16_t maxlen)
 {
 	int i = 0;
@@ -236,7 +238,7 @@ void UI_Task_Btn_Del_Callback(uint16_t fouces_index)
 {
 	UI_Table_Clean(table_Contain_Property->list, fouces_index, 0);
 }
- 
+
 void UI_Task_Btn_Del_Click_Event(lv_event_t* e)
 {
 	static const Task_Parameter_Struct del_templete = { .mode = 0xff };
@@ -275,6 +277,7 @@ void UI_Task_Msg_Init(lv_obj_t* parent)
 	Msg_Label = lv_label_create(parent);
 	lv_obj_align_to(Msg_Label, start_btn, LV_ALIGN_OUT_BOTTOM_LEFT, -100, 0);
 	lv_label_set_text(Msg_Label, string);
+
 }
 
 static uint8_t StartBtnFlag;
@@ -512,6 +515,20 @@ void UI_Page1_Msg_Refulsh()
 		lv_obj_invalidate(Msg_Label);
 	}
 	free(str);
+	//const char *newline = "\r\n";
+	//const int mallocSize = 40;
+	//char* str = message_malloc(mallocSize);
+	//if (str == 0)
+	//	return;
+	//memset(str, 0, mallocSize);
+	//if (Message_Center_Read_prinft("Ctrl", str, mallocSize, "Msg?") == 0)
+	//{
+	//	lv_textarea_add_text(Msg_Label, str);
+	//	lv_textarea_add_text(Msg_Label, newline);
+	//	/*	lv_label_set_text(Msg_Label, str);
+	//		lv_obj_invalidate(Msg_Label);*/
+	//}
+	//free(str);
 }
 
 
@@ -532,6 +549,56 @@ void UI_Page1_Timer_UIupdata_handle(lv_timer_t* t)
 void UI_Page1_Timer_handle(lv_timer_t* t)
 {
 	UI_Page1_Get_Souce_Updata();
+}
+
+static void ta_event_cb(lv_event_t* e)
+{
+	lv_event_code_t code = lv_event_get_code(e);
+	lv_obj_t* ta = lv_event_get_target(e);
+	lv_obj_t* kb = lv_event_get_user_data(e);
+	if (code == LV_EVENT_FOCUSED || code == LV_EVENT_CLICKED) {
+		lv_keyboard_set_textarea(kb, ta);
+		lv_obj_clear_flag(kb, LV_OBJ_FLAG_HIDDEN);
+	}
+	if (code == LV_EVENT_INSERT)
+	{
+		strncpy(MouseNameTextArea_textSource,
+			lv_textarea_get_text(e->current_target),
+			50);
+	}
+
+	if (code == LV_EVENT_DEFOCUSED) {
+		lv_keyboard_set_textarea(kb, NULL);
+		lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
+		//lv_obj_invalidate(kb);
+	}
+}
+
+static void keyboardHidden(lv_event_t* e)
+{
+	lv_event_code_t code = lv_event_get_code(e);
+	if (code == LV_EVENT_CANCEL) {
+		lv_obj_add_flag(e->current_target, LV_OBJ_FLAG_HIDDEN);
+	}
+}
+
+void UI_mouse_Name_textInput(lv_obj_t* parent)
+{
+	/*Create a keyboard to use it with an of the text areas*/
+	lv_obj_t* kb = lv_keyboard_create(parent);
+	lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
+
+	/*Create a text area. The keyboard will write here*/
+	lv_obj_t* ta;
+	ta = lv_textarea_create(parent);
+	MouseNameTextArea = ta;
+	lv_obj_align(ta, LV_ALIGN_TOP_LEFT, 75, 10 + 145);
+	lv_obj_add_event_cb(ta, ta_event_cb, LV_EVENT_ALL, kb);
+	lv_textarea_set_placeholder_text(ta, "enter mouse name");
+	lv_textarea_set_accepted_chars(ta, "_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+	lv_textarea_set_max_length(ta, 50);
+	lv_obj_add_event_cb(kb, keyboardHidden, LV_EVENT_CANCEL, 0);
+	lv_obj_set_size(ta, 240, 45);
 }
 
 void mainpage_init(lv_obj_t* parent)
@@ -555,7 +622,8 @@ void mainpage_init(lv_obj_t* parent)
 	// meassage
 	Message_Center_Add_Send_CB("task", UI_Page1_Send_ADD_Cmd);
 	// 加参数进入接口
-	//Control_Set_cb(control_cb_array, control_cb_array_size, Control_btn_communication);
+	UI_mouse_Name_textInput(parent);
+
 	lv_timer_create(UI_Page1_Timer_handle, 5, 0);
 	lv_timer_create(UI_Page1_Timer_UIupdata_handle, 100, 0);
 

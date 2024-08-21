@@ -98,7 +98,6 @@ UI_Parameter_Handler VOR_init(lv_obj_t* parent)
     };
     dropdown_Vel2 = dropdown_freq;
     UI_DropDown_Init(&dropdown_Vel2);
-
     Obj.Freq.dropdown1 = dropdown_Vel2.dropdown;
 
 
