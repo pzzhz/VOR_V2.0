@@ -10,6 +10,13 @@ extern "C"
 {
 #endif //
 #define Msg_COMPARE(a,b) (strncmp(a,b,sizeof(a)-1)==0) //Ç°±ØÐëÊÇconst×Ö·û´®
+
+	typedef enum 
+	{
+		msg_match = 0,
+		msg_nomatch
+	}MsgReadReturn;
+
 	typedef  uint8_t(*function_cb)(uint8_t* msg, uint16_t msg_size,
 		uint8_t* src, uint16_t SrcSize);
 	uint8_t Message_Center_Add_Send_CB(

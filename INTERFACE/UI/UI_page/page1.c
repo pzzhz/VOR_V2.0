@@ -407,6 +407,17 @@ void UI_Page1_Send_ADD_Cmd(uint8_t* msg, uint16_t msg_size,
 
 }
 
+MsgReadReturn UI_Page1_Send_MouseName(uint8_t* msg, uint16_t msg_size,
+	uint8_t* src, uint16_t SrcSize)
+{
+	if (Msg_COMPARE("MouseName?", msg))
+	{
+		strncpy(src, MouseNameTextArea_textSource, SrcSize);
+		return msg_match;
+	}
+	return msg_nomatch;
+}
+
 void UI_Page1_Get_Souce_Updata()
 {
 	if (task_msg.isvaild)
@@ -560,7 +571,7 @@ static void ta_event_cb(lv_event_t* e)
 		lv_keyboard_set_textarea(kb, ta);
 		lv_obj_clear_flag(kb, LV_OBJ_FLAG_HIDDEN);
 	}
-	if (code == LV_EVENT_INSERT)
+	if (code == LV_EVENT_VALUE_CHANGED)
 	{
 		strncpy(MouseNameTextArea_textSource,
 			lv_textarea_get_text(e->current_target),
@@ -582,26 +593,27 @@ static void keyboardHidden(lv_event_t* e)
 	}
 }
 
+
 void UI_mouse_Name_textInput(lv_obj_t* parent)
 {
 	/*Create a keyboard to use it with an of the text areas*/
-	lv_obj_t* kb = lv_keyboard_create(parent);
+	lv_obj_t* kb = lv_keyboard_create(lv_scr_act());
 	lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
 
 	/*Create a text area. The keyboard will write here*/
 	lv_obj_t* ta;
 	ta = lv_textarea_create(parent);
 	MouseNameTextArea = ta;
-	lv_obj_align(ta, LV_ALIGN_TOP_LEFT, 75, 10 + 145);
+	lv_obj_align(ta, LV_ALIGN_TOP_LEFT, 60, 110);
 	lv_obj_add_event_cb(ta, ta_event_cb, LV_EVENT_ALL, kb);
 	lv_textarea_set_placeholder_text(ta, "enter mouse name");
-	lv_textarea_set_accepted_chars(ta, "_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+	lv_textarea_set_accepted_chars(ta, "_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-=+");
 	lv_textarea_set_max_length(ta, 50);
 	lv_obj_add_event_cb(kb, keyboardHidden, LV_EVENT_CANCEL, 0);
 	lv_obj_set_size(ta, 240, 45);
 }
 
-void mainpage_init(lv_obj_t* parent)
+void Page1_init(lv_obj_t* parent)
 {
 	parent_box = parent;
 	table_Contain_Property = UI_ListBox_Create(parent);
@@ -621,6 +633,7 @@ void mainpage_init(lv_obj_t* parent)
 
 	// meassage
 	Message_Center_Add_Send_CB("task", UI_Page1_Send_ADD_Cmd);
+	Message_Center_Add_Read_CB("page1", UI_Page1_Send_MouseName);
 	// 加参数进入接口
 	UI_mouse_Name_textInput(parent);
 

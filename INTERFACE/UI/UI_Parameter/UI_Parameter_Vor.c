@@ -72,7 +72,7 @@ static UI_parameter_VOR Obj;
 static uint8_t UI_Get(Task_Parameter_Struct* e);
 static uint8_t UI_Hidden(uint8_t flag);
 
-UI_Parameter_Handler VOR_init(lv_obj_t* parent)
+UI_Parameter_Handler VOR_init(lv_obj_t* parent,int16_t x,int16_t y)
 {
     //create base obj
     UI_Parameter_Handler ui_Parameter_Handler = { .hidden = UI_Hidden ,.Get = UI_Get };
@@ -82,7 +82,7 @@ UI_Parameter_Handler VOR_init(lv_obj_t* parent)
     lv_obj_clear_flag(context_box, LV_OBJ_FLAG_SCROLLABLE);
     lv_obj_set_size(context_box, 315, 260);
     lv_obj_set_style_bg_opa(context_box, 0, LV_OPA_TRANSP);
-    lv_obj_align(context_box, LV_ALIGN_DEFAULT, 0, 200);
+    lv_obj_align(context_box, LV_ALIGN_DEFAULT, x, y);
 
     UI_Dropdown_Struct dropdown_freq = {
        .dropdown = Obj.Freq.dropdown1,

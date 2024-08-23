@@ -104,6 +104,12 @@
     <ClCompile Include="..\..\INTERFACE\UI\UI_Parameter\UI_Parameter_Ovar.c">
       <Filter>UI\UI_Parameter</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\INTERFACE\UI\UI_page\PageManagment.c">
+      <Filter>UI\UI_page</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INTERFACE\UI\UI_page\Page_Maintain.c">
+      <Filter>UI\UI_page</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LVGL.Simulator.rc" />

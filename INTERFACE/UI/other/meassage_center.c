@@ -289,7 +289,7 @@ uint8_t Message_Center_Read_prinft(
 			{
 				if (node->Readcb[i] != 0)
 				{
-					if (node->Readcb[i](string, stringLen, Src, SrcSize) == 0)
+					if (node->Readcb[i](string, stringLen, Src, SrcSize) == msg_match)
 					{
 						free(string);
 						return okne;

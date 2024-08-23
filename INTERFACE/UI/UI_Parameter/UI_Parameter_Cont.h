@@ -7,7 +7,7 @@ extern "C"
 {
 
 #endif //
-    UI_Parameter_Handler Continue_init(lv_obj_t* parent);
+    UI_Parameter_Handler Continue_init(lv_obj_t* parent, int16_t x, int16_t y);
 #ifdef __cplusplus
 
 }

@@ -73,6 +73,8 @@
     <ClCompile Include="..\..\INTERFACE\UI\UI_Component\UI_ListBox.c" />
     <ClCompile Include="..\..\INTERFACE\UI\UI_Component\UI_SpinBox.c" />
     <ClCompile Include="..\..\INTERFACE\UI\UI_page\page1.c" />
+    <ClCompile Include="..\..\INTERFACE\UI\UI_page\PageManagment.c" />
+    <ClCompile Include="..\..\INTERFACE\UI\UI_page\Page_Maintain.c" />
     <ClCompile Include="..\..\INTERFACE\UI\UI_Parameter\UI_Parameter_Cont.c" />
     <ClCompile Include="..\..\INTERFACE\UI\UI_Parameter\UI_Parameter_Ovar.c" />
     <ClCompile Include="..\..\INTERFACE\UI\UI_Parameter\UI_Parameter_Set.c" />

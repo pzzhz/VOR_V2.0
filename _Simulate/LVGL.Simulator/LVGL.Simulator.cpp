@@ -28,13 +28,13 @@
 extern "C"
 {
 
-//#include "UI_Parameter_Set.h"
+    //#include "UI_Parameter_Set.h"
 #include "../../INTERFACE/UI/UI_Parameter/UI_Parameter_Set.h"
 #include "../../INTERFACE/UI/UI_Component/UI_ListBox.h"
 #include "../../INTERFACE/UI/Task/task_manager.h"
 #include "../../INTERFACE/UI/control/control.h"
 #include "../../INTERFACE/UI/UI_Parameter/UI_Parameter_Cont.h"
-#include "../../INTERFACE/UI/UI_page/page1.h"
+#include "../../INTERFACE/UI/UI_page/PageManagment.h"
 #include "../../commuication/communication.h"
 
 }
@@ -134,8 +134,8 @@ int main()
 #endif // 0
     //Task_mangager_Init();
     controlInit();
-    mainpage_init(lv_scr_act());
-  
+    UI_Page_Management_Init();
+
 
     while (!lv_win32_quit_signal)
     {

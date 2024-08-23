@@ -146,7 +146,7 @@ void Mode_init(lv_obj_t* parent)
 	lv_obj_clear_flag(context_box, LV_OBJ_FLAG_SCROLLABLE);
 	lv_obj_set_size(context_box, 220, 50);
 	lv_obj_set_style_bg_opa(context_box, 0, LV_OPA_TRANSP);
-	lv_obj_align(context_box, LV_ALIGN_DEFAULT, 0, 100);
+	lv_obj_align(context_box, LV_ALIGN_DEFAULT, -15, 55);
 
 	UI_Dropdown_Struct dropdown = {
 	   .dropdown = mode_set.Mode.dropdown1,
@@ -167,9 +167,9 @@ void Mode_init(lv_obj_t* parent)
 	lv_dropdown_get_selected_str(Mode_dropdown.dropdown, str, 10); //get str
 
 
-	ui_mode_cb.cb[Task_VOR] = VOR_init(lv_scr_act());
-	ui_mode_cb.cb[Task_Continue] = Continue_init(lv_scr_act());
-	ui_mode_cb.cb[Task_OVAR] = OVAR_init(lv_scr_act());
+	ui_mode_cb.cb[Task_VOR] = VOR_init(parent, -15, 155);
+	ui_mode_cb.cb[Task_Continue] = Continue_init(parent, -15, 155);
+	ui_mode_cb.cb[Task_OVAR] = OVAR_init(parent, -15, 155);
 
 	ui_mode_cb.cb[Task_Continue].hidden(1);
 	ui_mode_cb.cb[Task_OVAR].hidden(1);

@@ -175,7 +175,7 @@ void controlfunction()
 	char message[50], cmd[50] = { "" };
 
 	thread_create(Task_control_handler, &control_info, &task_ctrl_thread, 1000);
-	Meassage_Center_Add("PAGE1");
+	Meassage_Center_Add("page1");
 	Ctrl_Message_Center_init();
 	HAL_API_INIT();
 	Task_mangager_Init();
