@@ -34,14 +34,14 @@ extern "C"
 
 	uint8_t Message_Center_Read_prinft(
 		const char* name,
-		uint8_t* Src,
+		void* Src,
 		uint8_t SrcSize,
 		const char* format,
 		...);
 
 	uint8_t Message_Center_Send_prinft(
 		const char* name,
-		uint8_t* Src,
+		void* Src,
 		uint8_t SrcSize,
 		const char* format,
 		...);

@@ -10,7 +10,7 @@
 #include <stddef.h>
 
 #if LV_TICK_CUSTOM == 1
-#include LV_TICK_CUSTOM_INCLUDE
+    #include LV_TICK_CUSTOM_INCLUDE
 #endif
 
 /*********************
@@ -29,9 +29,8 @@
  *  STATIC VARIABLES
  **********************/
 #if !LV_TICK_CUSTOM
-static uint32_t sys_time = 0;
-uint32_t my_lv_time;
-static volatile uint8_t tick_irq_flag;
+    static uint32_t sys_time = 0;
+    static volatile uint8_t tick_irq_flag;
 #endif
 
 /**********************
@@ -51,7 +50,6 @@ LV_ATTRIBUTE_TICK_INC void lv_tick_inc(uint32_t tick_period)
 {
     tick_irq_flag = 0;
     sys_time += tick_period;
-    my_lv_time = sys_time;
 }
 #endif
 
@@ -69,11 +67,10 @@ uint32_t lv_tick_get(void)
      *If `tick_irq_flag` was cleared in `lv_tick_inc` try to read again
      *until `tick_irq_flag` remains `1`.*/
     uint32_t result;
-    do
-    {
+    do {
         tick_irq_flag = 1;
-        result = sys_time;
-    } while (!tick_irq_flag); /*Continue until see a non interrupted cycle*/
+        result        = sys_time;
+    } while(!tick_irq_flag); /*Continue until see a non interrupted cycle*/
 
     return result;
 #else
@@ -91,12 +88,10 @@ uint32_t lv_tick_elaps(uint32_t prev_tick)
     uint32_t act_time = lv_tick_get();
 
     /*If there is no overflow in sys_time simple subtract*/
-    if (act_time >= prev_tick)
-    {
+    if(act_time >= prev_tick) {
         prev_tick = act_time - prev_tick;
     }
-    else
-    {
+    else {
         prev_tick = UINT32_MAX - prev_tick + 1;
         prev_tick += act_time;
     }

@@ -61,7 +61,7 @@ uint32_t lv_tick_elaps(uint32_t prev_tick);
 /**********************
  *      MACROS
  **********************/
-extern uint32_t my_lv_time;
+
 #ifdef __cplusplus
 } /*extern "C"*/
 #endif

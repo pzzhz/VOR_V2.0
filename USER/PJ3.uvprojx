@@ -738,14 +738,14 @@
           <GroupName>lv_draw</GroupName>
           <Files>
             <File>
+              <FileName>lv_draw.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\lv_draw.c</FilePath>
+            </File>
+            <File>
               <FileName>lv_draw_arc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\lv_draw_arc.c</FilePath>
-            </File>
-            <File>
-              <FileName>lv_draw_blend.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\lv_draw_blend.c</FilePath>
             </File>
             <File>
               <FileName>lv_draw_img.c</FileName>
@@ -756,6 +756,11 @@
               <FileName>lv_draw_label.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\lv_draw_label.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_layer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\lv_draw_layer.c</FilePath>
             </File>
             <File>
               <FileName>lv_draw_line.c</FileName>
@@ -771,6 +776,11 @@
               <FileName>lv_draw_rect.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\lv_draw_rect.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_transform.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\lv_draw_transform.c</FilePath>
             </File>
             <File>
               <FileName>lv_draw_triangle.c</FileName>
@@ -791,6 +801,66 @@
               <FileName>lv_img_decoder.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\lv_img_decoder.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_transform.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_transform.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_layer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_layer.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_arc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_arc.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_blend.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_blend.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_dither.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_dither.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_gradient.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_gradient.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_img.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_img.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_letter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_letter.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_line.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_line.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_polygon.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_polygon.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_rect.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_rect.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1297,6 +1367,11 @@
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\LVGL\lvgl\src\widgets\lv_textarea.c</FilePath>
             </File>
+            <File>
+              <FileName>lv_menu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\extra\widgets\menu\lv_menu.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1411,6 +1486,16 @@
               <FileName>page1.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\UI_page\page1.c</FilePath>
+            </File>
+            <File>
+              <FileName>PageManagment.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\UI_page\PageManagment.c</FilePath>
+            </File>
+            <File>
+              <FileName>Page_Maintain.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\UI_page\Page_Maintain.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2404,14 +2489,14 @@
           <GroupName>lv_draw</GroupName>
           <Files>
             <File>
+              <FileName>lv_draw.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\lv_draw.c</FilePath>
+            </File>
+            <File>
               <FileName>lv_draw_arc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\lv_draw_arc.c</FilePath>
-            </File>
-            <File>
-              <FileName>lv_draw_blend.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\lv_draw_blend.c</FilePath>
             </File>
             <File>
               <FileName>lv_draw_img.c</FileName>
@@ -2422,6 +2507,11 @@
               <FileName>lv_draw_label.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\lv_draw_label.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_layer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\lv_draw_layer.c</FilePath>
             </File>
             <File>
               <FileName>lv_draw_line.c</FileName>
@@ -2437,6 +2527,11 @@
               <FileName>lv_draw_rect.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\lv_draw_rect.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_transform.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\lv_draw_transform.c</FilePath>
             </File>
             <File>
               <FileName>lv_draw_triangle.c</FileName>
@@ -2457,6 +2552,66 @@
               <FileName>lv_img_decoder.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\lv_img_decoder.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_transform.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_transform.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_layer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_layer.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_arc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_arc.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_blend.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_blend.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_dither.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_dither.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_gradient.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_gradient.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_img.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_img.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_letter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_letter.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_line.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_line.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_polygon.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_polygon.c</FilePath>
+            </File>
+            <File>
+              <FileName>lv_draw_sw_rect.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\draw\sw\lv_draw_sw_rect.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2963,6 +3118,11 @@
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\LVGL\lvgl\src\widgets\lv_textarea.c</FilePath>
             </File>
+            <File>
+              <FileName>lv_menu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\LVGL\lvgl\src\extra\widgets\menu\lv_menu.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3077,6 +3237,16 @@
               <FileName>page1.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\UI_page\page1.c</FilePath>
+            </File>
+            <File>
+              <FileName>PageManagment.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\UI_page\PageManagment.c</FilePath>
+            </File>
+            <File>
+              <FileName>Page_Maintain.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\UI_page\Page_Maintain.c</FilePath>
             </File>
           </Files>
         </Group>

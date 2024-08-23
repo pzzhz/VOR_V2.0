@@ -4,6 +4,7 @@
 #include "../other/system_function.h"
 #include "stdint.h"
 #include "../other/meassage_center.h"
+#include "stdarg.h"
 
 #ifndef STM32F40_41xxx
 #include "Windows.h"
@@ -182,13 +183,13 @@ void controlfunction()
 	Communication_Init();
 	while (1)
 	{
-		// UI 信息发送
+		// UI 信息发�?
 		// UI 按键监听
 		// 串口 监听
-		// 串口 反馈
-		// 紧急停机
-		// 启动
-		// UI Table 按键监听和处理
+		// 串口 反�??
+		// 紧急停�?
+		// �?�?
+		// UI Table 按键监听和�?�理
 		Startflag = Ctrl_Get_Strat_Cmd();
 		//Ctrl_Read_State_Ack(&control_info);
 		if (Startflag == 0x01)
@@ -210,11 +211,11 @@ void thread_create(void* function, Task_control_info* e, TaskHandle_t* control_t
 #ifndef STM32F40_41xxx
 	HANDLE hThread;
 	DWORD dwThreadId;
-	hThread = CreateThread(NULL,         // 默认安全属性
-		0,            // 默认堆栈大小
+	hThread = CreateThread(NULL,         // 默�?�安全属�?
+		0,            // 默�?�堆栈大�?
 		function,     // 线程函数
-		e,            // 传递给线程函数的参数
-		0,            // 默认创建标志
+		e,            // 传递给线程函数的参�?
+		0,            // 默�?�创建标�?
 		&dwThreadId); // 线程ID)
 #else
 	//	static TaskHandle_t control_thread;

@@ -47,7 +47,7 @@ void RK3588_Printf(uint16_t tasksize)
 	TaskArray[3].mode = Task_VHIT, TaskArray[3].VHIT.Counter = 4;
 	TaskArray[4].mode = Task_TC, TaskArray[4].TC.Sec = 5, TaskArray[4].TC.Vel = 1;*/
 	Task_Parameter_Struct* e;
-	char* mousename = malloc(50);
+	char* mousename = (char*)malloc(50);
 	HAL_Get_UI_MouseName(mousename, 50);
 	OutputDebugPrintf("mousename: %s \r\n", mousename);
 	free(mousename);

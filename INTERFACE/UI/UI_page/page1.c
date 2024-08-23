@@ -133,14 +133,14 @@ void ui1_(Table_Property* p)
 //	char* CMD = cmd;
 //	if (CmdCheck(cmd, CMD_BTN_ADD) == 0)
 //	{
-//		// 执行添加
+//		// 执�?�添�?
 //	}
 //	if (Control_Add_Task.flag == Flag_required)
 //	{
 //		uint16_t index = Control_Add_Task.fouce_index;
 //		Control_Add_Task.info_pt = Task_Stroage_Insert(Control_Add_Task.info, index);
 //		if (Control_Add_Task.info_pt != 0)
-//			Control_Add_Task.flag = Flag_OKNE; // 让参数继续运行
+//			Control_Add_Task.flag = Flag_OKNE; // 让参数继�?运�??
 //		else
 //			Control_Add_Task.flag = Flag_Error;
 //		return 0;
@@ -149,7 +149,7 @@ void ui1_(Table_Property* p)
 //	{
 //		uint16_t index = Control_del_Task.fouce_index;
 //		if (Task_Stroage_delByID(index))
-//			Control_del_Task.flag = Flag_OKNE; // 让参数继续运行
+//			Control_del_Task.flag = Flag_OKNE; // 让参数继�?运�??
 //		else
 //			Control_del_Task.flag = Flag_Error;
 //		return 0;
@@ -177,7 +177,7 @@ void UI_Task_Btn_ADD_Callback(uint16_t fouces_index, Task_Parameter_Struct* pt)
 	lv_obj_t* table = UI_Table_Create(table_Contain_Property, ui1_, fouces_index);
 	Table_Property* table_Property = UI_Table_Get_Property(table);
 	parent_bo2[parent_bo2_index++] = table;
-	// 设置好数据源
+	// 设置好数�?�?
 	table_Property->Updata_Source = pt;
 	UI_Table_Set_Fouces(table_Contain_Property, fouces_index);
 }
@@ -185,7 +185,7 @@ void UI_Task_Btn_ADD_Callback(uint16_t fouces_index, Task_Parameter_Struct* pt)
 void UI_Task_Btn_ADD_Click_Event(lv_event_t* e)
 {
 	uint32_t handleID;
-	// volatile Control_flag *add_flag = &Control_Add_Task.flag;		//避免汇编只访问reg导致错误
+	// volatile Control_flag *add_flag = &Control_Add_Task.flag;		//避免汇编�?访问reg导致错�??
 	uint8_t res = UI_Parameter_Read(&Page_Add_Task.info);
 	if (res == 0)
 		return;
@@ -287,7 +287,7 @@ void UI_Start_Btn_Clicked_Handle(lv_event_t* e)
 {
 	if (e->code == LV_EVENT_CLICKED)
 	{
-		Message_Center_Send_prinft("Ctrl", 1,
+		Message_Center_Send_prinft("Ctrl", 0,
 			0,
 			"ReqShift");
 	}
@@ -369,7 +369,7 @@ void UI_Page1_Send_ADD_Cmd(uint8_t* msg, uint16_t msg_size,
 			task_msg.isvaild = 1;
 			task_msg.cmd_typed = cmd_add;
 			task_msg.task_id = index;
-			task_msg.task = src;
+			task_msg.task = (Task_Parameter_Struct *)src;
 		}
 	}
 	if (Msg_COMPARE("DEL", msg))
@@ -621,21 +621,21 @@ void Page1_init(lv_obj_t* parent)
 	//参数设置
 	Mode_init(parent);
 	// UI_Table_Create(list5, 0);
-	// 加4个按键
+	// �?4�?按键
 	UI_Task_Btn_Init(parent);
 
-	// 加后台
+	// 加后�?
 
 	// 加电机控制器接口
 
-	// 启动按键
+	// �?动按�?
 	UI_Start_Btn_Init(parent);
 	UI_Task_Msg_Init(parent);
 
 	// meassage
 	Message_Center_Add_Send_CB("task", UI_Page1_Send_ADD_Cmd);
 	Message_Center_Add_Read_CB("page1", UI_Page1_Send_MouseName);
-	// 加参数进入接口
+	// 加参数进入接�?
 	UI_mouse_Name_textInput(parent);
 
 	lv_timer_create(UI_Page1_Timer_handle, 5, 0);
