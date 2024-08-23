@@ -32,7 +32,7 @@ typedef struct
 	uint16_t currentTaskIndex;
 	uint32_t remainingTime;
 } Task_Control_Status;
-static char msg_buffer[50];
+// static char msg_buffer[50];
 
 static Task_control_info* control;
 extern uint8_t Ctrl_Msg_Printf(const char* format,

@@ -116,7 +116,7 @@ uint8_t VorControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 			Ctrl_Msg_Printf("%d:VOR Count:%d", e->currentCount, count);
 			LastCount = count;
 		}
-		if (e->State_Bit.Exit)			//for exit
+		if (e->State_Bit.Exit) // for exit
 		{
 			Ctrl_Msg_Printf("%d:VOR Stopping", e->currentCount);
 			HAL_Slave_VOR_Stop();
@@ -130,4 +130,5 @@ uint8_t VorControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 	CAM_State = HAL_CAM_REC_Set(0);
 	MYPRINTF("\r\n vor end");
 	e->UI_para.state = end;
+	return 0;
 }

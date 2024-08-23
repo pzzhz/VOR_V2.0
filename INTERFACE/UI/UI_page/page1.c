@@ -67,6 +67,7 @@ static uint16_t  Get_Str_Len(const char* str, uint16_t maxlen)
 			return (i == 0) ? 0 : i - 1;
 		}
 	}
+	return 0;
 }
 
 void Set_table_Cell_Text(lv_obj_t* obj, Task_Parameter_Struct* e)
