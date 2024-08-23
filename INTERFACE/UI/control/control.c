@@ -156,7 +156,7 @@ uint8_t Ctrl_Write_Ack(uint8_t* msg, uint16_t msg_size,
 
 uint8_t Ctrl_Message_Center_init()
 {
-	Meassage_Center_Add("Ctrl");
+	/*Meassage_Center_Add("Ctrl");*/
 	Message_Center_Add_Read_CB("Ctrl", Ctrl_Read_Ack);
 	Message_Center_Add_Send_CB("Ctrl", Ctrl_Write_Ack);
 }
@@ -176,7 +176,7 @@ void controlfunction()
 	char message[50], cmd[50] = { "" };
 
 	thread_create(Task_control_handler, &control_info, &task_ctrl_thread, 1000);
-	Meassage_Center_Add("page1");
+	/*Meassage_Center_Add("page1");*/
 	Ctrl_Message_Center_init();
 	HAL_API_INIT();
 	Task_mangager_Init();
@@ -231,5 +231,8 @@ void thread_create(void* function, Task_control_info* e, TaskHandle_t* control_t
 
 void controlInit()
 {
+	Meassage_Center_Add("task");
+	Meassage_Center_Add("page1");
+	Meassage_Center_Add("Ctrl");
 	thread_create(controlfunction, 0, &contrl_thread, 750);
 }

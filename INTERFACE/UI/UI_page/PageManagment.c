@@ -18,7 +18,7 @@ void UI_Page_Management_Init()
 
 	/*Create a menu object*/
 	lv_obj_t* menu = lv_menu_create(lv_scr_act());
-	lv_obj_set_size(menu, lv_disp_get_hor_res(NULL), lv_disp_get_ver_res(NULL));
+	lv_obj_set_size(menu, 800, 480);
 	lv_obj_center(menu);
 	lv_color_t bg_color = lv_obj_get_style_bg_color(menu, 0);
 	lv_obj_set_style_bg_color(menu, lv_color_darken(lv_obj_get_style_bg_color(menu, 0), 50), 0);
@@ -34,10 +34,12 @@ void UI_Page_Management_Init()
 
 	/*Create sub pages*/
 	lv_obj_t* sub_1_page = lv_menu_page_create(menu, "menu/Running");
-	lv_obj_set_size(sub_1_page, 800, 430);
+	//lv_obj_set_size(sub_1_page, 800, 430);
 	lv_obj_t* obj = lv_obj_create(sub_1_page);
-	lv_obj_set_size(obj, 800, 430);
+	lv_obj_set_size(obj, 795, 430);
 	Page1_init(obj);
+
+
 
 
 	/*cont = lv_menu_cont_create(sub_1_page);
@@ -55,13 +57,15 @@ void UI_Page_Management_Init()
 	label = lv_label_create(cont);
 	lv_label_set_text(label, "Hello, I am hiding here");*/
 
+	lv_obj_t* setpageCont;
 	/*Create a main page*/
 	lv_obj_t* main_page = lv_menu_page_create(menu, "menu");
 	cont = lv_menu_cont_create(main_page);
 	label = lv_label_create(cont);
 	lv_label_set_text(label, "->Running");
 	lv_menu_set_load_page_event(menu, cont, sub_1_page);
-
+	/*show running page*/
+	setpageCont = cont;
 
 	cont = lv_menu_cont_create(main_page);
 	label = lv_label_create(cont);
@@ -74,6 +78,10 @@ void UI_Page_Management_Init()
 	////lv_menu_set_load_page_event(menu, cont, sub_3_page);
 
 	lv_menu_set_page(menu, main_page);
-	lv_event_send(cont, LV_EVENT_CLICKED, 0);
+	lv_obj_clear_flag(menu, LV_OBJ_FLAG_SCROLLABLE);
+	lv_obj_clear_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
+	lv_obj_clear_flag(sub_1_page, LV_OBJ_FLAG_SCROLLABLE);
+	lv_event_send(setpageCont, LV_EVENT_CLICKED, 0);
+
 	//lv_menu_setpage
 }

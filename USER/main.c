@@ -56,7 +56,7 @@ extern void UI_Page_Management_Init();
 void LVGL_HANDLER()
 {
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-
+    /*hardware*/
     LCD_Init();
     FT5206_Init();
     LCD_Display_Dir(1);
@@ -64,14 +64,15 @@ void LVGL_HANDLER()
     lv_port_disp_init();     // lvgl显示接口初�?��?,放在lv_init()的后�??
     lv_port_indev_init();    // lvgl输入接口初�?��?,放在lv_init()的后�??
     TIM3_Int_Init(1999, 83); // 定时器初始化(1ms�?�?),用于给lvgl提供1ms的心跳节�??
-    Task_Stroage_Init();
+    /*system init */
     controlInit();
+    Task_Stroage_Init();
     UI_Page_Management_Init();
     while (1)
     {
         touch_sever(1, NULL);
         lv_task_handler();
-        ControlDelay(5);
+        ControlDelay(2);
     }
 }
 
@@ -91,6 +92,7 @@ int main(void)
                 (void *)NULL,
                 (UBaseType_t)3,
                 (TaskHandle_t *)&handle);
+                
     vTaskStartScheduler();
 }
 

@@ -48,10 +48,11 @@ void RK3588_Printf(uint16_t tasksize)
 	TaskArray[4].mode = Task_TC, TaskArray[4].TC.Sec = 5, TaskArray[4].TC.Vel = 1;*/
 	Task_Parameter_Struct* e;
 	char* mousename = (char*)malloc(50);
+	mousename[0] = 0;
 	HAL_Get_UI_MouseName(mousename, 50);
-	OutputDebugPrintf("mousename: %s \r\n", mousename);
-	free(mousename);
-
+	//OutputDebugPrintf("mousename: %s \r\n", mousename);
+	if (mousename[0] == 0)
+		strncpy(mousename, "unnamed", 50);
 	OutputDebugPrintf("&%d", tasksize);
 	for (int i = 0; i < tasksize; i++)
 	{
@@ -59,7 +60,7 @@ void RK3588_Printf(uint16_t tasksize)
 		switch (e->mode)
 		{
 		case Task_VOR:
-			OutputDebugPrintf("&VOR_T%dV%dF%02d", e->VOR.Counter, (int)e->VOR.Vel, (int)(e->VOR.Freq * 10.0f));
+			OutputDebugPrintf("&%d_VOR_T%dV%dF%02d", mousename, e->VOR.Counter, (int)e->VOR.Vel, (int)(e->VOR.Freq * 10.0f));
 			break;
 		case Task_Continue:
 			OutputDebugPrintf("&CONT_S%dV%d", e->CONT.Sec, (int)e->CONT.Vel);
@@ -79,6 +80,7 @@ void RK3588_Printf(uint16_t tasksize)
 		}
 	}
 	OutputDebugPrintf("@");
+	free(mousename);
 }
 
 void RK3588_End_Printf(void)

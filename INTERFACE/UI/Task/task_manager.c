@@ -373,5 +373,5 @@ void Task_mangager_Init()
         &taskhandle,
         "task manager",
         256);
-    Meassage_Center_Add(task_ID);
+    //Meassage_Center_Add(task_ID);
 }

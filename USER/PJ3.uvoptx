@@ -260,6 +260,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>printf_buf</ItemText>
         </Ww>
+        <Ww>
+          <count>19</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>task</ItemText>
+        </Ww>
       </WatchWindow1>
       <WatchWindow2>
         <Ww>

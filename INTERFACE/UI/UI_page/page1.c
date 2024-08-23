@@ -19,6 +19,7 @@ lv_obj_t* start_btn;
 lv_obj_t* Msg_Label;
 lv_obj_t* MouseNameTextArea;
 char MouseNameTextArea_textSource[50];
+uint8_t isSaveUpdata;
 int16_t CurrentTask = -1, Interval_ID = -1;
 int16_t CurrentCount = -1, Interval_RemainingSec = -1;
 uint8_t parent_bo2_index = 0;
@@ -72,9 +73,17 @@ static uint16_t  Get_Str_Len(const char* str, uint16_t maxlen)
 
 void Set_table_Cell_Text(lv_obj_t* obj, Task_Parameter_Struct* e)
 {
-	// static uint8_t times;
+	static int8_t updata_count = -1;
+	if (isSaveUpdata == 0)
+		return;
 	char strs[25];
 	Table_Property* item_property = UI_Table_Get_Property(obj);
+	if (updata_count > *item_property->ID)
+	{
+		isSaveUpdata = 0;
+		updata_count = -1;
+	}
+	updata_count = *item_property->ID;
 	switch (e->mode)
 	{
 	case Task_VOR:
@@ -369,7 +378,7 @@ void UI_Page1_Send_ADD_Cmd(uint8_t* msg, uint16_t msg_size,
 			task_msg.isvaild = 1;
 			task_msg.cmd_typed = cmd_add;
 			task_msg.task_id = index;
-			task_msg.task = (Task_Parameter_Struct *)src;
+			task_msg.task = (Task_Parameter_Struct*)src;
 		}
 	}
 	if (Msg_COMPARE("DEL", msg))
@@ -388,6 +397,7 @@ void UI_Page1_Send_ADD_Cmd(uint8_t* msg, uint16_t msg_size,
 		if (sscanf(msg, "Save %d", &index) == 1 &&
 			SrcSize == sizeof(Task_Parameter_Struct*))
 		{
+
 			/*task_msg.cmd_typed = cmd_save;
 			task_msg.task = src;
 			task_msg.task_id = index;
@@ -405,6 +415,7 @@ void UI_Page1_Send_ADD_Cmd(uint8_t* msg, uint16_t msg_size,
 			task_msg.isvaild = 1;
 		}
 	}
+	isSaveUpdata = 1;
 
 }
 

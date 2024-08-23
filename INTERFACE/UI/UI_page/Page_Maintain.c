@@ -71,7 +71,7 @@ void lv_example_menu_55(lv_obj_t *parent, lv_obj_t *obj)
     // lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
     btn = lv_list_add_btn(list1, LV_SYMBOL_DIRECTORY, "led");
     btn = lv_list_add_btn(list1, LV_SYMBOL_WIFI, "wifi");
-    lv_obj_add_event_cb(lv_btn_create(btn),
+    lv_obj_add_event_cb(btn,
                         Camera_WIFI_btn_handle, LV_EVENT_CLICKED, NULL);
     btn = lv_list_add_btn(list1, LV_SYMBOL_CHARGE, "IR led voltage");
     // lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
