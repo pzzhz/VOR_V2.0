@@ -26,6 +26,7 @@ typedef struct
     uint32_t Tick;
     uint32_t MaxCount;
     float angleReq;
+    // float current_angle;
 } Inc_Machine_parameter;
 Inc_Machine_parameter inc_para;
 
@@ -34,6 +35,7 @@ extern uint8_t JY60_Get_Inc(float *angle);
 uint8_t Inc_ctrl(void)
 {
     static uint8_t Angle_nonreqTime;
+		static int16_t last_angle,angle_nomovetime;
     static float angle = 0;
     if (JY60_Get_Inc(&angle) == 0)
     {
@@ -48,7 +50,9 @@ uint8_t Inc_ctrl(void)
         Angle_nonreqTime = 0;
     if (inc_para.state == running)
     {
-        int16_t bias = ((inc_para.angleReq - angle) * 5.0f);
+        int16_t bias = ((inc_para.angleReq - angle) * 2.0f);
+				if(angle_nomovetime
+																														Angle_nonreqTime=bias;
         if (bias > 0)
         {
             INC_IO_Set(1);
@@ -120,6 +124,6 @@ uint8_t INC_Machine_Get_Count(float *angleReq, float *CurrentAngle)
     if (angleReq != 0)
         *angleReq = inc_para.angleReq;
     if (CurrentAngle != 0)
-        *CurrentAngle = 0;
+        JY60_Get_Inc(CurrentAngle);
     return 1;
 }

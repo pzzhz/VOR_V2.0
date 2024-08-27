@@ -132,7 +132,6 @@ uint8_t OVAR_Machine_Get_Count(uint32_t *MillSecReq, uint32_t *CurrentMillSec)
 {
     if (ovar_para.state == end)
         return 0;
-        return 0;
     if (MillSecReq != 0)
         *MillSecReq = ovar_para.MillSecReq;
     if (CurrentMillSec != 0)

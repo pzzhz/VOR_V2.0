@@ -76,7 +76,7 @@ void Inc_handle(float angle)
 	{
 		float current_angle;
 		inc_flag = HAL_Incline_Get_State(&current_angle);
-		Ctrl_Msg_Printf("inc angle %d", (int)angle);
+		Ctrl_Msg_Printf("inc angle %d", (int)current_angle);
 		MYPRINTF("%.3f", current_angle);
 		SaftExitDelay(10, 0);
 		MYPRINTF("\r");

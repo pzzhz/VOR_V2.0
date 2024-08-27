@@ -76,6 +76,7 @@ void OutputDebugPrintf(const char *strOutputString, ...)
     // vsprintf(strBuffer, sizeof(strBuffer) - 1, strOutputString, vlArgs);  //_vsnprintf_s  _vsnprintf
     uint16_t len = vsprintf(strBuffer, strOutputString, vlArgs);
     va_end(vlArgs);
+    printf(strBuffer);
     OutputDebugStringA(strBuffer); // OutputDebugString    // OutputDebugStringW
     isbusy = 0;
 #else
@@ -93,8 +94,9 @@ void OutputDebugPrintf(const char *strOutputString, ...)
         res = USART1_Send_Package(strBuffer, len); // OutputDebugString    // OutputDebugStringW
         vTaskDelay(1);
     }
-
+				
 #endif
+isbusy=0;
 }
 
 long ControlThreadCreate(void *function,     // set thread code

@@ -161,8 +161,22 @@ uint8_t Ctrl_Message_Center_init()
 	Message_Center_Add_Send_CB("Ctrl", Ctrl_Write_Ack);
 }
 
+uint8_t Maintain_Service_Read_ack(uint8_t* msg, uint16_t msg_size,
+	uint8_t* src, uint16_t SrcSize)
+{
+	if (Msg_COMPARE("Camere LED", msg))
+	{
+		uint8_t res = HAL_CAM_SET_Set();
+		return !res;
+	}
+	//if()
+}
 
 
+void Maintain_Service()
+{
+
+}
 
 
 void controlfunction()

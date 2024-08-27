@@ -142,14 +142,14 @@ void ui1_(Table_Property* p)
 //	char* CMD = cmd;
 //	if (CmdCheck(cmd, CMD_BTN_ADD) == 0)
 //	{
-//		// 执�?�添�?
+//		// 执�?�添�?
 //	}
 //	if (Control_Add_Task.flag == Flag_required)
 //	{
 //		uint16_t index = Control_Add_Task.fouce_index;
 //		Control_Add_Task.info_pt = Task_Stroage_Insert(Control_Add_Task.info, index);
 //		if (Control_Add_Task.info_pt != 0)
-//			Control_Add_Task.flag = Flag_OKNE; // 让参数继�?运�??
+//			Control_Add_Task.flag = Flag_OKNE; // 让参数继�?运�??
 //		else
 //			Control_Add_Task.flag = Flag_Error;
 //		return 0;
@@ -158,7 +158,7 @@ void ui1_(Table_Property* p)
 //	{
 //		uint16_t index = Control_del_Task.fouce_index;
 //		if (Task_Stroage_delByID(index))
-//			Control_del_Task.flag = Flag_OKNE; // 让参数继�?运�??
+//			Control_del_Task.flag = Flag_OKNE; // 让参数继�?运�??
 //		else
 //			Control_del_Task.flag = Flag_Error;
 //		return 0;
@@ -186,7 +186,7 @@ void UI_Task_Btn_ADD_Callback(uint16_t fouces_index, Task_Parameter_Struct* pt)
 	lv_obj_t* table = UI_Table_Create(table_Contain_Property, ui1_, fouces_index);
 	Table_Property* table_Property = UI_Table_Get_Property(table);
 	parent_bo2[parent_bo2_index++] = table;
-	// 设置好数�?�?
+	// 设置好数�?�?
 	table_Property->Updata_Source = pt;
 	UI_Table_Set_Fouces(table_Contain_Property, fouces_index);
 }
@@ -194,7 +194,7 @@ void UI_Task_Btn_ADD_Callback(uint16_t fouces_index, Task_Parameter_Struct* pt)
 void UI_Task_Btn_ADD_Click_Event(lv_event_t* e)
 {
 	uint32_t handleID;
-	// volatile Control_flag *add_flag = &Control_Add_Task.flag;		//避免汇编�?访问reg导致错�??
+	// volatile Control_flag *add_flag = &Control_Add_Task.flag;		//避免汇编�?访问reg导致错�??
 	uint8_t res = UI_Parameter_Read(&Page_Add_Task.info);
 	if (res == 0)
 		return;
@@ -629,24 +629,20 @@ void Page1_init(lv_obj_t* parent)
 {
 	parent_box = parent;
 	table_Contain_Property = UI_ListBox_Create(parent);
-	//参数设置
+	//user expirement para set
 	Mode_init(parent);
 	// UI_Table_Create(list5, 0);
-	// �?4�?按键
-	UI_Task_Btn_Init(parent);
+	/*btn*/  
+	UI_Task_Btn_Init(parent);   //task btn include -add-save-move-del
 
-	// 加后�?
-
-	// 加电机控制器接口
-
-	// �?动按�?
+	// task begin btn
 	UI_Start_Btn_Init(parent);
 	UI_Task_Msg_Init(parent);
 
 	// meassage
 	Message_Center_Add_Send_CB("task", UI_Page1_Send_ADD_Cmd);
 	Message_Center_Add_Read_CB("page1", UI_Page1_Send_MouseName);
-	// 加参数进入接�?
+	// mouse ID inter
 	UI_mouse_Name_textInput(parent);
 
 	lv_timer_create(UI_Page1_Timer_handle, 5, 0);

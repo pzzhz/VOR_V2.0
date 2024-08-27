@@ -60,19 +60,19 @@ void RK3588_Printf(uint16_t tasksize)
 		switch (e->mode)
 		{
 		case Task_VOR:
-			OutputDebugPrintf("&%d_VOR_T%dV%dF%02d", mousename, e->VOR.Counter, (int)e->VOR.Vel, (int)(e->VOR.Freq * 10.0f));
+			OutputDebugPrintf("&%s_VOR_T%dV%dF%02d", mousename, e->VOR.Counter, (int)e->VOR.Vel, (int)(e->VOR.Freq * 10.0f));
 			break;
 		case Task_Continue:
-			OutputDebugPrintf("&CONT_S%dV%d", e->CONT.Sec, (int)e->CONT.Vel);
+			OutputDebugPrintf("&%s_CONT_S%dV%d", mousename, e->CONT.Sec, (int)e->CONT.Vel);
 			break;
 		case Task_OVAR:
-			OutputDebugPrintf("&OVAR_S%dV%dI%02d", e->OVAR.Sec, (int)e->OVAR.Vel, (int)(e->OVAR.Inc_Degree));
+			OutputDebugPrintf("&%s_OVAR_S%dV%dI%02d", mousename, e->OVAR.Sec, (int)e->OVAR.Vel, (int)(e->OVAR.Inc_Degree));
 			break;
 		case Task_VHIT:
-			OutputDebugPrintf("&VHIT_T%d", e->VHIT.Counter);
+			OutputDebugPrintf("&%s_VHIT_T%d", mousename, e->VHIT.Counter);
 			break;
 		case Task_TC:
-			OutputDebugPrintf("&TC_S%dV%d", e->TC.Sec, e->TC.Vel);
+			OutputDebugPrintf("&%s_TC_S%dV%d", mousename, e->TC.Sec, e->TC.Vel);
 			break;
 
 		default:
