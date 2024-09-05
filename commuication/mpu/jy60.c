@@ -111,6 +111,11 @@ uint8_t JY60_Get_Inc(float *angle)
     return 1;
 }
 
+float JY60_Get_IncAsync()
+{
+    return jy60.inc;
+}
+
 void JY60_Init(void)
 {
 #ifdef STM32F40_41xxx

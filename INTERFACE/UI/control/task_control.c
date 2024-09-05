@@ -1,8 +1,8 @@
 /*
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-24 10:26:50
- * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-08-12 17:44:56
+ * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
+ * @LastEditTime: 2024-09-05 11:27:10
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\INTERFACE\UI\control\task_control.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -37,9 +37,9 @@ typedef struct
 static Task_control_info* control;
 extern uint8_t Ctrl_Msg_Printf(const char* format,
 	...);
+extern void Rk3588_Printf(const char* strOutputString, ...);
 
-
-void RK3588_Printf(uint16_t tasksize)
+void RK3588_SendTaskInfo(uint16_t tasksize)
 {
 	/*TaskArray[0].mode = Task_VOR, TaskArray[0].VOR.Counter = 1, TaskArray[0].VOR.Vel = 1, TaskArray[0].VOR.Freq = 1.5f;
 	TaskArray[1].mode = Task_Continue, TaskArray[1].CONT.Sec = 2, TaskArray[1].CONT.Vel = 1;
@@ -50,52 +50,52 @@ void RK3588_Printf(uint16_t tasksize)
 	char* mousename = (char*)malloc(50);
 	mousename[0] = 0;
 	HAL_Get_UI_MouseName(mousename, 50);
-	//OutputDebugPrintf("mousename: %s \r\n", mousename);
+	// Rk3588_Printf("mousename: %s \r\n", mousename);
 	if (mousename[0] == 0)
 		strncpy(mousename, "unnamed", 50);
-	OutputDebugPrintf("&%d", tasksize);
+	Rk3588_Printf("&%d", tasksize);
 	for (int i = 0; i < tasksize; i++)
 	{
 		e = &TaskArray[i];
 		switch (e->mode)
 		{
 		case Task_VOR:
-			OutputDebugPrintf("&%s_VOR_T%dV%dF%02d", mousename, e->VOR.Counter, (int)e->VOR.Vel, (int)(e->VOR.Freq * 10.0f));
+			Rk3588_Printf("&%s_VOR_T%dV%dF%02d", mousename, e->VOR.Counter, (int)e->VOR.Vel, (int)(e->VOR.Freq * 10.0f));
 			break;
 		case Task_Continue:
-			OutputDebugPrintf("&%s_CONT_S%dV%d", mousename, e->CONT.Sec, (int)e->CONT.Vel);
+			Rk3588_Printf("&%s_CONT_S%dV%d", mousename, e->CONT.Sec, (int)e->CONT.Vel);
 			break;
 		case Task_OVAR:
-			OutputDebugPrintf("&%s_OVAR_S%dV%dI%02d", mousename, e->OVAR.Sec, (int)e->OVAR.Vel, (int)(e->OVAR.Inc_Degree));
+			Rk3588_Printf("&%s_OVAR_S%dV%dI%02d", mousename, e->OVAR.Sec, (int)e->OVAR.Vel, (int)(e->OVAR.Inc_Degree));
 			break;
 		case Task_VHIT:
-			OutputDebugPrintf("&%s_VHIT_T%d", mousename, e->VHIT.Counter);
+			Rk3588_Printf("&%s_VHIT_T%d", mousename, e->VHIT.Counter);
 			break;
 		case Task_TC:
-			OutputDebugPrintf("&%s_TC_S%dV%d", mousename, e->TC.Sec, e->TC.Vel);
+			Rk3588_Printf("&%s_TC_S%dV%d", mousename, e->TC.Sec, e->TC.Vel);
 			break;
 
 		default:
 			break;
 		}
 	}
-	OutputDebugPrintf("@");
+	Rk3588_Printf("@");
 	free(mousename);
 }
 
 void RK3588_End_Printf(void)
 {
-	// OutputDebugPrintf("finish");
+	// Rk3588_Printf("finish");
 }
 
 void RK3588_Initial_Printf(void)
 {
-	OutputDebugPrintf("clear");
+	Rk3588_Printf("clear");
 }
 
 void RK3588_interrupt_Printf(void)
 {
-	OutputDebugPrintf("interrupt");
+	Rk3588_Printf("interrupt");
 }
 
 void task_interval_handle(int index)
@@ -104,15 +104,15 @@ void task_interval_handle(int index)
 	uint32_t time = ControlGetTick(), remainingTime = 0;
 	// uint16_t len = sprintf(msg_buffer, "Interval: ID:%d", index);
 	// Message_Center_Send("PAGE1", 0, msg_buffer, len);
-  /*  Message_Center_Send_prinft(
-		"PAGE1", 0, 0,
-		"Interval: ID:%d", index);*/
-		/*HAL_Set_UI_Page1_Msg("Interval: ID:%d", index);*/
+	/*  Message_Center_Send_prinft(
+		  "PAGE1", 0, 0,
+		  "Interval: ID:%d", index);*/
+		  /*HAL_Set_UI_Page1_Msg("Interval: ID:%d", index);*/
 	while (remainingTime < waitMillSec)
 	{
 		remainingTime = ControlGetTick() - time;
 		Ctrl_Msg_Printf("interval %ds", remainingTime);
-		if (control->State_Bit.Exit)			//for exit
+		if (control->State_Bit.Exit) // for exit
 		{
 			return;
 		}
@@ -150,7 +150,15 @@ void Task_control_handler(Task_control_info* e)
 	if (e == 0)
 		return;
 	control = e;
-	ControlDelay(10 * 1000);
+	for (int i = 0;i < 60;i++)
+	{
+		int res = Hal_Rk3588_ReadLine("clear\n");
+		if (res == 0)
+		{
+			break;
+		}
+		ControlDelay(1000);
+	}
 	RK3588_Initial_Printf();
 	// uint16_t len = 0;
 BEGIN_POS:
@@ -174,7 +182,7 @@ BEGIN_POS:
 	e->State_Bit.IsRunning = 1;
 
 	uint16_t task_size = e->taskCount;
-	RK3588_Printf(task_size);
+	RK3588_SendTaskInfo(task_size);
 
 	for (int i = 0; i < task_size; i++)
 	{

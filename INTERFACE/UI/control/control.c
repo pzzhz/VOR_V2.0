@@ -73,7 +73,6 @@ void control_run_cb_array(UI_Function_struct* function_array,
 }
 #endif
 
-
 typedef enum
 {
 	StartCmdNone,
@@ -82,7 +81,7 @@ typedef enum
 } Start_Cmd_Type;
 Start_Cmd_Type Start_Stop_Flag = StartCmdNone;
 
-uint8_t	Ctrl_Get_Strat_Cmd()
+uint8_t Ctrl_Get_Strat_Cmd()
 {
 	uint8_t cmd = Start_Stop_Flag;
 	if (Start_Stop_Flag != StartCmdNone)
@@ -100,7 +99,7 @@ uint8_t Ctrl_Msg_Printf(const char* format,
 	va_end(args);
 }
 
-//return 0 ->ok
+// return 0 ->ok
 uint8_t Ctrl_Read_Ack(uint8_t* msg, uint16_t msg_size,
 	uint8_t* src, uint16_t SrcSize)
 {
@@ -125,10 +124,8 @@ uint8_t Ctrl_Read_Ack(uint8_t* msg, uint16_t msg_size,
 			strncpy(src, control_info.message, SrcSize);
 			control_info.ismessageUpdata = 0;
 			return 0;
-
 		}
 	}
-
 
 	return 1;
 }
@@ -151,14 +148,7 @@ uint8_t Ctrl_Write_Ack(uint8_t* msg, uint16_t msg_size,
 	{
 		Start_Stop_Flag = StartCmdStop;
 	}
-	return	 0;
-}
-
-uint8_t Ctrl_Message_Center_init()
-{
-	/*Meassage_Center_Add("Ctrl");*/
-	Message_Center_Add_Read_CB("Ctrl", Ctrl_Read_Ack);
-	Message_Center_Add_Send_CB("Ctrl", Ctrl_Write_Ack);
+	return 0;
 }
 
 uint8_t Maintain_Service_Read_ack(uint8_t* msg, uint16_t msg_size,
@@ -169,15 +159,54 @@ uint8_t Maintain_Service_Read_ack(uint8_t* msg, uint16_t msg_size,
 		uint8_t res = HAL_CAM_SET_Set();
 		return !res;
 	}
-	//if()
-}
+	if (Msg_COMPARE("Camere wifi", msg))
+	{
+		uint8_t res = HAL_CAM_SET_sign_led();
+		return !res;
+	}
+	if (Msg_COMPARE("Camere Vol", msg))
+	{
+		int volX1000 = 0;
+		uint8_t res = 1; // 0->success
+		if (sscanf(msg, "Camere Vol %d", &volX1000) == 1)
+		{
+			if (volX1000 < 1800 && volX1000 > 500)
+				res = HAL_CAM_SET_Led_Voltage(volX1000);
+		}
+		return !res;
+	}
+	if (Msg_COMPARE("Inc Up", msg))
+	{
+		HAL_Incline_Fouces_Move(1);
+	}
+	if (Msg_COMPARE("Inc down", msg))
+	{
+		HAL_Incline_Fouces_Move(-1);
+	}
+	if (Msg_COMPARE("FAN_pwm", msg))
+	{
+		int pwm = 0;
+		if (sscanf(msg, "FAN_pwm %d", &pwm) == 1)
+		{
+			HAL_FAN_Set(pwm);
+		}
+		return 0;
+	}
 
+	return 1;
+}
 
 void Maintain_Service()
 {
-
 }
 
+uint8_t Ctrl_Message_Center_init()
+{
+	/*Meassage_Center_Add("Ctrl");*/
+	Message_Center_Add_Read_CB("Ctrl", Ctrl_Read_Ack);
+	Message_Center_Add_Send_CB("Ctrl", Ctrl_Write_Ack);
+	Message_Center_Add_Read_CB("Ctrl", Maintain_Service_Read_ack);
+}
 
 void controlfunction()
 {
@@ -197,15 +226,9 @@ void controlfunction()
 	Communication_Init();
 	while (1)
 	{
-		// UI 信息发�?
-		// UI 按键监听
-		// 串口 监听
-		// 串口 反�??
-		// 紧急停�?
-		// �?�?
-		// UI Table 按键监听和�?�理
+
 		Startflag = Ctrl_Get_Strat_Cmd();
-		//Ctrl_Read_State_Ack(&control_info);
+		// Ctrl_Read_State_Ack(&control_info);
 		if (Startflag == 0x01)
 		{
 			Task_control_Begin(&control_info);
@@ -225,12 +248,12 @@ void thread_create(void* function, Task_control_info* e, TaskHandle_t* control_t
 #ifndef STM32F40_41xxx
 	HANDLE hThread;
 	DWORD dwThreadId;
-	hThread = CreateThread(NULL,         // 默�?�安全属�?
-		0,            // 默�?�堆栈大�?
-		function,     // 线程函数
-		e,            // 传递给线程函数的参�?
-		0,            // 默�?�创建标�?
-		&dwThreadId); // 线程ID)
+	hThread = CreateThread(NULL,
+		0,
+		function,
+		e,
+		0,
+		&dwThreadId);
 #else
 	//	static TaskHandle_t control_thread;
 	volatile BaseType_t res =

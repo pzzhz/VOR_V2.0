@@ -56,6 +56,7 @@
     <ClCompile Include="..\..\commuication\communication.c" />
     <ClCompile Include="..\..\commuication\communication_API.c" />
     <ClCompile Include="..\..\commuication\mpu\jy60.c" />
+    <ClCompile Include="..\..\commuication\rk3588_uart.c" />
     <ClCompile Include="..\..\INTERFACE\UI\control\control.c" />
     <ClCompile Include="..\..\INTERFACE\UI\control\control_base.c" />
     <ClCompile Include="..\..\INTERFACE\UI\control\control_CONT.c" />

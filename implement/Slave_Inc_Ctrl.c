@@ -1,8 +1,8 @@
 /*
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-24 14:44:19
- * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-08-08 10:48:49
+ * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
+ * @LastEditTime: 2024-09-02 16:28:03
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\implement\Slave_Vor_Ctrl.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -21,8 +21,10 @@ typedef struct
         end,
         running,
         retract,
-        error
+        error,
+        manual
     } state;
+    int8_t manual_dir;
     uint32_t Tick;
     uint32_t MaxCount;
     float angleReq;
@@ -35,7 +37,7 @@ extern uint8_t JY60_Get_Inc(float *angle);
 uint8_t Inc_ctrl(void)
 {
     static uint8_t Angle_nonreqTime;
-		static int16_t last_angle,angle_nomovetime;
+    static int16_t last_angle, angle_nomovetime;
     static float angle = 0;
     if (JY60_Get_Inc(&angle) == 0)
     {
@@ -51,8 +53,8 @@ uint8_t Inc_ctrl(void)
     if (inc_para.state == running)
     {
         int16_t bias = ((inc_para.angleReq - angle) * 2.0f);
-				if(angle_nomovetime
-																														Angle_nonreqTime=bias;
+        //				if(angle_nomovetime
+        Angle_nonreqTime = bias;
         if (bias > 0)
         {
             INC_IO_Set(1);
@@ -81,8 +83,21 @@ uint8_t Inc_ctrl(void)
         if (inc_para.Tick > 3000)
             inc_para.state = end;
     }
+    if (inc_para.state == manual)
+    {
+        uint8_t io_cmd = (inc_para.manual_dir == 1) ? 1 : (inc_para.manual_dir == 0) ? 0
+                                                      : (inc_para.manual_dir == -1)  ? 2
+                                                                                     : 0;
+        inc_para.Tick++;
+        INC_IO_Set(io_cmd);
+        if (inc_para.Tick > 200)
+        {
+            inc_para.state = end;
+        }
+    }
     if (inc_para.state == end)
     {
+        INC_IO_Set(0);
         return 1;
     }
     return 0;
@@ -108,6 +123,23 @@ uint8_t INC_Machine_Init(float angle, uint32_t Maxcount)
     Slave1_Set_Machine_Cb(INC_handler);
     inc_para.state = running;
     inc_para.angleReq = angle;
+    return 1;
+}
+
+uint8_t INC_Machine_Manual_Ctrl(int8_t direction)
+{
+#ifndef HARDWARE_TEST
+#else
+#endif
+    if (inc_para.state == end)
+    {
+        inc_para.state = manual;
+			inc_para.Tick = 0;
+        INC_IO_INIT();
+        Slave1_Set_Machine_Cb(INC_handler);
+    }
+    inc_para.Tick = 0;
+    inc_para.manual_dir = direction;
     return 1;
 }
 

@@ -110,6 +110,9 @@
     <ClCompile Include="..\..\INTERFACE\UI\UI_page\Page_Maintain.c">
       <Filter>UI\UI_page</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\commuication\rk3588_uart.c">
+      <Filter>UI\commuication</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LVGL.Simulator.rc" />

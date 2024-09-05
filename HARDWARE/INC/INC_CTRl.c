@@ -1,4 +1,12 @@
 /*
+ * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com
+ * @Date: 2024-08-05 14:28:29
+ * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
+ * @LastEditTime: 2024-09-04 15:47:02
+ * @FilePath: \ubuntud:\workfile\项目3 vor\software\VOR_V2.0\HARDWARE\INC\INC_CTRl.c
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
+/*
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-08-05 14:28:29
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.

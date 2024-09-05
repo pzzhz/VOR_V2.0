@@ -1,8 +1,8 @@
 /*
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-23 16:30:52
- * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-07-31 14:55:37
+ * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
+ * @LastEditTime: 2024-09-03 15:07:12
  * @FilePath: \USERd:\workfile\é¡¹ç›®3 vor\software\VOR_V2.0\INTERFACE\UI\other\system_function.c
  * @Description: è¿™æ˜¯é»˜è?¤è?¾ç½®,è¯·è?¾ç½®`customMade`, æ‰“å¼€koroFileHeaderæŸ¥çœ‹é…ç½® è¿›è?Œè?¾ç½®: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -45,6 +45,7 @@ void SaftExitDelay(uint32_t ms, uint8_t e)
 #endif // use_windows
 }
 
+
 uint32_t ControlGetTick()
 {
 #ifndef STM32F40_41xxx
@@ -55,7 +56,7 @@ uint32_t ControlGetTick()
     return tick;
 
 #else
-    uint32_t tick = xTaskGetTickCount() / 20;
+    uint32_t tick = xTaskGetTickCount()/pdMS_TO_TICKS(1); //issue
     return tick;
 #endif
 }
@@ -74,7 +75,7 @@ void OutputDebugPrintf(const char *strOutputString, ...)
     va_list vlArgs;
     va_start(vlArgs, strOutputString);
     // vsprintf(strBuffer, sizeof(strBuffer) - 1, strOutputString, vlArgs);  //_vsnprintf_s  _vsnprintf
-    uint16_t len = vsprintf(strBuffer, strOutputString, vlArgs);
+    uint16_t len = vsnprintf(strBuffer, PUT_PUT_DEBUG_BUF_LEN, strOutputString, vlArgs);
     va_end(vlArgs);
     printf(strBuffer);
     OutputDebugStringA(strBuffer); // OutputDebugString    // OutputDebugStringW
@@ -86,7 +87,7 @@ void OutputDebugPrintf(const char *strOutputString, ...)
     va_list vlArgs;
     va_start(vlArgs, strOutputString);
     // vsprintf(strBuffer, sizeof(strBuffer) - 1, strOutputString, vlArgs);  //_vsnprintf_s  _vsnprintf
-    uint16_t len = vsprintf(strBuffer, strOutputString, vlArgs);
+    uint16_t len = vsnprintf(strBuffer, PUT_PUT_DEBUG_BUF_LEN, strOutputString, vlArgs);
     va_end(vlArgs);
     uint8_t res = 0;
     while (res == 0)
