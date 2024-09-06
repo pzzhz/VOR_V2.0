@@ -18,7 +18,7 @@
 #else
 #include "../implement/Slave_Vor_Ctrl.h"
 #endif // use_windows
-	   // 无UI控制
+ // 无UI控制
 // 返回message
 
 struct
@@ -29,7 +29,7 @@ struct
 	float Freq;
 } vor_info;
 
-uint8_t HAL_Slave_VOR_Init(Task_Parameter_Struct *e)
+uint8_t HAL_Slave_VOR_Init(Task_Parameter_Struct* e)
 {
 #ifndef STM32F40_41xxx
 	vor_info.time = ControlGetTick();
@@ -54,7 +54,7 @@ uint8_t HAL_Slave_VOR_Stop(void)
 	return 1;
 }
 
-uint8_t HAL_Slave_VOR_Get_State(uint32_t *remainingCount)
+uint8_t HAL_Slave_VOR_Get_State(uint32_t* remainingCount)
 {
 #ifndef STM32F40_41xxx
 	uint32_t currentCount = vor_info.Freq * (ControlGetTick() - vor_info.time) / 1000.0f;
@@ -73,44 +73,36 @@ uint8_t HAL_Slave_VOR_Get_State(uint32_t *remainingCount)
 #endif // !STM32F40_41xxx
 }
 
-uint8_t VorControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
+uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 {
-	// begin noice ui
-	uint32_t begin_tick = ControlGetTick();
-	uint32_t counter_up = ControlGetTick() - begin_tick;
+	const int camWaitTime_s = 5;
 	e->UI_para.state = ready;
 	MYPRINTF("\r\n vor begin");
 	MYPRINTF("\r\n");
-	// 
-	// uint8_t inc_flag = 0;
-	// 启动部分
-	// while (inc_flag == 0)
-	// {
-	// 	float current_angle;
-	// 	inc_flag = HAL_Incline_Get_State(&current_angle);
-	// 	PRINTF("%.3f", current_angle);
-	// 	// wait inc and camer
-	// 	SaftExitDelay(10, e->ExitFlag);
-	// 	/*counter_up = ControlGetTick() - begin_tick;
-	// 	e->UI_para.sec = counter_up;*/
-	// 	PRINTF("\r");
-	// }
 	// 执行部分
 	MYPRINTF("\r\n");
-	HAL_Slave_VOR_Init(task);
-	e->UI_para.state = taskruning;
-	uint8_t VOR_flag = 1;
-	int32_t LastCount = -1;
 	uint8_t CAM_State = HAL_CAM_REC_Set(1);
 	if (CAM_State == 0)
 	{
-
+		Ctrl_Msg_Printf("CAM ERROR");
 	}
-	uint32_t count;
-	// motor initial
-	while (VOR_flag)
+	for (int i = 0; i < camWaitTime_s; i++)
 	{
-		VOR_flag = HAL_Slave_VOR_Get_State(&count);
+		Ctrl_Msg_Printf("start after %ds", camWaitTime_s - i);
+		SaftExitDelay(1000, 0);
+	}
+	/*motor set running configure*/
+	HAL_Slave_VOR_Init(task);
+	/*notice control thread current state*/
+	e->UI_para.state = taskruning;
+	/*get vor machine flag*/
+	uint8_t VOR_machine_flag = 1;
+	int32_t LastCount = -1;
+	uint32_t count;
+	/*waiting vor machine finish*/
+	while (VOR_machine_flag)
+	{
+		VOR_machine_flag = HAL_Slave_VOR_Get_State(&count);
 		if (LastCount != count)
 		{
 			Ctrl_Msg_Printf("%d:VOR Count:%d", e->currentCount, count);
@@ -124,10 +116,17 @@ uint8_t VorControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 		MYPRINTF("%3d", count);
 		// wait motor infinsh
 		SaftExitDelay(50, 0);
-		counter_up = ControlGetTick() - begin_tick;
+		
 		MYPRINTF("\r");
 	}
-	CAM_State = HAL_CAM_REC_Set(0);
+	/*one sec for cam stop*/
+	SaftExitDelay(1000, 0);
+	 CAM_State = HAL_CAM_REC_Set(1);
+	if (CAM_State == 0)
+	{
+		Ctrl_Msg_Printf("CAM ERROR");
+	}
+	/*--one sec for cam stop*/
 	MYPRINTF("\r\n vor end");
 	e->UI_para.state = end;
 	return 0;

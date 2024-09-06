@@ -1,14 +1,15 @@
 /*
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-30 11:37:02
- * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-08-05 09:47:14
+ * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
+ * @LastEditTime: 2024-09-05 18:22:21
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\commuication\mpu\jy60.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 #include "jy60.h"
 #include "math.h"
 #include "string.h"
+#include "stdio.h"
 // #include "..\HARDWARE\USART\USART5.h"
 
 static uint8_t isupdata;
@@ -35,6 +36,7 @@ struct
 } jy60;
 
 static jy60_data Calibrate;
+extern uint8_t USART3_PRINTF(char *string, uint16_t size);
 
 void jy60_Calculate()
 {
@@ -46,14 +48,19 @@ void jy60_Calculate()
     jy60.data.pitch = jy60_orginal.pitch / 32768.0f * 180 - Calibrate.pitch;
     jy60.data.yaw = jy60_orginal.yaw / 32768.0f * 180 - Calibrate.yaw;
     jy60.inc = sqrt((jy60.data.roll) * (jy60.data.roll) + (jy60.data.pitch) * (jy60.data.pitch));
+    char str[50];
+    uint16_t len = sprintf(str, "\r\n %d.%02d", (int)jy60.inc, (int)(jy60.inc * 100.0f) % 100);
+    USART3_PRINTF(str, len);
     if (index == 10)
         return;
+
     jy60.data.roll = jy60_orginal.roll / 32768.0f * 180;
     jy60.data.pitch = jy60_orginal.pitch / 32768.0f * 180;
     jy60.data.yaw = jy60_orginal.yaw / 32768.0f * 180;
     isupdata = 0;
     stroage[index] = jy60.data;
     index++;
+
     // index = (index < sizeof(stroage)) ? index : 0;
     if (index == 10)
     {
@@ -87,9 +94,22 @@ void jy60_decode(uint8_t dr)
         break;
     case 10:
         isupdata = 1;
+        uint8_t result = 0;
+		 bytes[current_Index] = dr;
+        for (int i = 0; i < 10; i++)
+        {
+            result +=bytes[i];
+        }
+				 current_Index = 0;
+        if (result != dr)
+				{
+					isupdata=0;
+					return;
+				}
+
         memcpy(&jy60_orginal, &bytes[2], sizeof(jy60_orginal));
         jy60_Calculate();
-        current_Index = 0;
+       
         break;
     default:
         if (current_Index < 11)

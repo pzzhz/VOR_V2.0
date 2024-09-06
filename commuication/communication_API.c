@@ -90,7 +90,7 @@ uint8_t HAL_BL_USART_INIT(void)
 #if USE_BL
 #ifdef STM32F40_41xxx
 	USART3_INIT(9600,
-		usart_protocol_InterruptHandle);
+		0);
 	usart_protocol_init(USART3_Send_Package);
 #else
 	//SerialPort_Init(usart_protocol_InterruptHandle, L"COM1");

@@ -45,6 +45,7 @@ extern "C"
 			struct
 			{
 				uint8_t Init : 1;
+				uint8_t ExInit : 1;
 				uint8_t IsRunning : 1;
 				uint8_t Exit : 1;
 				uint8_t finish : 1;

@@ -9,6 +9,7 @@
 #ifndef __rk3588_uart_H_
 #define __rk3588_uart_H_
 #include "stdint.h"
+#include "stdarg.h"
 #ifdef __cplusplus
 extern "C"
 {

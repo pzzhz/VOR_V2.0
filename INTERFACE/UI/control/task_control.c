@@ -111,7 +111,7 @@ void task_interval_handle(int index)
 	while (remainingTime < waitMillSec)
 	{
 		remainingTime = ControlGetTick() - time;
-		Ctrl_Msg_Printf("interval %ds", remainingTime);
+		Ctrl_Msg_Printf("interval %ds", remainingTime / 1000);
 		if (control->State_Bit.Exit) // for exit
 		{
 			return;
@@ -150,16 +150,21 @@ void Task_control_handler(Task_control_info* e)
 	if (e == 0)
 		return;
 	control = e;
+	e->State_Bit.Init = 1;
 	for (int i = 0;i < 60;i++)
 	{
-		int res = Hal_Rk3588_ReadLine("clear\n");
-		if (res == 0)
+		Ctrl_Msg_Printf("waiting Ready %02dS", i);
+		int res = Hal_Rk3588_ReadLine("ready\n");
+		if (res == 0 || e->State_Bit.ExInit)
 		{
 			break;
 		}
 		ControlDelay(1000);
 	}
 	RK3588_Initial_Printf();
+	e->State_Bit.Init = 0;
+	e->State_Bit.ExInit = 0;
+	Ctrl_Msg_Printf(" ");
 	// uint16_t len = 0;
 BEGIN_POS:
 	// get all task need to implement

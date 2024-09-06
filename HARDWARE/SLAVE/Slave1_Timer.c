@@ -116,7 +116,7 @@ void Slave_server_Init(void)
 #ifdef HARDWARE_TEST
     TIM_TimeBaseInitStructure.TIM_Prescaler = 167; // 定时器分频
 #else
-    TIM_TimeBaseInitStructure.TIM_Prescaler = 168 * 2 - 1; // 定时器分频
+    TIM_TimeBaseInitStructure.TIM_Prescaler = 168  - 1; // 定时器分频
 #endif
     TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up; // 向上计数模式
     TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;

@@ -1,5 +1,6 @@
 #include "control.h"
 #include "control_Hardware_API.h"
+#include "../../commuication/communication_API.h"
 #include "task_control.h"
 #include "../other/system_function.h"
 #include "stdint.h"
@@ -156,12 +157,12 @@ uint8_t Maintain_Service_Read_ack(uint8_t* msg, uint16_t msg_size,
 {
 	if (Msg_COMPARE("Camere LED", msg))
 	{
-		uint8_t res = HAL_CAM_SET_Set();
+		uint8_t res = HAL_CAM_SET_sign_led();
 		return !res;
 	}
 	if (Msg_COMPARE("Camere wifi", msg))
 	{
-		uint8_t res = HAL_CAM_SET_sign_led();
+		uint8_t res = HAL_CAM_SET_Set();
 		return !res;
 	}
 	if (Msg_COMPARE("Camere Vol", msg))
@@ -196,6 +197,16 @@ uint8_t Maintain_Service_Read_ack(uint8_t* msg, uint16_t msg_size,
 	return 1;
 }
 
+uint8_t ctrlWaitRk3588()
+{
+	uint8_t Startflag = Ctrl_Get_Strat_Cmd();
+	if (Startflag != 0)
+	{
+		return 1;
+	}
+	return 0;
+}
+
 void Maintain_Service()
 {
 }
@@ -226,18 +237,29 @@ void controlfunction()
 	Communication_Init();
 	while (1)
 	{
-
-		Startflag = Ctrl_Get_Strat_Cmd();
-		// Ctrl_Read_State_Ack(&control_info);
-		if (Startflag == 0x01)
+		if (control_info.State_Bit.Init == 0)
 		{
-			Task_control_Begin(&control_info);
+			if (Hal_Rk3588_ReadLine("wifi down") == 0) {
+				HAL_CAM_SET_Set();
+			}
+			Startflag = Ctrl_Get_Strat_Cmd();
+			// Ctrl_Read_State_Ack(&control_info);
+			if (Startflag == 0x01)
+			{
+				Task_control_Begin(&control_info);
+			}
+			if (Startflag == 0x02)
+			{
+				Task_control_ReqStop(&control_info);
+			}
 		}
-		if (Startflag == 0x02)
+		else
 		{
-			Task_control_ReqStop(&control_info);
+			if (ctrlWaitRk3588() != 0)
+			{
+				control_info.State_Bit.ExInit = 1;
+			}
 		}
-
 		ControlDelay(10);
 		// e.ExitFlag = 1;
 	}

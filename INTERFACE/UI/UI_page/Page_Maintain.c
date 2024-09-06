@@ -138,7 +138,7 @@ void UI_page_maintain_incline_init(lv_obj_t* parent)
 
 	btn = lv_btn_create(parent);
 	label = lv_label_create(btn);
-	lv_label_set_text(label, "DOWN");
+	lv_label_set_text(label, "DW");
 
 	lv_obj_add_event_cb(btn, UI_page_maintain_incline_down_handle, LV_EVENT_ALL, 0);
 }

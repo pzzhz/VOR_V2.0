@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-23 16:30:52
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
- * @LastEditTime: 2024-09-03 15:07:12
+ * @LastEditTime: 2024-09-06 11:32:07
  * @FilePath: \USERd:\workfile\é¡¹ç›®3 vor\software\VOR_V2.0\INTERFACE\UI\other\system_function.c
  * @Description: è¿™æ˜¯é»˜è?¤è?¾ç½®,è¯·è?¾ç½®`customMade`, æ‰“å¼€koroFileHeaderæŸ¥çœ‹é…ç½® è¿›è?Œè?¾ç½®: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -24,7 +24,7 @@ void ControlDelay(uint32_t ms)
 #ifndef STM32F40_41xxx
     Sleep(ms);
 #else
-    vTaskDelay(pdMS_TO_TICKS(ms * 2));
+    vTaskDelay(pdMS_TO_TICKS(ms ));
 #endif // use_windows
 }
 
@@ -41,7 +41,7 @@ void SaftExitDelay(uint32_t ms, uint8_t e)
 #ifndef STM32F40_41xxx
     Sleep(ms);
 #else
-    vTaskDelay(pdMS_TO_TICKS(ms * 2));
+    vTaskDelay(pdMS_TO_TICKS(ms));
 #endif // use_windows
 }
 

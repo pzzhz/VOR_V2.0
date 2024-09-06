@@ -78,7 +78,7 @@ void Set_table_Cell_Text(lv_obj_t* obj, Task_Parameter_Struct* e)
 		return;
 	char strs[25];
 	Table_Property* item_property = UI_Table_Get_Property(obj);
-	if (updata_count > *item_property->ID)
+	if (updata_count > table_Contain_Property->list->size * 2)
 	{
 		isSaveUpdata = 0;
 		updata_count = -1;
@@ -271,8 +271,10 @@ void UI_Task_Btn_Init(lv_obj_t* parent)
 	for (int i = 0; i < 4; i++)
 	{
 		btn[i] = lv_btn_create(parent);
+		lv_obj_set_size(btn[i], 70, 40);
 		lv_obj_t* label = lv_label_create(btn[i]); /*Add a label to the button*/
 		lv_label_set_text(label, string[i]);	   /*Set the labels text*/
+		lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
 		lv_obj_align(btn[i], LV_ALIGN_DEFAULT, i * 80, 0);
 	}
 	lv_obj_add_event_cb(btn[0], UI_Task_Btn_ADD_Click_Event, LV_EVENT_CLICKED, 0);
@@ -285,7 +287,7 @@ char string[50];
 void UI_Task_Msg_Init(lv_obj_t* parent)
 {
 	Msg_Label = lv_label_create(parent);
-	lv_obj_align_to(Msg_Label, start_btn, LV_ALIGN_OUT_BOTTOM_LEFT, -100, 0);
+	lv_obj_align_to(Msg_Label, start_btn, LV_ALIGN_OUT_BOTTOM_LEFT, -200, -20);
 	lv_label_set_text(Msg_Label, string);
 
 }
@@ -632,7 +634,7 @@ void Page1_init(lv_obj_t* parent)
 	//user expirement para set
 	Mode_init(parent);
 	// UI_Table_Create(list5, 0);
-	/*btn*/  
+	/*btn*/
 	UI_Task_Btn_Init(parent);   //task btn include -add-save-move-del
 
 	// task begin btn
