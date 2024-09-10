@@ -174,7 +174,7 @@ void Rk3588_Init(void)
 {
 #ifdef STM32F40_41xxx
 	USART1_INIT(115200, Rk3588_SerialBuffer);
-	USART6_INIT(115200,Rk3588_L_SerialBuffer);
+USART6_INIT(115200,Rk3588_L_SerialBuffer);
 #else
 	SerialPort_Init(Rk3588_SerialBuffer, L"COM5");
 #endif

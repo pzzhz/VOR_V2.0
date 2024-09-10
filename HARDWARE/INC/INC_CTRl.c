@@ -28,6 +28,7 @@ void INC_IO_Set(uint8_t state)
     volatile uint16_t *const gpio_reg = (uint16_t *)&GPIOF->BSRRL;
     const uint16_t gpio_pinUP = GPIO_Pin_14;
     const uint16_t gpio_pinDown = GPIO_Pin_13;
+		#if 0
     if (state == up)
     {
         gpio_reg[0] = gpio_pinDown;
@@ -41,9 +42,27 @@ void INC_IO_Set(uint8_t state)
     }
     else
     {
-        uint16_t value = gpio_pinDown | gpio_pinDown;
+        uint16_t value = gpio_pinDown | gpio_pinUP;
         gpio_reg[1] = value;
     }
+		#else
+		 if (state == down)
+    {
+        gpio_reg[0] = gpio_pinDown;
+        gpio_reg[1] = gpio_pinUP;
+    }
+    else if (state == up )
+    {
+
+        gpio_reg[1] = gpio_pinDown;
+        gpio_reg[0] = gpio_pinUP;
+    }
+    else
+    {
+        uint16_t value = gpio_pinDown | gpio_pinUP;
+        gpio_reg[1] = value;
+    }
+		#endif
 }
 
 void INC_IO_INIT()

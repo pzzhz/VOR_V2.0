@@ -119,13 +119,11 @@ void USART3_IRQHandler(void) // 串口1中断服务程序
     {
         uint8_t dr;
         if (USART3_FIFO_Send(&dr))
-        {
-						USART1->DR=dr;
+				{
             USART3->DR = dr;
         }
         else
         {
-						 USART1->DR=0xaa;
             USART_ITConfig(USART3, USART_IT_TXE, DISABLE);
         }
     }

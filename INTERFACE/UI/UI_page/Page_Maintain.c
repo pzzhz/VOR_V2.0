@@ -19,12 +19,12 @@ static lv_obj_t* create_slider(lv_obj_t* parent,
 static lv_obj_t* create_switch(lv_obj_t* parent,
 	const char* icon, const char* txt, bool chk);
 
-/*HANDLE CAM*/ static void Camera_Led_sw_handle(lv_event_t* e)
+/*HANDLE CAM*/ static void Camera_Rec_sw_handle(lv_event_t* e)
 {
 	lv_obj_t* sw = e->current_target;
 	uint8_t isclick = lv_obj_has_state(sw, LV_STATE_CHECKED);
 	if (Message_Center_Read_prinft("Ctrl", 0, 0,
-		"Camere LED %d", !isclick) == 0)
+		"Camere Rec", !isclick) == 0)
 	{
 		if (isclick)
 			lv_obj_clear_state(sw, LV_STATE_CHECKED);
@@ -168,7 +168,9 @@ void lv_example_menu_55(lv_obj_t* parent, lv_obj_t* obj)
 
 	lv_list_add_text(list1, "Camera");
 	// lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
-	btn = lv_list_add_btn(list1, LV_SYMBOL_DIRECTORY, "led");
+	btn = lv_list_add_btn(list1, LV_SYMBOL_DIRECTORY, "Rec");
+	lv_obj_add_event_cb(btn,
+		Camera_Rec_sw_handle, LV_EVENT_CLICKED, NULL);
 	btn = lv_list_add_btn(list1, LV_SYMBOL_WIFI, "wifi");
 	lv_obj_add_event_cb(btn,
 		Camera_WIFI_btn_handle, LV_EVENT_CLICKED, NULL);

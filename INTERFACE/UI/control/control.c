@@ -165,6 +165,11 @@ uint8_t Maintain_Service_Read_ack(uint8_t* msg, uint16_t msg_size,
 		uint8_t res = HAL_CAM_SET_Set();
 		return !res;
 	}
+	if (Msg_COMPARE("Camere Rec", msg))
+	{
+		uint8_t res = HAL_CAM_REC_Set(0);
+		return !res;
+	}
 	if (Msg_COMPARE("Camere Vol", msg))
 	{
 		int volX1000 = 0;

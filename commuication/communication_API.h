@@ -18,6 +18,7 @@ extern "C"
 	uint8_t HAL_BL_USART_Server(void);
 	void HAL_communication_Init(void);
 	int Hal_Rk3588_ReadLine(const char* format, ...);
+	int Hal_Rk3588_L_ReadLine(const char* format, ...);
 
 #ifdef __cplusplus
 }

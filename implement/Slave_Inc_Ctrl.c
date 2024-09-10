@@ -120,7 +120,6 @@ uint8_t Inc_ctrl(void)
     }
     if (exit_flag == 1)
     {
-        inc_para.state = end;
         return 1;
     }
     return 0;
@@ -133,6 +132,7 @@ uint8_t INC_handler(void)
     if (res)
     {
         INC_IO_Set(0);
+				inc_para.state = end;
         return 1; // end turn off tim4
     }
     return 0;

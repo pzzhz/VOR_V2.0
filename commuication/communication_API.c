@@ -75,6 +75,16 @@ int Hal_Rk3588_ReadLine(const char* format, ...)
 	//    Rk3588_Printf(strOutputString,...);
 }
 
+int Hal_Rk3588_L_ReadLine(const char* format, ...)
+{
+	va_list arg;
+	va_start(arg, format);
+	int res = Rk3588_L_ReadLineArg(format, &arg);
+	va_end(arg);
+	return res;
+	//    Rk3588_Printf(strOutputString,...);
+}
+
 uint8_t HAL_MPU_Get_Angle(float* angle)
 {
 #if USE_MPU
