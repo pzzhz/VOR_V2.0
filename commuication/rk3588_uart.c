@@ -14,19 +14,19 @@
 #include "../HARDWARE/USART/USART6.h"
 
 #define buff_size 64
-static uint16_t buffIndex,buffIndexL;
-static uint8_t buff[buff_size],buffL[buff_size];
-static uint8_t newlineFlag,newlineFlagL;
-static uint8_t isreading,isreadingL;
+static uint16_t buffIndex, buffIndexL;
+static uint8_t buff[buff_size], buffL[buff_size];
+static uint8_t newlineFlag, newlineFlagL;
+static uint8_t isreading, isreadingL;
 
 void Rk3588_Printf(const char* strOutputString, ...)
 {
 	static uint8_t isbusy = 0;
-//	uint8_t* pt = &isbusy;
-	/*while (*pt)
-	{
-	}
-	isbusy = 1;*/
+	//	uint8_t* pt = &isbusy;
+		/*while (*pt)
+		{
+		}
+		isbusy = 1;*/
 #ifndef STM32F40_41xxx
 #define PUT_PUT_DEBUG_BUF_LEN 1024
 	static char strBuffer[PUT_PUT_DEBUG_BUF_LEN] = { 0 };
@@ -61,11 +61,11 @@ void Rk3588_Printf(const char* strOutputString, ...)
 void Rk3588_L_Printf(const char* strOutputString, ...)
 {
 	static uint8_t isbusy = 0;
-//	uint8_t* pt = &isbusy;
-	/*while (*pt)
-	{
-	}
-	isbusy = 1;*/
+	//	uint8_t* pt = &isbusy;
+		/*while (*pt)
+		{
+		}
+		isbusy = 1;*/
 #ifndef STM32F40_41xxx
 #define PUT_PUT_DEBUG_BUF_LEN 1024
 	static char strBuffer[PUT_PUT_DEBUG_BUF_LEN] = { 0 };
@@ -124,6 +124,19 @@ int Rk3588_ReadLineArg(const char* format, va_list* args)
 	return res;
 }
 
+
+int Rk3588_ReadLinearray(char* bytes)
+{
+	if (newlineFlag != 1)
+		return -1;
+	isreading = 1;
+	memcpy(bytes, buff, buffIndex);
+	buffIndex = 0;
+	newlineFlag = 0;
+	isreading = 0;
+	return 1;
+}
+
 int Rk3588_L_ReadLineArg(const char* format, va_list* args)
 {
 	if (newlineFlagL != 1)
@@ -134,6 +147,18 @@ int Rk3588_L_ReadLineArg(const char* format, va_list* args)
 	newlineFlagL = 0;
 	isreadingL = 0;
 	return res;
+}
+
+int Rk3588_L_ReadLinearray(char* bytes)
+{
+	if (newlineFlagL != 1)
+		return -1;
+	isreadingL = 1;
+	memcpy(bytes, buffL, buffIndexL);
+	buffIndexL = 0;
+	newlineFlagL = 0;
+	isreadingL = 0;
+	return 1;
 }
 
 void Rk3588_SerialBuffer(uint8_t byte)
@@ -174,8 +199,8 @@ void Rk3588_Init(void)
 {
 #ifdef STM32F40_41xxx
 	USART1_INIT(115200, Rk3588_SerialBuffer);
-USART6_INIT(115200,Rk3588_L_SerialBuffer);
+	USART6_INIT(115200, Rk3588_L_SerialBuffer);
 #else
-	SerialPort_Init(Rk3588_SerialBuffer, L"COM5");
+	SerialPort_Init(Rk3588_SerialBuffer, L"COM1");
 #endif
 }

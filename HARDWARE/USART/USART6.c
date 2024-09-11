@@ -13,6 +13,7 @@
 #include "stdio.h"
 
 static void (*Interrupt_handle)(uint8_t dr);
+static uint8_t isinit=0;
 
 void USART6_INIT(
     uint32_t boundrate,
@@ -59,6 +60,7 @@ void USART6_INIT(
 
     // #if EN_UART5_RX
     USART_ITConfig(USART6, USART_IT_RXNE, ENABLE); // 开启相关中断
+		USART_ITConfig(USART6, USART_IT_TXE, ENABLE); // 开启相关中断
 
     // UART5 NVIC 配置
     NVIC_InitStructure.NVIC_IRQChannel = USART6_IRQn;         // 串口1中断通道
@@ -66,6 +68,7 @@ void USART6_INIT(
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;        // 子优先级3
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;           // IRQ通道使能
     NVIC_Init(&NVIC_InitStructure);                           // 根据指定的参数初始化VIC寄存器、
+		isinit=1;
 }
 static char printf_buf[100];
 static uint16_t send_index, send_len;
@@ -86,6 +89,8 @@ uint8_t USART6_FIFO_Send(uint8_t *dr)
 
 uint8_t USART6_Send_Package(char *string, uint16_t size)
 {
+		if(isinit==0)
+		 return 1;
     if (send_len)
         return 0;
     memcpy(printf_buf, string, size);

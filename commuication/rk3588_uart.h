@@ -19,6 +19,9 @@ extern "C"
 	int Rk3588_ReadLineArg(const char* format, va_list* args);
 	void Rk3588_Printf(const char* strOutputString, ...);
 
+	int Rk3588_ReadLinearray(char* bytes);
+	int Rk3588_L_ReadLinearray(char* bytes);
+
 #ifdef __cplusplus
 }
 #endif //

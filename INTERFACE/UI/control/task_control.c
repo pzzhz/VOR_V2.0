@@ -162,9 +162,8 @@ void Task_control_handler(Task_control_info *e)
 		return;
 	control = e;
 	e->State_Bit.Init = 1;
-	for (int i = 0; i < 60; i++)
+	for (int i = 0; i < 60*20; i++)
 	{
-		
 		Ctrl_Msg_Printf("waiting Ready %02dS Ready,%d,%d", i,Rk3588_ReadyFlag_1,Rk3588_ReadyFlag_2);
 		if (Hal_Rk3588_ReadLine("ready\n") == 0)
 			Rk3588_ReadyFlag_1 = 1;

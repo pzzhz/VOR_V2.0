@@ -19,6 +19,8 @@ extern "C"
 	void HAL_communication_Init(void);
 	int Hal_Rk3588_ReadLine(const char* format, ...);
 	int Hal_Rk3588_L_ReadLine(const char* format, ...);
+	int Hal_Rk3588_Readarray(char* bytes);
+	int Hal_Rk3588_L_Readarray(char* bytes);
 
 #ifdef __cplusplus
 }

@@ -50,7 +50,7 @@ void jy60_Calculate()
     jy60.inc = sqrt((jy60.data.roll) * (jy60.data.roll) + (jy60.data.pitch) * (jy60.data.pitch));
     char str[50];
     uint16_t len = sprintf(str, "\r\n %d.%02d", (int)jy60.inc, (int)(jy60.inc * 100.0f) % 100);
-    USART3_PRINTF(str, len);
+    //USART3_PRINTF(str, len);
     if (index == 10)
         return;
 

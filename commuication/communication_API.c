@@ -75,6 +75,18 @@ int Hal_Rk3588_ReadLine(const char* format, ...)
 	//    Rk3588_Printf(strOutputString,...);
 }
 
+int Hal_Rk3588_Readarray(char *bytes)
+{
+	return Rk3588_ReadLinearray(bytes);
+	//    Rk3588_Printf(strOutputString,...);
+}
+
+int Hal_Rk3588_L_Readarray(char* bytes)
+{
+	return Rk3588_L_ReadLinearray(bytes);
+	//    Rk3588_Printf(strOutputString,...);
+}
+
 int Hal_Rk3588_L_ReadLine(const char* format, ...)
 {
 	va_list arg;

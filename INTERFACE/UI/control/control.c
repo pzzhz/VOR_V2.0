@@ -244,8 +244,12 @@ void controlfunction()
 	{
 		if (control_info.State_Bit.Init == 0)
 		{
-			if (Hal_Rk3588_ReadLine("wifi down") == 0) {
-				HAL_CAM_SET_Set();
+			if (Hal_Rk3588_Readarray(message)==1) {
+				if (Msg_COMPARE("wifi down", message))
+				{
+					HAL_CAM_SET_Set();
+
+				}
 			}
 			Startflag = Ctrl_Get_Strat_Cmd();
 			// Ctrl_Read_State_Ack(&control_info);
