@@ -40,8 +40,9 @@ uint8_t Slave_motor(void)
         float time_max = 1000;
         float sin_data;
         int tem = time_max / vor_para.freq;
-        sin_data = sin(((float)2.0f * Pi * vor_para.freq * vor_para.Tick++ / 1000.0f));
-        vor_para.CurrentCounter = vor_para.freq * vor_para.Tick++ / 1000.0f;
+        vor_para.Tick++;
+        sin_data = sin(((float)2.0f * Pi * vor_para.freq * vor_para.Tick / 1000.0f));
+        vor_para.CurrentCounter = vor_para.freq * vor_para.Tick / 1000.0f;
         tim_f_sin_set(angle_step * sin_data * vor_para.vel);
         if (vor_para.CurrentCounter >= vor_para.counterReq)
             return 1;
