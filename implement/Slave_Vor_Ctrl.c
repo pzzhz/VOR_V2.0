@@ -1,8 +1,8 @@
 /*
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-24 14:44:19
- * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-08-08 10:53:06
+ * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
+ * @LastEditTime: 2024-09-21 14:42:40
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\implement\Slave_Vor_Ctrl.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -15,7 +15,7 @@
 
 int sin_time = 0;
 int tim_count, last_count, plus_f = 1;
-
+extern void  Motor_Spd_Pid(float speed);
 typedef struct
 {
     enum
@@ -32,7 +32,7 @@ typedef struct
 } Vor_Machine_parameter;
 Vor_Machine_parameter vor_para;
 #define Pi 3.1415926
-
+float C610Spd;
 uint8_t Slave_motor(void)
 {
     if (vor_para.state == running)
@@ -40,9 +40,9 @@ uint8_t Slave_motor(void)
         float time_max = 1000;
         float sin_data;
         int tem = time_max / vor_para.freq;
-        vor_para.Tick++;
-        sin_data = sin(((float)2.0f * Pi * vor_para.freq * vor_para.Tick / 1000.0f));
-        vor_para.CurrentCounter = vor_para.freq * vor_para.Tick / 1000.0f;
+        sin_data = sin(((float)2.0f * Pi * vor_para.freq * vor_para.Tick++ / 1000.0f));
+        vor_para.CurrentCounter = vor_para.freq * vor_para.Tick++ / 1000.0f;
+        Motor_Spd_Pid(C610Spd);
         tim_f_sin_set(angle_step * sin_data * vor_para.vel);
         if (vor_para.CurrentCounter >= vor_para.counterReq)
             return 1;
@@ -68,6 +68,7 @@ uint8_t VOR_handler(void)
     if (res)
     {
         vor_para.state = end;
+        Motor_Spd_Pid(0);
         return 1; // end turn off tim4
     }
     return 0;

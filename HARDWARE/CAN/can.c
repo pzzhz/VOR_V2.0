@@ -1,8 +1,8 @@
 /*
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-13 11:18:33
- * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-08-02 18:13:02
+ * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
+ * @LastEditTime: 2024-09-19 11:16:00
  * @FilePath: \USERd:\workfile\项目3 vor\software\vor-pjt\template\HARDWARE\CAN\can.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -283,7 +283,7 @@ uint8_t can_pend_msg(uint8_t fifox)
  * @param       data    : 数据缓冲区
  * @retval      无
  */
-static void can_rx_msg(uint8_t fifox, uint32_t *id, uint8_t *ide, uint8_t *rtr, uint8_t *len, uint8_t *data)
+ void can_rx_msg(uint8_t fifox, uint32_t *id, uint8_t *ide, uint8_t *rtr, uint8_t *len, uint8_t *data)
 {
     *ide = CAN2->sFIFOMailBox[fifox].RIR & 0x04; /* 得到标识符选择位的值 */
 

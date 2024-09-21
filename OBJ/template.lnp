@@ -16,6 +16,8 @@
 "..\obj\inc_ctrl.o"
 "..\obj\fan.o"
 "..\obj\usart6.o"
+"..\obj\c610.o"
+"..\obj\pid.o"
 "..\obj\delay.o"
 "..\obj\sys.o"
 "..\obj\usart.o"

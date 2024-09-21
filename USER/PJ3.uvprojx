@@ -474,6 +474,16 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\USART\USART6.c</FilePath>
             </File>
+            <File>
+              <FileName>C610.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\c610\C610.c</FilePath>
+            </File>
+            <File>
+              <FileName>pid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\c610\pid.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2170,6 +2180,16 @@
               <FileName>USART6.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\USART\USART6.c</FilePath>
+            </File>
+            <File>
+              <FileName>C610.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\c610\C610.c</FilePath>
+            </File>
+            <File>
+              <FileName>pid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\c610\pid.c</FilePath>
             </File>
           </Files>
         </Group>
