@@ -1,8 +1,8 @@
 /*
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-22 16:00:07
- * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-08-12 17:28:27
+ * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
+ * @LastEditTime: 2024-09-21 15:16:48
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\INTERFACE\UI\control\control_VOR.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -107,6 +107,11 @@ uint8_t ContControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 			Ctrl_Msg_Printf("%d:CONT count:%d", e->currentCount, count);
 			// HAL_Set_UI_Page1_Msg("Count:%d", count);
 			LastCount = count;
+		}
+		if (e->State_Bit.Exit) // for exit
+		{
+			Ctrl_Msg_Printf("%d:CONT Stopping", e->currentCount);
+			HAL_Slave_CONT_Stop();
 		}
 		MYPRINTF("%3d", count);
 		// wait motor infinsh

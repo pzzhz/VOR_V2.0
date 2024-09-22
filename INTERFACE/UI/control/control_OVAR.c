@@ -112,11 +112,8 @@ static void motor_handle(Task_Parameter_Struct *task, Task_control_info *e)
 		}
 		if (e->State_Bit.Exit) // for exit
 		{
-			/*      Message_Center_Send_prinft(
-					  "PAGE1", 0,
-					  0,
-					  "Stopping %d", count);*/
-			HAL_Slave_VOR_Stop();
+			Ctrl_Msg_Printf("%d:OVAR Stopping", e->currentCount);
+			hal_Slave_OVAR_Stop();
 		}
 		MYPRINTF("%3d", count);
 		// wait motor infinsh

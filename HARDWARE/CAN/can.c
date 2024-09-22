@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-13 11:18:33
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
- * @LastEditTime: 2024-09-19 11:16:00
+ * @LastEditTime: 2024-09-21 14:49:02
  * @FilePath: \USERd:\workfile\项目3 vor\software\vor-pjt\template\HARDWARE\CAN\can.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -139,11 +139,11 @@ uint8_t can_init(uint8_t tsjw, uint8_t tbs2, uint8_t tbs1, uint16_t brp, uint8_t
     CAN1->FA1R |= 1 << 14;                      /* 激活过滤器0 */
     CAN1->FMR &= 0 << 0;                        /* 过滤器组进入正常模式 */
 
-#if 0
+#if 1
 
     /* 使用中断接收 */
     CAN2->IER |= 1 << 1;                   /* FIFO0消息挂号中断允许 */
-    // sys_nvic_init(1, 0, CAN2_RX0_IRQn, 2); /* 组2 */
+     sys_nvic_init(1, 0, CAN2_RX0_IRQn, 2); /* 组2 */
 
 #endif
     return 0;
@@ -160,7 +160,7 @@ uint8_t can_init(uint8_t tsjw, uint8_t tbs2, uint8_t tbs1, uint16_t brp, uint8_t
  *   @arg       0 ~ 3   : 邮箱编号
  *   @arg       0XFF    : 无有效邮箱(数据发送失败)
  */
-static uint8_t can_tx_msg(uint32_t id, uint8_t ide, uint8_t rtr, uint8_t len, uint8_t *data)
+ uint8_t can_tx_msg(uint32_t id, uint8_t ide, uint8_t rtr, uint8_t len, uint8_t *data)
 {
     uint8_t mbox;
 
