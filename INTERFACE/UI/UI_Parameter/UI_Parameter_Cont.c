@@ -67,6 +67,7 @@ UI_Parameter_Handler Continue_init(lv_obj_t* parent, int16_t x, int16_t y)
 	lv_obj_clear_flag(context_box, LV_OBJ_FLAG_SCROLLABLE);
 	lv_obj_set_size(context_box, 315, 260);
 	lv_obj_set_style_bg_opa(context_box, 0, LV_OPA_TRANSP);
+	lv_obj_set_style_border_opa(context_box, 0, LV_OPA_TRANSP);
 	lv_obj_align(context_box, LV_ALIGN_DEFAULT, x, y);
 
 	UI_Dropdown_Struct dropdown_Vel = {
@@ -92,7 +93,7 @@ UI_Parameter_Handler Continue_init(lv_obj_t* parent, int16_t x, int16_t y)
 	Obj.Vel.btn1_CW_label2 = lv_label_create(Obj.Vel.btn1_CW_Set);
 	lv_label_set_text(Obj.Vel.btn1_CW_label2, "CCW");
 	lv_obj_align(Obj.Vel.btn1_CW_label2, LV_ALIGN_CENTER, 0, 0);
-	lv_obj_align(Obj.Vel.btn1_CW_Set, LV_ALIGN_LEFT_MID, 195, 80);
+	lv_obj_align_to(Obj.Vel.btn1_CW_Set,Obj.Vel.dropdown1, LV_ALIGN_OUT_RIGHT_MID, 15, 0);
 
 	//btn is clicked change label text
 	lv_obj_add_event_cb(Obj.Vel.btn1_CW_Set, rotate_dir_buttum_handler, LV_EVENT_CLICKED, (void*)&Obj.Vel.CW_flag);

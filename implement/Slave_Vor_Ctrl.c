@@ -40,9 +40,10 @@ uint8_t Slave_motor(void)
         float time_max = 1000;
         float sin_data;
         int tem = time_max / vor_para.freq;
-        sin_data = sin(((float)2.0f * Pi * vor_para.freq * vor_para.Tick++ / 1000.0f));
-        vor_para.CurrentCounter = vor_para.freq * vor_para.Tick++ / 1000.0f;
-        Motor_Spd_Pid(C610Spd*sin_data);
+        sin_data = sin(((float)2.0f * Pi * vor_para.freq * vor_para.Tick / 1000.0f));
+        vor_para.CurrentCounter = vor_para.freq * vor_para.Tick / 1000.0f;
+			 vor_para.Tick++;
+        Motor_Spd_Pid( -vor_para.vel*sin_data*33.33);
         tim_f_sin_set(angle_step * sin_data * vor_para.vel);
         if (vor_para.CurrentCounter >= vor_para.counterReq)
             return 1;
@@ -66,9 +67,10 @@ uint8_t VOR_handler(void)
     //        break;
     //    }
     if (res)
-    {
+    {       
+			Motor_Spd_Pid(0);
         vor_para.state = end;
-        Motor_Spd_Pid(0);
+
         return 1; // end turn off tim4
     }
     return 0;

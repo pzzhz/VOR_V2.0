@@ -12,7 +12,12 @@ void TIM1_BRK_TIM9_IRQHandler(void)
         {
             uint8_t res = function_cb();
             if (res)
-                TIM9->CR1 &= ~TIM_CR1_CEN;
+						{
+							     TIM9->CR1 &= ~TIM_CR1_CEN;
+										extern void Slave1_En_IO(uint8_t state);
+									 Slave1_En_IO(0);
+						}
+           
         }
         // ฒนอฃป๚ด๚ย๋
     }

@@ -132,13 +132,13 @@ void UI_page_maintain_incline_init(lv_obj_t* parent)
 {
 	lv_obj_t* btn = lv_btn_create(parent);
 	lv_obj_t* label = lv_label_create(btn);
-	lv_label_set_text(label, "UP");
+	lv_label_set_text(label, LV_SYMBOL_UP);
 
 	lv_obj_add_event_cb(btn, UI_page_maintain_incline_Up_handle, LV_EVENT_ALL, 0);
 
 	btn = lv_btn_create(parent);
 	label = lv_label_create(btn);
-	lv_label_set_text(label, "DW");
+	lv_label_set_text(label, LV_SYMBOL_DOWN);
 
 	lv_obj_add_event_cb(btn, UI_page_maintain_incline_down_handle, LV_EVENT_ALL, 0);
 }
@@ -168,7 +168,7 @@ void lv_example_menu_55(lv_obj_t* parent, lv_obj_t* obj)
 
 	lv_list_add_text(list1, "Camera");
 	// lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
-	btn = lv_list_add_btn(list1, LV_SYMBOL_DIRECTORY, "Rec");
+	btn = lv_list_add_btn(list1, LV_SYMBOL_SETTINGS, "Rec");
 	lv_obj_add_event_cb(btn,
 		Camera_Rec_sw_handle, LV_EVENT_CLICKED, NULL);
 	btn = lv_list_add_btn(list1, LV_SYMBOL_WIFI, "wifi");
@@ -180,7 +180,7 @@ void lv_example_menu_55(lv_obj_t* parent, lv_obj_t* obj)
 		Camera_vol_slider_handle, LV_EVENT_VALUE_CHANGED, NULL);
 
 	lv_list_add_text(list1, "incline");
-	btn = lv_list_add_btn(list1, LV_SYMBOL_BLUETOOTH, "manual control");
+	btn = lv_list_add_btn(list1, LV_SYMBOL_SETTINGS, "manual control");
 	lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
 	UI_page_maintain_incline_init(btn);
 	// lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
@@ -197,9 +197,9 @@ void lv_example_menu_55(lv_obj_t* parent, lv_obj_t* obj)
 	// lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
 
 	lv_list_add_text(list1, "motion");
-	btn = lv_list_add_btn(list1, LV_SYMBOL_OK, "IR ");
+	btn = lv_list_add_btn(list1, LV_SYMBOL_SETTINGS, "IR ");
 	// lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
-	btn = lv_list_add_btn(list1, LV_SYMBOL_CLOSE, "servo ctrl");
+	btn = lv_list_add_btn(list1, LV_SYMBOL_SETTINGS, "servo ctrl");
 
 	lv_list_add_text(list1, "other");
 	btn = lv_list_add_btn(list1, 0, "FAN ");

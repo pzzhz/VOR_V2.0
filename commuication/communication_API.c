@@ -143,6 +143,14 @@ uint8_t HAL_USB_INIT()
 	return 1;
 }
 
+int HAL_USB_Isconnect()
+{
+#if USE_USB
+extern	vu8 bDeviceState;	
+#endif
+	return bDeviceState;
+}
+
 uint8_t HAL_USB_TX(uint8_t* str, uint16_t len)
 {
 #ifdef STM32F40_41xxx
@@ -159,5 +167,5 @@ void HAL_communication_Init(void)
 	HAL_communication_Mpu_Init();
 	HAL_communication_Bl_Init();
 	HAL_BL_USART_INIT();
-	//    HAL_USB_INIT();
+//   HAL_USB_INIT();
 }

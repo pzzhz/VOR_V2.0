@@ -91,6 +91,7 @@ UI_Parameter_Handler OVAR_init(lv_obj_t* parent, int16_t x, int16_t y)
 	lv_obj_clear_flag(context_box, LV_OBJ_FLAG_SCROLLABLE);
 	lv_obj_set_size(context_box, 315, 260);
 	lv_obj_set_style_bg_opa(context_box, 0, LV_OPA_TRANSP);
+	lv_obj_set_style_border_opa(context_box, 0, LV_OPA_TRANSP);
 	lv_obj_align(context_box, LV_ALIGN_DEFAULT, x, y);
 
 	UI_Dropdown_Struct dropdown_Vel = {
@@ -115,7 +116,7 @@ UI_Parameter_Handler OVAR_init(lv_obj_t* parent, int16_t x, int16_t y)
 	   .label_ofs_x = -14,
 	   .label_ofs_y = 0,
 	   .x = 50,
-	   .y = 80,
+	   .y = 60,
 	   .Item = OVAR_INCItem,
 	   .parent = context_box,
 	   .handle = (myhander)handler,

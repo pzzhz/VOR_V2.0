@@ -618,7 +618,7 @@ void UI_mouse_Name_textInput(lv_obj_t* parent)
 	lv_obj_t* ta;
 	ta = lv_textarea_create(parent);
 	MouseNameTextArea = ta;
-	lv_obj_align(ta, LV_ALIGN_TOP_LEFT, 60, 110);
+	lv_obj_align(ta, LV_ALIGN_TOP_LEFT, -0, 120);
 	lv_obj_add_event_cb(ta, ta_event_cb, LV_EVENT_ALL, kb);
 	lv_textarea_set_placeholder_text(ta, "enter mouse name");
 	lv_textarea_set_accepted_chars(ta, "_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-=+");

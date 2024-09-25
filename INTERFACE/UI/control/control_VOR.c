@@ -54,10 +54,12 @@ uint8_t HAL_Slave_VOR_Stop(void)
 	return 1;
 }
 
-uint8_t HAL_Slave_VOR_Get_State(uint32_t* remainingCount)
+uint8_t HAL_Slave_VOR_Get_State(uint32_t* remainingCount,uint32_t * parcent)
 {
 #ifndef STM32F40_41xxx
 	uint32_t currentCount = vor_info.Freq * (ControlGetTick() - vor_info.time) / 1000.0f;
+	if (parcent != 0)
+		*parcent = currentCount * 100 / vor_info.SetCount;
 	if (currentCount < vor_info.SetCount)
 	{
 		*remainingCount = vor_info.SetCount - currentCount;
@@ -68,6 +70,8 @@ uint8_t HAL_Slave_VOR_Get_State(uint32_t* remainingCount)
 #else
 	uint32_t counterReq = 0, CurrentCount = 0;
 	uint8_t res = VOR_Machine_Get_Count(&counterReq, &CurrentCount);
+	if (parcent != 0&& counterReq!=0)
+		*parcent = CurrentCount * 100 / counterReq;
 	*remainingCount = counterReq - CurrentCount;
 	return res;
 #endif // !STM32F40_41xxx
@@ -82,13 +86,11 @@ uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 	// 执行部分
 	MYPRINTF("\r\n");
 	uint8_t CAM_State = HAL_CAM_REC_Set(1);
-	if (CAM_State == 0)
-	{
-		Ctrl_Msg_Printf("CAM ERROR");
-	}
 	for (int i = 0; i < camWaitTime_s; i++)
 	{
-		Ctrl_Msg_Printf("start after %ds", camWaitTime_s - i);
+		(CAM_State == 0 && i < 2) ?
+			Ctrl_Msg_Printf("camera error") :
+			Ctrl_Msg_Printf("start after %ds", i);
 		SaftExitDelay(1000, 0);
 	}
 	/*motor set running configure*/
@@ -98,19 +100,19 @@ uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 	/*get vor machine flag*/
 	uint8_t VOR_machine_flag = 1;
 	int32_t LastCount = -1;
-	uint32_t count;
+	uint32_t count,parcent;
 	/*waiting vor machine finish*/
 	while (VOR_machine_flag)
 	{
-		VOR_machine_flag = HAL_Slave_VOR_Get_State(&count);
+		VOR_machine_flag = HAL_Slave_VOR_Get_State(&count, &parcent);
 		if (LastCount != count)
 		{
-			Ctrl_Msg_Printf("%d:VOR Count:%d", e->currentCount, count);
+			Ctrl_Msg_Printf("%d:VOR Done:%d%%", e->currentCount, parcent);
 			LastCount = count;
 		}
 		if (e->State_Bit.Exit) // for exit
 		{
-			Ctrl_Msg_Printf("%d:VOR Stopping", e->currentCount);
+			Ctrl_Msg_Printf("%d:VOR Terminated", e->currentCount);
 			HAL_Slave_VOR_Stop();
 		}
 		MYPRINTF("%3d", count);
@@ -119,6 +121,7 @@ uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 		
 		MYPRINTF("\r");
 	}
+	Ctrl_Msg_Printf("%d:VOR Done:100%%", e->currentCount);
 	/*one sec for cam stop*/
 	SaftExitDelay(1000, 0);
 	 CAM_State = HAL_CAM_REC_Set(1);

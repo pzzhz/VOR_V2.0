@@ -33,7 +33,7 @@ void UI_Page_Management_Init()
 	lv_obj_t* label;
 
 	/*Create sub pages*/
-	lv_obj_t* sub_1_page = lv_menu_page_create(menu, "menu/Running");
+	lv_obj_t* sub_1_page = lv_menu_page_create(menu, "");
 	//lv_obj_set_size(sub_1_page, 800, 430);
 	lv_obj_t* obj = lv_obj_create(sub_1_page);
 	lv_obj_set_size(obj, 795, 430);
@@ -46,7 +46,7 @@ void UI_Page_Management_Init()
 	label = lv_label_create(cont);
 	lv_label_set_text(label, "Hello, I am hiding here");*/
 
-	lv_obj_t* sub_2_page = lv_menu_page_create(menu, "Page 2");
+	lv_obj_t* sub_2_page = lv_menu_page_create(menu, "Settings");
 
 	extern void lv_example_menu_55(lv_obj_t * parent, lv_obj_t * obj);
 	lv_example_menu_55(sub_2_page, menu);
@@ -69,7 +69,7 @@ void UI_Page_Management_Init()
 
 	cont = lv_menu_cont_create(main_page);
 	label = lv_label_create(cont);
-	lv_label_set_text(label, "->Set");
+	lv_label_set_text(label, "->Settings");
 	lv_menu_set_load_page_event(menu, cont, sub_2_page);
 
 	//cont = lv_menu_cont_create(main_page);

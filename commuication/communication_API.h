@@ -21,6 +21,7 @@ extern "C"
 	int Hal_Rk3588_L_ReadLine(const char* format, ...);
 	int Hal_Rk3588_Readarray(char* bytes);
 	int Hal_Rk3588_L_Readarray(char* bytes);
+	int HAL_USB_Isconnect();
 
 #ifdef __cplusplus
 }

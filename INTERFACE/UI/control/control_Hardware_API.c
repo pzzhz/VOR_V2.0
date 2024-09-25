@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-25 14:38:08
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
- * @LastEditTime: 2024-09-21 19:19:48
+ * @LastEditTime: 2024-09-22 17:26:02
  * @FilePath: \USER  d:\workfile\项目3 vor\software\VOR_V2.0\INTERFACE\UI\control\control_Hardware_API.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -92,7 +92,7 @@ uint8_t HAL_CAM_REC_Set(uint8_t flag)
 	//	if (Cam_Flag == flag)
 	{
 		const uint8_t CAN_CAM_MSG[8] = {
-			01, 0, 0, 0, 0, 0, 0, 0};
+			0, 0, 0, 0, 0, 0, 0, 0};
 		res = can_send_msg(0x00, (uint8_t *)CAN_CAM_MSG, 8); // can_send reture 1->fail 0->success
 		res = (res == 1) ? 0 : 1;							 // exchange reture 1->success 0->fail
 		Cam_Flag = flag;
@@ -107,7 +107,7 @@ uint8_t HAL_CAM_SET_Set(void)
 	uint8_t res = 1; // reture success
 #ifdef STM32F40_41xxx
 	const uint8_t CAN_CAM_MSG[8] = {
-		0, 0, 0, 0, 0, 0, 0, 0};
+		01, 0, 0, 0, 0, 0, 0, 0};
 	res = can_send_msg(0x00, (uint8_t *)CAN_CAM_MSG, 8); // can_send reture 1->fail 0->success
 	res = (res == 1) ? 0 : 1;							 // exchange reture 1->success 0->fail
 #endif

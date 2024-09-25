@@ -42,7 +42,7 @@ void Slave1_Dir_IO(uint8_t state)
 {
     uint16_t *const gpio_reg = (uint16_t *)&GPIOA->BSRRL;
     const uint16_t gpio_pin = GPIO_Pin_7;
-    if (state)
+    if (!state)
     {
         gpio_reg[0] = gpio_pin;
     }

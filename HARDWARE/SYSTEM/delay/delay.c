@@ -254,4 +254,25 @@ void delay_ms(u16 nms)
 	return;
 
 }
+
+void jump_to_bootloader(void)
+{
+    // 禁用所有中断
+    __disable_irq();
+
+    // 设置 Bootloader 地址
+    uint32_t bootloader_address = 0x1FFF0000;
+
+    // 定义一个指向函数的指针，指向 Bootloader 的复位向量
+    void (*bootloader_entry)(void) = (void (*)(void))(*((uint32_t *)(bootloader_address + 4)));
+
+    // 设置主堆栈指针
+	RCC->AHB1RSTR=RCC_AHB1RSTR_OTGHRST;
+	RCC->AHB1RSTR=0;
+    __set_MSP(*((uint32_t *)bootloader_address));
+
+    // 跳转到 Bootloader
+    bootloader_entry();
+}
+
 #endif

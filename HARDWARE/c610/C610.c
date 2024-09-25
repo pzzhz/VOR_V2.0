@@ -55,7 +55,7 @@ void Motor_Spd_Pid_INIT()
     int ch = 1;
     for (int i = 0; i < 4; i++)
     {
-        PID_struct_init(&rotate.pid[i].V, POSITION_PID, 1500, 500, 10, 0.2f, 5.0f);    // 速度
+        PID_struct_init(&rotate.pid[i].V, POSITION_PID, 1500, 500, 20, 0.2f, 5.0f);    // 速度
         PID_struct_init(&rotate.pid[i].I, POSITION_PID, 1500, 500, 1.0f, 0.05f, 0.0f); // 电流环
         /* code */
     }
