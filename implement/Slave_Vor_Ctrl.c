@@ -33,12 +33,16 @@ typedef struct
 Vor_Machine_parameter vor_para;
 #define Pi 3.1415926
 float C610Spd;
+extern uint8_t HAL_CAM_SET_sign_led(void);
 uint8_t Slave_motor(void)
 {
     if (vor_para.state == running)
     {
         float time_max = 1000;
         float sin_data;
+				uint32_t PhaseZero = 1000.0f/vor_para.freq;
+			if(vor_para.Tick%PhaseZero==0)
+					HAL_CAM_SET_sign_led();
         int tem = time_max / vor_para.freq;
         sin_data = sin(((float)2.0f * Pi * vor_para.freq * vor_para.Tick / 1000.0f));
         vor_para.CurrentCounter = vor_para.freq * vor_para.Tick / 1000.0f;

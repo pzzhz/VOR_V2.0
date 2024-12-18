@@ -37,37 +37,48 @@ void Cont_Back_init(float tragetPos, float sps, float accMs);
 
 static uint8_t motor_set(void)
 {
+	static int DscTimer;
     uint8_t res;
     if (cont_para.state == running)
     {
         cont_para.CurrentMillSec = cont_para.Tick++;
-        tim_f_sin_set(angle_step * cont_para.vel);
+			float factor =  cont_para.CurrentMillSec/1000.0f;
+			factor=(factor>1)?1:factor;
+        tim_f_sin_set(angle_step * cont_para.vel*factor);
         if (cont_para.CurrentMillSec >= cont_para.MillSecReq)
         {
-            float pos = Slave1_Get_Encode_Angle();
-            float traget = pos - (((int32_t)pos / 360)) * 360 - 180;
-            if (traget > 0)
-            {
-                traget = 360;
-            }
-            else
-                traget = 0;
-            tim_f_sin_set(angle_step * 0);
-            Cont_Back_init(traget, 30, 5);
+//            float pos = Slave1_Get_Encode_Angle();
+//            float traget = pos - (((int32_t)pos / 360)) * 360 - 180;
+//            if (traget > 0)
+//            {
+//                traget = 360;
+//            }
+//            else
+//                traget = 0;
+//            tim_f_sin_set(angle_step * 0);
+//            Cont_Back_init(traget, 30, 5);
+					DscTimer=1000;
             cont_para.state = back;
             return 0;
         }
     }
     if (cont_para.state == back)
     {
-        cont_para.back.motor.ms_esccape++;
-        res = motor_speed_cal(0, &speeds, &cont_para.back);
-        if (res == 0)
-        {
-            tim_f_sin_set(0);
-            return 1;
-        }
-        tim_f_sin_set(angle_step * speeds);
+//        cont_para.back.motor.ms_esccape++;
+//        res = motor_speed_cal(0, &speeds, &cont_para.back);
+//        if (res == 0)
+//        {
+//            tim_f_sin_set(0);
+//            return 1;
+//        }
+//        tim_f_sin_set(angle_step * speeds);
+			DscTimer-=1;
+			 tim_f_sin_set(angle_step * cont_para.vel*DscTimer/1000.0f);
+			if(DscTimer<=0)
+			{
+					 tim_f_sin_set(0);
+				return 1;
+			}
     }
     return 0;
 }

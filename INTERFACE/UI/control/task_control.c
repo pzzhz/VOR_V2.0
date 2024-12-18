@@ -42,16 +42,10 @@ extern void Rk3588_L_Printf(const char *strOutputString, ...);
 
 void RK3588_SendTaskInfo(uint16_t tasksize)
 {
-	/*TaskArray[0].mode = Task_VOR, TaskArray[0].VOR.Counter = 1, TaskArray[0].VOR.Vel = 1, TaskArray[0].VOR.Freq = 1.5f;
-	TaskArray[1].mode = Task_Continue, TaskArray[1].CONT.Sec = 2, TaskArray[1].CONT.Vel = 1;
-	TaskArray[2].mode = Task_OVAR, TaskArray[2].OVAR.Sec = 3, TaskArray[2].OVAR.Vel = 1, TaskArray[2].OVAR.Inc_Degree = 3.3f;
-	TaskArray[3].mode = Task_VHIT, TaskArray[3].VHIT.Counter = 4;
-	TaskArray[4].mode = Task_TC, TaskArray[4].TC.Sec = 5, TaskArray[4].TC.Vel = 1;*/
 	Task_Parameter_Struct *e;
 	char *mousename = (char *)malloc(50);
 	mousename[0] = 0;
 	HAL_Get_UI_MouseName(mousename, 50);
-	// Rk3588_Printf("mousename: %s \r\n", mousename);
 	if (mousename[0] == 0)
 		strncpy(mousename, "unnamed", 50);
 	Rk3588_Printf("&%d", tasksize);
@@ -93,7 +87,12 @@ void RK3588_SendTaskInfo(uint16_t tasksize)
 
 void RK3588_End_Printf(void)
 {
-	// Rk3588_Printf("finish");
+	 Rk3588_Printf("finish");
+}
+
+void RK3588_terminal_Printf(void)
+{
+	 Rk3588_Printf("terminal");
 }
 
 void RK3588_Initial_Printf(void)
@@ -162,24 +161,8 @@ void Task_control_handler(Task_control_info *e)
 		return;
 	control = e;
 	e->State_Bit.Init = 1;
-//	for (int i = 0; i < 60*20; i++)
-//	{
-//		Ctrl_Msg_Printf("waiting Ready %02dS Ready,%d,%d", i,Rk3588_ReadyFlag_1,Rk3588_ReadyFlag_2);
-//		if (Hal_Rk3588_ReadLine("ready\n") == 0)
-//			Rk3588_ReadyFlag_1 = 1;
-//		if (Hal_Rk3588_L_ReadLine("ready\n") == 0)
-//			Rk3588_ReadyFlag_2 = 1;
-//		if ((Rk3588_ReadyFlag_1 && Rk3588_ReadyFlag_2) ||
-//			e->State_Bit.ExInit)
-//		{
-//			break;
-//		}
-//		ControlDelay(1000);
-////		Rk3588_L_Printf("ready");
-//	}
-	// RK3588_Initial_Printf();
 	e->State_Bit.Init = 0;
-	e->State_Bit.ExInit = 0;
+	e->State_Bit.ExInit = 0; 
 	Ctrl_Msg_Printf(" ");
 	// uint16_t len = 0;
 BEGIN_POS:
@@ -211,7 +194,11 @@ BEGIN_POS:
 		e->currentCount = i;
 		task_interval_handle(i);
 		if (e->State_Bit.Exit)
-			break;
+		{
+			RK3588_terminal_Printf();
+				break;
+		}
+		
 		uint8_t isretract = 1;
 		switch (task->mode)
 		{

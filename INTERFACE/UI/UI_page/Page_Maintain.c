@@ -176,7 +176,7 @@ void lv_example_menu_55(lv_obj_t* parent, lv_obj_t* obj)
 		Camera_WIFI_btn_handle, LV_EVENT_CLICKED, NULL);
 	btn = lv_list_add_btn(list1, LV_SYMBOL_CHARGE, "IR led voltage\n");
 	lv_obj_clear_flag(btn, LV_OBJ_FLAG_CLICKABLE);
-	lv_obj_add_event_cb(create_slider(btn, 0, 0, 0, 120, 50),
+	lv_obj_add_event_cb(create_slider(btn, 0, 0, 0, 80, 50),
 		Camera_vol_slider_handle, LV_EVENT_VALUE_CHANGED, NULL);
 
 	lv_list_add_text(list1, "incline");

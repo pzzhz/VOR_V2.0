@@ -31,45 +31,70 @@ typedef struct
 } Ovar_Machine_parameter;
 Ovar_Machine_parameter ovar_para;
 #define Pi 3.1415926
-static float speeds = 0;
+//static float speeds = 0;
 
 void OVAR_Back_init(float tragetPos, float sps, float accMs);
 
 static uint8_t motor_set(void)
 {
-    uint8_t res;
+		static int DscTimer;
     if (ovar_para.state == running)
     {
         ovar_para.CurrentMillSec = ovar_para.Tick++;
-        tim_f_sin_set(angle_step * ovar_para.vel);
+			float factor =  ovar_para.CurrentMillSec/1000.0f;
+			factor=(factor>1)?1:factor;
+        tim_f_sin_set(angle_step * ovar_para.vel*factor);
         if (ovar_para.CurrentMillSec >= ovar_para.MillSecReq)
         {
-            float pos = Slave1_Get_Encode_Angle();
-            float traget = pos - (((int32_t)pos / 360)) * 360 - 180;
-            if (traget > 0)
-            {
-                traget = 360;
-            }
-            else
-                traget = 0;
-            tim_f_sin_set(angle_step * 0);
-            OVAR_Back_init(traget, 30, 5);
+					DscTimer=1000;
             ovar_para.state = back;
             return 0;
         }
     }
     if (ovar_para.state == back)
     {
-        ovar_para.back.motor.ms_esccape++;
-        res = motor_speed_cal(0, &speeds, &ovar_para.back);
-        if (res == 0)
-        {
-            tim_f_sin_set(0);
-            return 1;
-        }
-        tim_f_sin_set(angle_step * speeds);
+				DscTimer-=1;
+			 tim_f_sin_set(angle_step * ovar_para.vel*DscTimer/1000.0f);
+			if(DscTimer<=0)
+			{
+					 tim_f_sin_set(0);
+				return 1;
+			}
     }
     return 0;
+//    uint8_t res;
+//    if (ovar_para.state == running)
+//    {
+//        ovar_para.CurrentMillSec = ovar_para.Tick++;
+//        tim_f_sin_set(angle_step * ovar_para.vel);
+//        if (ovar_para.CurrentMillSec >= ovar_para.MillSecReq)
+//        {
+//            float pos = Slave1_Get_Encode_Angle();
+//            float traget = pos - (((int32_t)pos / 360)) * 360 - 180;
+//            if (traget > 0)
+//            {
+//                traget = 360;
+//            }
+//            else
+//                traget = 0;
+//            tim_f_sin_set(angle_step * 0);
+//            OVAR_Back_init(traget, 30, 5);
+//            ovar_para.state = back;
+//            return 0;
+//        }
+//    }
+//    if (ovar_para.state == back)
+//    {
+//        ovar_para.back.motor.ms_esccape++;
+//        res = motor_speed_cal(0, &speeds, &ovar_para.back);
+//        if (res == 0)
+//        {
+//            tim_f_sin_set(0);
+//            return 1;
+//        }
+//        tim_f_sin_set(angle_step * speeds);
+//    }
+//    return 0;
 }
 static uint8_t OVAR_handler(void)
 {

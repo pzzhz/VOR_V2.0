@@ -176,7 +176,7 @@ void Slave1_Step_Generator_Init(uint32_t arr, uint32_t psc)
     // Enable the TIM1 counter
     TIM1->CR1 |= TIM_CR1_CEN;
     TIM1->CCR1 = arr / 2;
-    SRV1_Encoder_Init();
+   
     Slave_server_Init();
 }
 

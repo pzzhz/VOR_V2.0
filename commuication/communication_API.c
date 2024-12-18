@@ -148,7 +148,7 @@ int HAL_USB_Isconnect()
 #if USE_USB
 extern	vu8 bDeviceState;	
 #endif
-	return bDeviceState;
+	//return bDeviceState;
 }
 
 uint8_t HAL_USB_TX(uint8_t* str, uint16_t len)

@@ -57,6 +57,7 @@ void LVGL_HANDLER()
 {
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
     /*hardware*/
+	  ControlDelay(2000);
     LCD_Init();
     FT5206_Init();
     LCD_Display_Dir(1);

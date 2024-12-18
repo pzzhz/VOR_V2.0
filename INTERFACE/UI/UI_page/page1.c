@@ -94,7 +94,7 @@ void Set_table_Cell_Text(lv_obj_t* obj, Task_Parameter_Struct* e)
 		sprintf(strs, "%.1f/hz", e->VOR.Freq);
 		// sprintf(strs, "%.1f/hz", lv_tick_get() / 1000.0f);
 		lv_table_set_cell_value_fmt(obj, 0, 2, "%s", strs);
-		sprintf(strs, "%.1f°/s", e->VOR.Vel);
+		sprintf(strs, "%.0f°/s", e->VOR.Vel);
 		lv_table_set_cell_value_fmt(obj, 0, 3, "%s", strs);
 		break;
 	case Task_Continue:
@@ -102,7 +102,7 @@ void Set_table_Cell_Text(lv_obj_t* obj, Task_Parameter_Struct* e)
 			lv_table_set_cell_value_fmt(obj, 0, 1, "%ds/%ds", CurrentCount, e->CONT.Sec);
 		else
 			lv_table_set_cell_value_fmt(obj, 0, 1, "%ds", e->CONT.Sec);
-		sprintf(strs, "%.1f°/s", e->CONT.Vel);
+		sprintf(strs, "%.0f°/s", e->CONT.Vel);
 		lv_table_set_cell_value_fmt(obj, 0, 2, "%s", strs);
 		lv_table_set_cell_value_fmt(obj, 0, 3, " ");
 		break;
@@ -113,7 +113,7 @@ void Set_table_Cell_Text(lv_obj_t* obj, Task_Parameter_Struct* e)
 			lv_table_set_cell_value_fmt(obj, 0, 1, "%d", (int)e->OVAR.Sec);
 		sprintf(strs, "%.1f°", e->OVAR.Inc_Degree);
 		lv_table_set_cell_value_fmt(obj, 0, 2, "%s", strs);
-		sprintf(strs, "%.1f°/s", e->OVAR.Vel);
+		sprintf(strs, "%.0f°/s", e->OVAR.Vel);
 		lv_table_set_cell_value_fmt(obj, 0, 3, "%s", strs);
 		break;
 	}
@@ -622,7 +622,7 @@ void UI_mouse_Name_textInput(lv_obj_t* parent)
 	lv_obj_add_event_cb(ta, ta_event_cb, LV_EVENT_ALL, kb);
 	lv_textarea_set_placeholder_text(ta, "enter mouse name");
 	lv_textarea_set_accepted_chars(ta, "_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-=+");
-	lv_textarea_set_max_length(ta, 50);
+	lv_textarea_set_max_length(ta, 10);
 	lv_obj_add_event_cb(kb, keyboardHidden, LV_EVENT_CANCEL, 0);
 	lv_obj_set_size(ta, 240, 45);
 }

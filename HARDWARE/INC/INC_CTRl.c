@@ -29,12 +29,12 @@ void INC_IO_Set(uint8_t state)
     const uint16_t gpio_pinUP = GPIO_Pin_14;
     const uint16_t gpio_pinDown = GPIO_Pin_13;
 		#if 1
-    if (state == up)
+    if (state == down)
     {
         gpio_reg[0] = gpio_pinDown;
         gpio_reg[1] = gpio_pinUP;
     }
-    else if (state == down)
+    else if (state == up)
     {
 
         gpio_reg[1] = gpio_pinDown;

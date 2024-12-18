@@ -9,6 +9,7 @@
 static char receiveBuf[50];
 static uint32_t HandleID;
 static uint8_t isbusy, isupdata = 1;
+	const int MaxTaskCount = 8;
 
 #define task_ID "task"
 
@@ -158,6 +159,8 @@ void task_manager_Add_Ack()
     {
         isupdata = 1;
         uint16_t index = Control_Add_Task.fouce_index;
+			if(Task_Stroage_GetSize()>MaxTaskCount)
+				return;
         Control_Add_Task.info_pt = Task_Stroage_Insert(Control_Add_Task.info, index);
         if (Control_Add_Task.info_pt != 0)
             Control_Add_Task.flag = Flag_OKNE; // 让参数继续运行

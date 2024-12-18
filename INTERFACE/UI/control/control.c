@@ -303,4 +303,6 @@ void controlInit()
 	Meassage_Center_Add("page1");
 	Meassage_Center_Add("Ctrl");
 	thread_create(controlfunction, 0, &contrl_thread, 750);
+	/*extern void SRV1_Encoder_Init();
+	SRV1_Encoder_Init();*/
 }
