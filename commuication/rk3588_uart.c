@@ -13,6 +13,7 @@
 #include "../HARDWARE/USART/USART1.h"
 #include "../HARDWARE/USART/USART6.h"
 
+ //#define UserSerialPort
 #define buff_size 64
 static uint16_t buffIndex, buffIndexL;
 static uint8_t buff[buff_size], buffL[buff_size];
@@ -27,7 +28,8 @@ void Rk3588_Printf(const char* strOutputString, ...)
 		{
 		}
 		isbusy = 1;*/
-#ifndef STM32F40_41xxx
+#ifndef STM32F40_41xxx 
+#ifdef UserSerialPort
 #define PUT_PUT_DEBUG_BUF_LEN 1024
 	static char strBuffer[PUT_PUT_DEBUG_BUF_LEN] = { 0 };
 	va_list vlArgs;
@@ -37,7 +39,8 @@ void Rk3588_Printf(const char* strOutputString, ...)
 	va_end(vlArgs);
 	printf(strBuffer);
 	OutputDebugStringA(strBuffer); // OutputDebugString    // OutputDebugStringW
-	isbusy = 0;
+	isbusy = 0
+#endif
 #else
 	extern uint8_t USART1_Send_Package(char* string, uint16_t size);
 #define PUT_PUT_DEBUG_BUF_LEN 50
@@ -67,6 +70,7 @@ void Rk3588_L_Printf(const char* strOutputString, ...)
 		}
 		isbusy = 1;*/
 #ifndef STM32F40_41xxx
+#ifdef UserSerialPort
 #define PUT_PUT_DEBUG_BUF_LEN 1024
 	static char strBuffer[PUT_PUT_DEBUG_BUF_LEN] = { 0 };
 	va_list vlArgs;
@@ -77,6 +81,7 @@ void Rk3588_L_Printf(const char* strOutputString, ...)
 	printf(strBuffer);
 	OutputDebugStringA(strBuffer); // OutputDebugString    // OutputDebugStringW
 	isbusy = 0;
+#endif
 #else
 	extern uint8_t USART6_Send_Package(char* string, uint16_t size);
 #define PUT_PUT_DEBUG_BUF_LEN 50
@@ -201,6 +206,6 @@ void Rk3588_Init(void)
 	USART1_INIT(115200, Rk3588_SerialBuffer);
 	USART6_INIT(115200, Rk3588_L_SerialBuffer);
 #else
-	SerialPort_Init(Rk3588_SerialBuffer, L"COM1");
+	//SerialPort_Init(, L"COM1");
 #endif
 }

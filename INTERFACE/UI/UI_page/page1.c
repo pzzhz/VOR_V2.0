@@ -249,6 +249,15 @@ void UI_Task_Btn_Del_Callback(uint16_t fouces_index)
 	UI_Table_Clean(table_Contain_Property->list, fouces_index, 0);
 }
 
+void UI_Task_table_CLEAN_Callback()
+{
+	int listsize = table_Contain_Property->list->size;
+	while (listsize--)
+	{
+		UI_Table_Clean(table_Contain_Property->list, 0, 0);
+	}
+}
+
 void UI_Task_Btn_Del_Click_Event(lv_event_t* e)
 {
 	static const Task_Parameter_Struct del_templete = { .mode = 0xff };
@@ -357,7 +366,8 @@ struct
 		cmd_add,
 		cmd_move,
 		cmd_del,
-		cmd_save
+		cmd_save,
+		cmd_clean
 	}cmd_typed;
 	Task_Parameter_Struct* task;
 	uint16_t task_id;
@@ -392,6 +402,11 @@ void UI_Page1_Send_ADD_Cmd(uint8_t* msg, uint16_t msg_size,
 			task_msg.task_id = index;
 			task_msg.isvaild = 1;
 		}
+	}
+	if (Msg_COMPARE("SETZERO", msg))
+	{
+		task_msg.cmd_typed = cmd_clean;
+		task_msg.isvaild = 1;
 	}
 	if (Msg_COMPARE("Save", msg))
 	{
@@ -450,6 +465,10 @@ void UI_Page1_Get_Souce_Updata()
 		if (cmdTpyed == cmd_del)
 		{
 			UI_Task_Btn_Del_Callback(task_msg.task_id);
+		}
+		if (cmdTpyed == cmd_clean)
+		{
+			UI_Task_table_CLEAN_Callback();
 		}
 		task_msg.isvaild = 0;
 	}

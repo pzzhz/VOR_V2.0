@@ -8,6 +8,7 @@
 extern uint8_t HAL_USB_TX(uint8_t* str, uint16_t len);
 
 void (*SendCb)(uint8_t* buf, uint16_t len) = 0;
+#define MsgRecBufLen (50)
 
 typedef enum
 {
@@ -15,6 +16,7 @@ typedef enum
 	Cmd_no_match,
 	Cmd_match,
 } DecodeFuntionReturn;
+#if 0
 DecodeFuntionReturn Decode_UploadTask_Cmd(uint8_t* bytes);
 DecodeFuntionReturn Decode_downloadTask_Cmd(uint8_t* bytes);
 DecodeFuntionReturn Decode_ReturnSlaveState_Cmd(uint8_t* bytes);
@@ -28,8 +30,15 @@ DecodeFuntionReturn(*decodingFuntion[DecodingFuntion_Length])(uint8_t* bytes) = 
 	Decode_downloadTask_Cmd,
 	Decode_Deleta_Cmd,
 };
+#else
+#define DecodingFuntion_Length 10
+DecodeFuntionReturn Decode_OtherCmd(uint8_t* bytes);
+DecodeFuntionReturn(*decodingFuntion[DecodingFuntion_Length])(uint8_t* bytes) = {
+	Decode_OtherCmd,
+};
+#endif
 
-static uint8_t receiveBuf[20];
+static uint8_t receiveBuf[MsgRecBufLen];
 uint8_t BLisupdata;
 
 void Task_Info_Package(Task_Parameter_Struct e, uint8_t id, uint8_t* buf)
@@ -59,7 +68,7 @@ void ReturnBytes_Package(uint8_t* buf, uint16_t len)
 	if (SendCb)
 		SendCb(sendbuf, 11);
 }
-
+#if 0
 void Return_Handle()
 {
 	//static int size, isupdata = 0, currentCount;
@@ -360,39 +369,180 @@ DecodeFuntionReturn Decode_Deleta_Cmd(uint8_t* bytes)
 	ReturnBytes_Package(buf, sizeof(buf));
 	return Cmd_match;
 }
+#endif
+
+DecodeFuntionReturn Decode_OtherCmd(uint8_t* msg)
+{
+	char* token;
+	char Port[10];
+	uint8_t RWdir = 0;//0:R,1:W
+	token = strtok(msg, "$"); //check port Name
+	if (token == NULL)
+		return Cmd_error;
+	strcpy(Port, token);
+	token = strtok(NULL, "$");//check R/W direction
+	if (token == NULL)
+		return Cmd_error;
+	RWdir = (token[0] == 'R') ? 0 : 1;
+	token = strtok(NULL, "$"); //Get Msg
+	if (token == NULL)
+		return Cmd_error;
+	if (RWdir == 1) //Write stage
+	{
+		Message_Center_Send_prinft(Port, 0, 0,
+			"%s", token);
+	}
+	else
+	{
+		const int RxMsgBufSize = 50;
+		char* RxMsg = message_malloc(RxMsgBufSize);
+		memset(RxMsg, 0, RxMsgBufSize);
+		const char errorMsg[] = "errorMsg\r\n";
+		uint8_t Nack = Message_Center_Read_prinft(Port, RxMsg, RxMsgBufSize,
+			"%s", token);
+		uint16_t RxMsgLen = strlen(RxMsg);
+		memmove(&RxMsg[1], &RxMsg[0], RxMsgLen);
+		RxMsg[0] = '(';
+		RxMsgLen = strlen(RxMsg);
+		if (RxMsgLen <= RxMsgBufSize - 2)
+			memcpy(&RxMsg[RxMsgLen], ")", 1);
+
+		if (Nack == 0)
+			SendCb(RxMsg, strlen(RxMsg));
+		else
+			SendCb(errorMsg, strlen(errorMsg));
+		message_free(RxMsg);
+	}
+}
+
+uint8_t BLctrl_Vor_Para_pkg(char* msg, Task_Parameter_Struct* par)
+{
+	par->mode = Task_VOR;
+	uint8_t res = sscanf(msg, "vor,%d,%f,%f",
+		&par->VOR.Counter, &par->VOR.Vel, &par->VOR.Freq);
+	if (res == 3)
+		return 1;
+	else
+		return 0;
+}
+
+uint8_t BLctrl_CNT_Vor_Para_pkg(char* msg, Task_Parameter_Struct* par)
+{
+	par->mode = Task_Continue;
+	uint8_t res = sscanf(msg, "cont,%d,%f",
+		&par->CONT.Sec, &par->CONT.Vel);
+	if (res == 2)
+		return 1;
+	else
+		return 0;
+}
+
+uint8_t BLctrl_OVAR_Para_pkg(char* msg, Task_Parameter_Struct* par)
+{
+	/*char* token = strtok(msg, ',');*/
+	par->mode = Task_OVAR;
+	uint8_t res = sscanf(msg, "ovar,%d,%f,%f",
+		&par->OVAR.Sec, &par->OVAR.Vel, &par->OVAR.Inc_Degree);
+	if (res == 3)
+		return 1;
+	else
+		return 0;
+}
+
+void BLctrl_Check_task_Msg(char* msg)
+{
+	int id;
+	char mode[10] = { 0 };
+	uint8_t tokenCount = 1;
+	char* token = strstr(msg, ",");
+	token++;
+	Task_Parameter_Struct  par = { 0 };
+	while (token != NULL)
+	{
+		if (tokenCount == 1)
+		{
+			uint8_t res = 0;
+			if (Msg_COMPARE("vor", token))
+				res = BLctrl_Vor_Para_pkg(token, &par);
+			if (Msg_COMPARE("cont", token))
+				res = BLctrl_CNT_Vor_Para_pkg(token, &par);
+			if (Msg_COMPARE("ovar", token))
+				res = BLctrl_OVAR_Para_pkg(token, &par);
+			if (res == 1)
+			{
+				int handleID;
+				Task_manager_Begin_Req(&handleID);
+				Task_manager_Req_append(handleID, par);
+				Task_manager_End_release(handleID);
+				break;
+			}
+		}
+		token = strstr(token, ",");
+		token++;
+		tokenCount++;
+	}
+
+}
+
+void BLctrl_Set_Task_Size_Msg()
+{
+	int handleID;
+	Task_manager_Begin_Req(&handleID);
+	Task_manager_Req_Set_Size(handleID);
+	Task_manager_End_release(handleID);
+}
+
+uint8_t BLctrl_Read_Handle(uint8_t* msg, uint16_t msg_size,
+	uint8_t* src, uint16_t SrcSize)
+{
+	if (Msg_COMPARE("savetask,", msg))
+	{
+		BLctrl_Check_task_Msg(msg);
+		return 0;
+	}
+	if (Msg_COMPARE("setsize", msg))
+	{
+		BLctrl_Set_Task_Size_Msg();
+		return 0;
+	}
+	return 1;
+}
+
+//搭建BLinterFace 的接口 负责 任务添加和修改
 
 void usart_protocol_InterruptHandle(uint8_t dr) // 串口1中断服务程序
 {
 	const uint8_t match_head[] = { 0xfe, 0xfd };
 	const uint8_t match_tail = 0xfc;
-	static uint8_t bytes[11];
+	static uint8_t bytes[MsgRecBufLen];
 	static uint16_t current_Index;
 	if (BLisupdata)
 		return;
 	switch (current_Index)
 	{
 	case 0:
-	case 1:
-		if (dr == match_head[current_Index])
+		if (dr == '(')
 		{
-			bytes[current_Index] = dr;
+			//bytes[current_Index] = dr;
 			current_Index++;
 		}
-		break;
-	case 10:
-		if (dr == match_tail)
-		{
-			bytes[current_Index] = dr;
-			memcpy(receiveBuf, bytes, sizeof(bytes));
-			BLisupdata = 1;
-		}
-		current_Index = 0;
 		break;
 	default:
-		if (current_Index < 11)
+		if (current_Index == sizeof(bytes))
 		{
-			bytes[current_Index] = dr;
-			current_Index++;
+			current_Index = 0;
+			return;
+		}
+		if (dr == ')')
+		{
+			//bytes[current_Index] = dr;
+			memcpy(receiveBuf, &bytes[1], current_Index);
+			current_Index = 0;
+			BLisupdata = 1;
+		}
+		else
+		{
+			bytes[current_Index++] = dr;
 		}
 		break;
 	}
@@ -400,11 +550,11 @@ void usart_protocol_InterruptHandle(uint8_t dr) // 串口1中断服务程序
 
 void usart_protocol_decoding(uint8_t* bytes)
 {
-	Return_Handle();
+	//Return_Handle();
 	if (BLisupdata == 0)
 		return;
 #if 1
-	uint8_t* buf = &receiveBuf[2];
+	uint8_t* buf = receiveBuf;
 	//    HAL_USB_TX(buf, 11);
 #else
 	uint8_t* buf = &bytes[2];
@@ -426,4 +576,7 @@ void usart_protocol_init(void (*cb)(uint8_t* buf, uint16_t len))
 {
 	BLisupdata = 0;
 	SendCb = cb;
+	Meassage_Center_Add("BLctrl");
+	Message_Center_Add_Read_CB("BLctrl", BLctrl_Read_Handle);
+
 }
