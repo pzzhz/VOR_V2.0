@@ -120,7 +120,7 @@ void task_interval_handle(int index)
 	while (remainingTime < waitMillSec)
 	{
 		remainingTime = ControlGetTick() - time;
-		Ctrl_Msg_Printf("interval %ds", remainingTime / 1000);
+		Ctrl_Msg_Printf("interval %ds",(waitMillSec- remainingTime) / 1000);
 		if (control->State_Bit.Exit) // for exit
 		{
 			return;

@@ -98,7 +98,7 @@ static void motor_handle(Task_Parameter_Struct* task, Task_control_info* e)
 	{
 		(CAM_State == 0 && i < 2) ?
 			Ctrl_Msg_Printf("camera error") :
-			Ctrl_Msg_Printf("start after %ds", i);
+			Ctrl_Msg_Printf("start after %ds", camWaitTime_s-i);
 		SaftExitDelay(1000, 0);
 	}
 	hal_Slave_OVAR_Init(task);

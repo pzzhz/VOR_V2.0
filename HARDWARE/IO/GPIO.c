@@ -1,0 +1,61 @@
+#include "GPIO.h"
+#include "stm32f4xx.h"
+
+void CAM_GPIO_INIT()
+{
+    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOGEN;
+    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOFEN;
+
+    GPIOG->MODER |= GPIO_MODER_MODER0_0;  // gpio g0 output init
+    GPIOG->MODER |= GPIO_MODER_MODER1_0;  // alm
+    GPIOF->MODER |= GPIO_MODER_MODER15_0; // gpio g0 output init
+
+    GPIOG->ODR &= ~GPIO_ODR_ODR_0;  // REC
+    GPIOG->ODR &= ~GPIO_ODR_ODR_1;  // WIFI
+    GPIOF->ODR &= ~GPIO_ODR_ODR_15; // SYNC LED
+}
+
+static void Timer_init(int ms)
+{
+    RCC->APB2ENR |= RCC_APB2ENR_TIM10EN;
+
+    TIM10->PSC = 14400;
+    TIM10->ARR = ms * 10;
+    TIM10->CNT = 0;
+    TIM10->CR1 |= TIM_CR1_OPM;
+    TIM10->CR1 |= TIM_CR1_CEN;
+    TIM10->DIER |= TIM_DIER_UIE;
+
+    NVIC_InitTypeDef NVIC_InitStructure;
+    NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_TIM10_IRQn;  // 串口1中断通道
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0; // 抢占优先级3
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;        // 子优先级3
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;           // IRQ通道使能
+    NVIC_Init(&NVIC_InitStructure);                           // 根据指定的参数初始化VIC寄存器、
+}
+
+void TIM1_UP_TIM10_IRQHandler()
+{
+    TIM10->SR = 0;
+    GPIOG->ODR &= ~GPIO_ODR_ODR_0;
+    GPIOF->ODR &= ~GPIO_ODR_ODR_15;
+    GPIOG->ODR &= ~GPIO_ODR_ODR_1;
+}
+
+void GPIO_CAM_REC_IO_Ctrl()
+{
+    GPIOG->ODR |= GPIO_ODR_ODR_1;
+    Timer_init(1500);
+}
+
+void GPIO_CAM_SyncLED_IO_Ctrl()
+{
+    GPIOF->ODR |= GPIO_ODR_ODR_15;
+    Timer_init(50);
+}
+
+void GPIO_CAM_Wifi_IO_Ctrl()
+{
+    GPIOG->ODR |= GPIO_ODR_ODR_0;
+    Timer_init(3000);
+}

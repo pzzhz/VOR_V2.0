@@ -484,6 +484,16 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\c610\pid.c</FilePath>
             </File>
+            <File>
+              <FileName>GPIO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IO\GPIO.c</FilePath>
+            </File>
+            <File>
+              <FileName>GPIO.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\HARDWARE\IO\GPIO.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2190,6 +2200,16 @@
               <FileName>pid.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\c610\pid.c</FilePath>
+            </File>
+            <File>
+              <FileName>GPIO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IO\GPIO.c</FilePath>
+            </File>
+            <File>
+              <FileName>GPIO.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\HARDWARE\IO\GPIO.h</FilePath>
             </File>
           </Files>
         </Group>

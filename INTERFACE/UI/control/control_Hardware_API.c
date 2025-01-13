@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-25 14:38:08
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
- * @LastEditTime: 2024-09-22 17:26:02
+ * @LastEditTime: 2025-01-13 10:48:32
  * @FilePath: \USER  d:\workfile\项目3 vor\software\VOR_V2.0\INTERFACE\UI\control\control_Hardware_API.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -14,12 +14,13 @@
 
 #include "stdarg.h"
 #include "stdio.h"
-
+#define Using_Direct_Cam_Ctrl
 #ifdef STM32F40_41xxx
 #include "../implement/Slave_Vor_Ctrl.h"
 #include "../implement/Slave_Inc_Ctrl.h"
 #include "../HARDWARE/CAN/can.h"
 #include "../HARDWARE/FAN/FAN.h"
+#include "../HARDWARE/IO/GPIO.h"
 #endif // !STM32F40_41xxx
 
 #define use_simluate 0
@@ -71,16 +72,19 @@ uint8_t HAL_Incline_Fouces_Move(int8_t direction)
 uint8_t HAL_CAM_Init()
 {
 #ifdef STM32F40_41xxx
-	//can_init(1, 6, 7, 6, 0); old 
+	// can_init(1, 6, 7, 6, 0); old
 	can_init(1, 10, 3, 7, 0);
-		extern void C610_Ctrl_Init();
+	extern void C610_Ctrl_Init();
 	C610_Ctrl_Init();
-	// buf[0] 00  rec
-	// buf[0] 01  set
-	// buf[0] 02  U16_L U16_H  led voltage Set
-	// buf[0] 04  cam Led Flush
-
+// buf[0] 00  rec
+// buf[0] 01  set
+// buf[0] 02  U16_L U16_H  led voltage Set
+// buf[0] 04  cam Led Flush
 #endif
+#ifdef Using_Direct_Cam_Ctrl
+	CAM_GPIO_INIT();
+#endif
+
 	return 0;
 }
 // 0 发生错误 1 正常
@@ -88,14 +92,20 @@ uint8_t HAL_CAM_REC_Set(uint8_t flag)
 {
 	static uint8_t Cam_Flag = 0;
 	uint8_t res = 1; // reture success
+
 #ifdef STM32F40_41xxx
 	//	if (Cam_Flag == flag)
 	{
+#ifdef Using_Direct_Cam_Ctrl
+		GPIO_CAM_REC_IO_Ctrl();
+		res = 1;
+#else
 		const uint8_t CAN_CAM_MSG[8] = {
 			0, 0, 0, 0, 0, 0, 0, 0};
 		res = can_send_msg(0x00, (uint8_t *)CAN_CAM_MSG, 8); // can_send reture 1->fail 0->success
 		res = (res == 1) ? 0 : 1;							 // exchange reture 1->success 0->fail
 		Cam_Flag = flag;
+#endif
 	}
 #endif
 	return res;
@@ -106,10 +116,15 @@ uint8_t HAL_CAM_SET_Set(void)
 {
 	uint8_t res = 1; // reture success
 #ifdef STM32F40_41xxx
+#ifdef Using_Direct_Cam_Ctrl
+	GPIO_CAM_Wifi_IO_Ctrl();
+	res = 1;
+#else
 	const uint8_t CAN_CAM_MSG[8] = {
 		01, 0, 0, 0, 0, 0, 0, 0};
 	res = can_send_msg(0x00, (uint8_t *)CAN_CAM_MSG, 8); // can_send reture 1->fail 0->success
 	res = (res == 1) ? 0 : 1;							 // exchange reture 1->success 0->fail
+#endif
 #endif
 	return res;
 }
@@ -119,10 +134,15 @@ uint8_t HAL_CAM_SET_sign_led(void)
 {
 	uint8_t res = 1; // reture success
 #ifdef STM32F40_41xxx
+#ifdef Using_Direct_Cam_Ctrl
+	GPIO_CAM_SyncLED_IO_Ctrl();
+	res = 1;
+#else
 	const uint8_t CAN_CAM_MSG[8] = {
 		04, 0, 0, 0, 0, 0, 0, 0};
 	res = can_send_msg(0x00, (uint8_t *)CAN_CAM_MSG, 8); // can_send reture 1->fail 0->success
 	res = (res == 1) ? 0 : 1;							 // exchange reture 1->success 0->fail
+#endif
 #endif
 	return res;
 }
@@ -163,7 +183,7 @@ uint8_t HAL_Set_UI_Page1_Msg(const char *format, ...)
 {
 	va_list args;
 	va_start(args, format);
-	extern char *UI_Page1_Get_Msg_Array(uint16_t * len);
+	extern char *UI_Page1_Get_Msg_Array(uint16_t *len);
 	extern void UI_Page1_Set_Msg_Finish(void);
 	char *msg_pt = UI_Page1_Get_Msg_Array(0);
 	while (msg_pt == 0)
@@ -194,10 +214,17 @@ uint8_t HAL_FAN_INIT()
 #endif
 }
 
+uint8_t HAL_CAN_IO_INIT()
+{
+#ifdef STM32F40_41xxx
+	FAN_Init();
+#endif
+}
+
 uint8_t HAL_FAN_Set(uint8_t pwm_precent)
 {
 #ifdef STM32F40_41xxx
-	FAN_Ctrl(pwm_precent);
+	CAM_GPIO_INIT();
 #endif
 }
 
@@ -206,5 +233,6 @@ uint8_t HAL_API_INIT(void)
 	HAL_CAM_Init();
 	HAL_CAM_SET_Set();
 	HAL_FAN_INIT();
+	HAL_CAN_IO_INIT();
 	return 0;
 }
