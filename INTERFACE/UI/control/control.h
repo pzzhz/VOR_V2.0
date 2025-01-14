@@ -45,12 +45,23 @@ extern "C"
 			struct
 			{
 				uint8_t Init : 1;
-				uint8_t ExInit : 1;
+				uint8_t WaitRk : 1;
 				uint8_t IsRunning : 1;
 				uint8_t Exit : 1;
 				uint8_t finish : 1;
 			};
 		} State_Bit;
+		union
+		{
+			 enum
+			{
+				Rk3588_Uart_Idle,
+				SendTaskArray,
+				Cancel,
+			} Rk3588_Flag_Typed;
+			uint8_t Lflag;
+			uint8_t Rflag;
+		} Rk3588_Flag;
 		union
 		{
 			uint8_t flag;

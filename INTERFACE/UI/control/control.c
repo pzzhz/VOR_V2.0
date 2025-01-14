@@ -15,6 +15,8 @@
 #include "task.h"
 #endif // use_windows
 
+#define Using_UI_LOCK 1
+
 #define use_windows
 #ifdef STM32F40_41xxx
 #else
@@ -212,6 +214,73 @@ uint8_t ctrlWaitRk3588()
 	return 0;
 }
 
+uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info* e, uint8_t LR)
+{
+	const uint16_t Rk_Ack_Expiration = 200;	//2000ms
+	static uint16_t Rk_Ack_CountL, Rk_Ack_CountR;
+	static uint8_t last_Rk3588_FlagL, last_Rk3588_FlagR;
+	uint16_t* Rk_Ack_Count = (LR) ? &Rk_Ack_CountL : &Rk_Ack_CountR;
+	uint8_t* last_Rk3588_Flag = (LR) ? &last_Rk3588_FlagL : &last_Rk3588_FlagR;
+	uint8_t* flag = (LR) ? &e->Rk3588_Flag.Lflag : &e->Rk3588_Flag.Rflag;
+	static char message[50];
+	uint8_t res = (LR) ? Hal_Rk3588_Readarray(message) : Hal_Rk3588_L_ReadLine(message);
+	if (res == 1) {
+		if (Msg_COMPARE("wifi down", message))
+		{
+			HAL_CAM_SET_Set();
+		}
+		if (Msg_COMPARE("ok", message))
+		{
+			if (*flag == SendTaskArray)		//when send task array
+				*flag = Rk3588_Uart_Idle;
+		}
+		if (Msg_COMPARE("clear finish", message))
+		{
+			*flag = 0;						//clear bit when clear finish
+			if (e->Rk3588_Flag.Lflag == 0 && e->Rk3588_Flag.Rflag == 0) //if both rk3588 finish clear ,restart user interface
+			{
+				e->State_Bit.WaitRk = 0;
+			}
+		}
+	}
+	if (*last_Rk3588_Flag != *flag)
+	{
+		*Rk_Ack_Count = 0;
+	}
+
+	if (*flag == SendTaskArray)
+	{
+		if (e->State_Bit.IsRunning == 0)
+			*flag = 0;
+		if (*Rk_Ack_Count == 0)
+		{
+			extern void RK3588_SendTaskInfo(uint16_t tasksize, uint8_t LR);
+			RK3588_SendTaskInfo(e->taskCount, LR);
+			*Rk_Ack_Count = Rk_Ack_Expiration;
+		}
+		else
+		{
+			*Rk_Ack_Count=*Rk_Ack_Count-1;
+		}
+	}
+	if (*flag == Cancel)
+	{
+		if (*Rk_Ack_Count == 0)
+		{
+			e->State_Bit.WaitRk = 1;
+			extern void RK3588_terminal_Printf(uint8_t LR);
+			RK3588_terminal_Printf(LR);
+			*Rk_Ack_Count = Rk_Ack_Expiration;
+		}
+		else
+		{
+			*Rk_Ack_Count = *Rk_Ack_Count - 1;
+		}
+	}
+
+	*last_Rk3588_Flag = *flag;
+}
+
 void Maintain_Service()
 {
 }
@@ -232,7 +301,7 @@ void controlfunction()
 	int flag = 0;
 	Start_Cmd_Type Startflag = StartCmdNone;
 	uint8_t nowState = 0;
-	char message[50], cmd[50] = { "" };
+
 
 	thread_create(Task_control_handler, &control_info, &task_ctrl_thread, 1000);
 	/*Meassage_Center_Add("page1");*/
@@ -242,32 +311,30 @@ void controlfunction()
 	Communication_Init();
 	while (1)
 	{
+		Rk3588_Ack_Cmd_Handle(&control_info, 0);
+		Rk3588_Ack_Cmd_Handle(&control_info,1);
 		if (control_info.State_Bit.Init == 0)
 		{
-			if (Hal_Rk3588_Readarray(message)==1) {
-				if (Msg_COMPARE("wifi down", message))
+			if (control_info.State_Bit.WaitRk == 0)
+			{
+				Startflag = Ctrl_Get_Strat_Cmd();
+				// Ctrl_Read_State_Ack(&control_info);
+				if (Startflag == 0x01)
 				{
-					HAL_CAM_SET_Set();
-
+					Task_control_Begin(&control_info);
 				}
-			}
-			Startflag = Ctrl_Get_Strat_Cmd();
-			// Ctrl_Read_State_Ack(&control_info);
-			if (Startflag == 0x01)
-			{
-				Task_control_Begin(&control_info);
-			}
-			if (Startflag == 0x02)
-			{
-				Task_control_ReqStop(&control_info);
+				if (Startflag == 0x02)
+				{
+					Task_control_ReqStop(&control_info);
+				}
 			}
 		}
 		else
 		{
-			if (ctrlWaitRk3588() != 0)
+			/*if (ctrlWaitRk3588() != 0)
 			{
-				control_info.State_Bit.ExInit = 1;
-			}
+				control_info.State_Bit.WaitRk = 1;
+			}*/
 		}
 		ControlDelay(10);
 		// e.ExitFlag = 1;

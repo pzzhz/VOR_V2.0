@@ -34,65 +34,70 @@ typedef struct
 } Task_Control_Status;
 // static char msg_buffer[50];
 
-static Task_control_info *control;
-extern uint8_t Ctrl_Msg_Printf(const char *format,
-							   ...);
-extern void Rk3588_Printf(const char *strOutputString, ...);
-extern void Rk3588_L_Printf(const char *strOutputString, ...);
+static Task_control_info* control;
+extern uint8_t Ctrl_Msg_Printf(const char* format,
+	...);
+extern void Rk3588_Printf(const char* strOutputString, ...);
+extern void Rk3588_L_Printf(const char* strOutputString, ...);
 
-void RK3588_SendTaskInfo(uint16_t tasksize)
+#define Rk3588_Send_Task_Array {control->Rk3588_Flag.Lflag = SendTaskArray;control->Rk3588_Flag.Rflag = SendTaskArray;}
+#define Rk3588_Task_Cancel {control->Rk3588_Flag.Lflag = Cancel;control->Rk3588_Flag.Rflag = Cancel;}
+
+void RK3588_SendTaskInfo(uint16_t tasksize, uint8_t LR)
 {
-	Task_Parameter_Struct *e;
-	char *mousename = (char *)malloc(50);
+	Task_Parameter_Struct* e;
+	char* mousename = (char*)malloc(50);
 	mousename[0] = 0;
 	HAL_Get_UI_MouseName(mousename, 50);
 	if (mousename[0] == 0)
 		strncpy(mousename, "unnamed", 50);
-	Rk3588_Printf("&%d", tasksize);
-	Rk3588_L_Printf("&%d", tasksize);
+	(LR) ? Rk3588_Printf("&%d", tasksize) :
+		Rk3588_L_Printf("&%d", tasksize);
 	for (int i = 0; i < tasksize; i++)
 	{
 		e = &TaskArray[i];
 		switch (e->mode)
 		{
 		case Task_VOR:
-			Rk3588_Printf("&%s_VOR_T%dV%dF%02d", mousename, e->VOR.Counter, (int)e->VOR.Vel, (int)(e->VOR.Freq * 10.0f));
-			Rk3588_L_Printf("&%s_VOR_T%dV%dF%02d", mousename, e->VOR.Counter, (int)e->VOR.Vel, (int)(e->VOR.Freq * 10.0f));
+			(LR) ? Rk3588_Printf("&%s_VOR_T%dV%dF%02d", mousename, e->VOR.Counter, (int)e->VOR.Vel, (int)(e->VOR.Freq * 10.0f)) :
+				Rk3588_L_Printf("&%s_VOR_T%dV%dF%02d", mousename, e->VOR.Counter, (int)e->VOR.Vel, (int)(e->VOR.Freq * 10.0f));
 			break;
 		case Task_Continue:
-			Rk3588_Printf("&%s_CONT_S%dV%d", mousename, e->CONT.Sec, (int)e->CONT.Vel);
-			Rk3588_L_Printf("&%s_CONT_S%dV%d", mousename, e->CONT.Sec, (int)e->CONT.Vel);
+			(LR) ? Rk3588_Printf("&%s_CONT_S%dV%d", mousename, e->CONT.Sec, (int)e->CONT.Vel) :
+				Rk3588_L_Printf("&%s_CONT_S%dV%d", mousename, e->CONT.Sec, (int)e->CONT.Vel);
 			break;
 		case Task_OVAR:
-			Rk3588_Printf("&%s_OVAR_S%dV%dI%02d", mousename, e->OVAR.Sec, (int)e->OVAR.Vel, (int)(e->OVAR.Inc_Degree));
-			Rk3588_L_Printf("&%s_OVAR_S%dV%dI%02d", mousename, e->OVAR.Sec, (int)e->OVAR.Vel, (int)(e->OVAR.Inc_Degree));
+			(LR) ? Rk3588_Printf("&%s_OVAR_S%dV%dI%02d", mousename, e->OVAR.Sec, (int)e->OVAR.Vel, (int)(e->OVAR.Inc_Degree)) :
+				Rk3588_L_Printf("&%s_OVAR_S%dV%dI%02d", mousename, e->OVAR.Sec, (int)e->OVAR.Vel, (int)(e->OVAR.Inc_Degree));
 			break;
 		case Task_VHIT:
-			Rk3588_Printf("&%s_VHIT_T%d", mousename, e->VHIT.Counter);
-			Rk3588_L_Printf("&%s_VHIT_T%d", mousename, e->VHIT.Counter);
+			(LR) ? Rk3588_Printf("&%s_VHIT_T%d", mousename, e->VHIT.Counter) :
+				Rk3588_L_Printf("&%s_VHIT_T%d", mousename, e->VHIT.Counter);
 			break;
 		case Task_TC:
-			Rk3588_Printf("&%s_TC_S%dV%d", mousename, e->TC.Sec, e->TC.Vel);
-			Rk3588_L_Printf("&%s_TC_S%dV%d", mousename, e->TC.Sec, e->TC.Vel);
+			(LR) ? Rk3588_Printf("&%s_TC_S%dV%d", mousename, e->TC.Sec, e->TC.Vel) :
+				Rk3588_L_Printf("&%s_TC_S%dV%d", mousename, e->TC.Sec, e->TC.Vel);
 			break;
 
 		default:
 			break;
 		}
 	}
-	Rk3588_Printf("@");
-	Rk3588_L_Printf("@");
+	(LR) ? Rk3588_Printf("@") :
+		Rk3588_L_Printf("@");
 	free(mousename);
 }
 
-void RK3588_End_Printf(void)
+void RK3588_End_Printf(uint8_t LR)
 {
-	 Rk3588_Printf("finish");
+	(LR) ? Rk3588_Printf("finish") :
+		Rk3588_L_Printf("finish");
 }
 
-void RK3588_terminal_Printf(void)
+void RK3588_terminal_Printf(uint8_t LR)
 {
-	 Rk3588_Printf("terminal");
+	(LR) ? Rk3588_Printf("cancel"):
+		Rk3588_L_Printf("cancel");
 }
 
 void RK3588_Initial_Printf(void)
@@ -116,7 +121,7 @@ void task_interval_handle(int index)
 	/*  Message_Center_Send_prinft(
 		  "PAGE1", 0, 0,
 		  "Interval: ID:%d", index);*/
-	/*HAL_Set_UI_Page1_Msg("Interval: ID:%d", index);*/
+		  /*HAL_Set_UI_Page1_Msg("Interval: ID:%d", index);*/
 	while (remainingTime < waitMillSec)
 	{
 		remainingTime = ControlGetTick() - time;
@@ -129,7 +134,7 @@ void task_interval_handle(int index)
 	}
 }
 
-uint8_t Task_control_Begin(Task_control_info *e)
+uint8_t Task_control_Begin(Task_control_info* e)
 {
 	if (e->State_Bit.IsRunning == 1)
 	{
@@ -144,7 +149,7 @@ uint8_t Task_control_Begin(Task_control_info *e)
 	return 1;
 }
 
-uint8_t Task_control_ReqStop(Task_control_info *e)
+uint8_t Task_control_ReqStop(Task_control_info* e)
 {
 	if (e->State_Bit.IsRunning == 0)
 	{
@@ -154,7 +159,7 @@ uint8_t Task_control_ReqStop(Task_control_info *e)
 	return 1;
 }
 
-void Task_control_handler(Task_control_info *e)
+void Task_control_handler(Task_control_info* e)
 {
 	uint8_t Rk3588_ReadyFlag_1 = 0, Rk3588_ReadyFlag_2 = 0;
 	if (e == 0)
@@ -162,7 +167,7 @@ void Task_control_handler(Task_control_info *e)
 	control = e;
 	e->State_Bit.Init = 1;
 	e->State_Bit.Init = 0;
-	e->State_Bit.ExInit = 0; 
+	e->State_Bit.WaitRk = 0;
 	Ctrl_Msg_Printf(" ");
 	// uint16_t len = 0;
 BEGIN_POS:
@@ -186,19 +191,19 @@ BEGIN_POS:
 	e->State_Bit.IsRunning = 1;
 
 	uint16_t task_size = e->taskCount;
-	RK3588_SendTaskInfo(task_size);
+	Rk3588_Send_Task_Array;
 
 	for (int i = 0; i < task_size; i++)
 	{
-		Task_Parameter_Struct *task = &e->taskArray[i];
+		Task_Parameter_Struct* task = &e->taskArray[i];
 		e->currentCount = i;
 		task_interval_handle(i);
 		if (e->State_Bit.Exit)
 		{
-			RK3588_terminal_Printf();
-				break;
+			Rk3588_Task_Cancel;
+			break;
 		}
-		
+
 		uint8_t isretract = 1;
 		switch (task->mode)
 		{
@@ -218,11 +223,11 @@ BEGIN_POS:
 			break;
 		}
 	}
-	RK3588_End_Printf();
 	Ctrl_Msg_Printf(" ");
 	// len = sprintf(msg_buffer, "End");
 	// Message_Center_Send("PAGE1", 0, msg_buffer, len);
 	/*HAL_Set_UI_Page1_Msg("End");*/
+	e->State_Bit.IsRunning = 0;
 	e->State_Bit.flag = 0;
 	e->Error_Bit.flag = 0;
 	goto BEGIN_POS;
