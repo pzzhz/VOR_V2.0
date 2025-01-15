@@ -225,7 +225,7 @@ uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info* e, uint8_t LR)
 	static char message[50];
 	uint8_t res = (LR) ? Hal_Rk3588_Readarray(message) : Hal_Rk3588_L_ReadLine(message);
 	if (res == 1) {
-		if (Msg_COMPARE("wifi down", message))
+		if (Msg_COMPARE("wifi down", message)) 
 		{
 			HAL_CAM_SET_Set();
 		}
