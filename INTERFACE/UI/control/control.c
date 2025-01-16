@@ -80,7 +80,8 @@ typedef enum
 {
 	StartCmdNone,
 	StartCmdBegin,
-	StartCmdStop
+	StartCmdStop,
+	StartCmdPause
 } Start_Cmd_Type;
 Start_Cmd_Type Start_Stop_Flag = StartCmdNone;
 
@@ -319,14 +320,15 @@ void controlfunction()
 			{
 				Startflag = Ctrl_Get_Strat_Cmd();
 				// Ctrl_Read_State_Ack(&control_info);
-				if (Startflag == 0x01)
+				if (Startflag == StartCmdBegin)
 				{
 					Task_control_Begin(&control_info);
 				}
-				if (Startflag == 0x02)
+				if (Startflag == StartCmdStop)
 				{
 					Task_control_ReqStop(&control_info);
 				}
+
 			}
 		}
 		else

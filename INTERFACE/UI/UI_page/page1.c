@@ -302,6 +302,12 @@ void UI_Start_Btn_Clicked_Handle(lv_event_t* e)
 			0,
 			"ReqShift");
 	}
+	if (e->code == LV_EVENT_LONG_PRESSED)
+	{
+		Message_Center_Send_prinft("Ctrl", 0,
+			0,
+			"ReqPause");
+	}
 }
 
 // void UI_Start_Btn_Refresh_Handle(lv_event_t* e)

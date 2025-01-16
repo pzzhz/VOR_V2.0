@@ -49,6 +49,7 @@ extern "C"
 				uint8_t IsRunning : 1;
 				uint8_t Exit : 1;
 				uint8_t finish : 1;
+				//uint8_t pause:
 			};
 		} State_Bit;
 		union
