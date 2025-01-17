@@ -296,17 +296,25 @@ static uint8_t StartBtnFlag;
 
 void UI_Start_Btn_Clicked_Handle(lv_event_t* e)
 {
+	static lv_event_code_t flag = 0;
 	if (e->code == LV_EVENT_CLICKED)
 	{
-		Message_Center_Send_prinft("Ctrl", 0,
-			0,
-			"ReqShift");
+		if (flag != LV_EVENT_LONG_PRESSED)
+		{
+			Message_Center_Send_prinft("Ctrl", 0,
+				0,
+				"ReqShift");
+			printf("\r\n clicked \r\n");
+		}
+		flag = e->code;
 	}
 	if (e->code == LV_EVENT_LONG_PRESSED)
 	{
 		Message_Center_Send_prinft("Ctrl", 0,
 			0,
-			"ReqPause");
+			"ReqStop");
+		flag = e->code;
+		printf("\r\n press \r\n");
 	}
 }
 
@@ -325,7 +333,7 @@ void UI_Start_Btn_Init(lv_obj_t* parent)
 	lv_obj_t* label = lv_label_create(btn); /*Add a label to the button*/
 	lv_label_set_text(label, "start");		/*Set the labels text*/
 	lv_obj_align(btn, LV_ALIGN_TOP_RIGHT, 0, 0);
-	lv_obj_add_event_cb(btn, UI_Start_Btn_Clicked_Handle, LV_EVENT_CLICKED, 0);
+	lv_obj_add_event_cb(btn, UI_Start_Btn_Clicked_Handle, LV_EVENT_ALL, 0);
 }
 
 uint8_t UI_Start_Btn_Get_CMD(void)

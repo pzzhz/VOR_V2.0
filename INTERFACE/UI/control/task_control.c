@@ -96,7 +96,7 @@ void RK3588_End_Printf(uint8_t LR)
 
 void RK3588_terminal_Printf(uint8_t LR)
 {
-	(LR) ? Rk3588_Printf("cancel"):
+	(LR) ? Rk3588_Printf("cancel") :
 		Rk3588_L_Printf("cancel");
 }
 
@@ -125,7 +125,7 @@ void task_interval_handle(int index)
 	while (remainingTime < waitMillSec)
 	{
 		remainingTime = ControlGetTick() - time;
-		Ctrl_Msg_Printf("interval %ds", remainingTime / 1000);
+		Ctrl_Msg_Printf("interval %ds",(waitMillSec- remainingTime) / 1000);
 		if (control->State_Bit.Exit) // for exit
 		{
 			return;
@@ -155,7 +155,18 @@ uint8_t Task_control_ReqStop(Task_control_info* e)
 	{
 		return 0;
 	}
+	e->State_Bit.pause = 0;
 	e->State_Bit.Exit = 1;
+	return 1;
+}
+
+uint8_t Task_control_ReqPause(Task_control_info* e)
+{
+	if (e->State_Bit.IsRunning == 0)
+	{
+		return 0;
+	}
+	e->State_Bit.pause = !e->State_Bit.pause;
 	return 1;
 }
 

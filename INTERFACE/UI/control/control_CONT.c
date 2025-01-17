@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-22 16:00:07
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
- * @LastEditTime: 2024-09-21 15:16:48
+ * @LastEditTime: 2025-01-17 14:19:50
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\INTERFACE\UI\control\control_VOR.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -24,6 +24,8 @@
 struct
 {
 	uint32_t time;
+	uint32_t RemainTime;
+	uint8_t flag_pause;
 	uint32_t SetSec;
 	float Vel;
 } Cont_info;
@@ -51,9 +53,31 @@ uint8_t HAL_Slave_CONT_Stop(void)
 	return 1;
 }
 
+uint8_t HAL_Slave_CONT_Pause(uint8_t enable)
+{
+#ifndef STM32F40_41xxx
+	if (enable)
+	{
+		Cont_info.flag_pause = 1;
+		Cont_info.RemainTime = ControlGetTick() - Cont_info.time;
+	}
+	else
+	{
+		Cont_info.time = ControlGetTick() - Cont_info.RemainTime;
+		Cont_info.flag_pause = 0;
+	}
+#else
+	Cont_Machine_Pause();
+#endif // !STM32F40_41xxx
+	return 1;
+}
+
+
 uint8_t HAL_Slave_CONT_Get_State(uint32_t* remainingSec, uint32_t* parcent)
 {
 #ifndef STM32F40_41xxx
+	if (Cont_info.flag_pause)
+		return 1;
 	uint32_t currentSec = (ControlGetTick() - Cont_info.time) / 1000.0f;
 	if (parcent != 0)
 		*parcent = currentSec * 100 / Cont_info.SetSec;
@@ -67,7 +91,7 @@ uint8_t HAL_Slave_CONT_Get_State(uint32_t* remainingSec, uint32_t* parcent)
 #else
 	uint32_t MillSecReq = 0, CurrentMillSec = 0;
 	uint8_t res = Cont_Machine_Get_Count(&MillSecReq, &CurrentMillSec);
-	if (parcent != 0&& MillSecReq!=0)
+	if (parcent != 0 && MillSecReq != 0)
 		*parcent = CurrentMillSec * 100 / MillSecReq;
 	*remainingSec = MillSecReq - CurrentMillSec;
 	return res;
@@ -90,21 +114,21 @@ uint8_t ContControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 	{
 		(CAM_State == 0 && i < 2) ?
 			Ctrl_Msg_Printf("camera error") :
-			Ctrl_Msg_Printf("start after %ds", i);
+			Ctrl_Msg_Printf("start after %ds", camWaitTime_s-i);
 		SaftExitDelay(1000, 0);
 	}
 	/*--cam rec*/
 	/*begin motion*/
 	HAL_Slave_CONT_Init(task);
 	e->UI_para.state = taskruning;
-	uint8_t CONT_flag = 1;
+	uint8_t CONT_flag = 1, pauseFlag = 0, CamIsStop = 0;	//防止启动时候发生意外触发
 	int32_t LastCount = -1;
 	// motor initial
 	uint32_t count, parcent;
 	while (CONT_flag)
 	{
 		CONT_flag = HAL_Slave_CONT_Get_State(&count, &parcent);
-		if (LastCount != count)
+		if (LastCount != count&&e->State_Bit.pause==0)
 		{
 			Ctrl_Msg_Printf("%d:CONT Done:%d%%", e->currentCount, parcent);
 			// HAL_Set_UI_Page1_Msg("Count:%d", count);
@@ -115,6 +139,22 @@ uint8_t ContControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 			Ctrl_Msg_Printf("%d:CONT Terminated", e->currentCount);
 			HAL_Slave_CONT_Stop();
 		}
+		if (e->State_Bit.pause != pauseFlag)
+		{
+			if (e->State_Bit.pause)
+			{
+				HAL_Slave_CONT_Pause(1);
+				Ctrl_Msg_Printf("%d:CONT Pause", e->currentCount);
+//				if (CamIsStop == 0)
+//					HAL_CAM_REC_Set(1);
+//				CamIsStop = 1;
+			}
+			else
+			{
+				HAL_Slave_CONT_Pause(0);
+			}
+		}
+		pauseFlag = e->State_Bit.pause;
 		MYPRINTF("%3d", count);
 		// wait motor infinsh
 		SaftExitDelay(10, 0);
@@ -124,11 +164,8 @@ uint8_t ContControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 	Ctrl_Msg_Printf("%d:CONT Done:100%%", e->currentCount);
 	/*one sec for cam stop*/
 	SaftExitDelay(1000, 0);
-	CAM_State = HAL_CAM_REC_Set(1);
-	if (CAM_State == 0)
-	{
-		Ctrl_Msg_Printf("CAM ERROR");
-	}
+	if (CamIsStop == 0)
+		HAL_CAM_REC_Set(1);
 	/*--one sec for cam stop*/
 	Ctrl_Msg_Printf("end");
 	MYPRINTF("\r\n vor end");

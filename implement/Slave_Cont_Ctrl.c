@@ -1,8 +1,8 @@
 /*
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-24 14:44:19
- * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-08-08 11:05:33
+ * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
+ * @LastEditTime: 2025-01-17 15:00:36
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\implement\Slave_Vor_Ctrl.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -21,11 +21,13 @@ typedef struct
         running,
         back,
         end,
+        pause
     } state;
     uint32_t Tick;
     float vel;
+    uint8_t ReqPause;
     // Task_Parameter_Struct info;
-    uint32_t CurrentMillSec;
+    int32_t accTimer;
     uint32_t MillSecReq;
     Speed_Cal_Struct back;
 } Cont_Machine_parameter;
@@ -37,51 +39,47 @@ void Cont_Back_init(float tragetPos, float sps, float accMs);
 
 static uint8_t motor_set(void)
 {
-	static int DscTimer;
     uint8_t res;
     if (cont_para.state == running)
     {
-        cont_para.CurrentMillSec = cont_para.Tick++;
-			float factor =  cont_para.CurrentMillSec/1000.0f;
-			factor=(factor>1)?1:factor;
-        tim_f_sin_set(angle_step * cont_para.vel*factor);
-        if (cont_para.CurrentMillSec >= cont_para.MillSecReq)
+        cont_para.accTimer = (cont_para.accTimer >= 1000) ? 1000 : cont_para.accTimer + 1;
+        cont_para.Tick++;
+        float factor = cont_para.accTimer / 1000.0f;
+        factor = (factor > 1) ? 1 : factor;
+        tim_f_sin_set(angle_step * cont_para.vel * factor);
+        if (cont_para.Tick >= cont_para.MillSecReq || cont_para.ReqPause)
         {
-//            float pos = Slave1_Get_Encode_Angle();
-//            float traget = pos - (((int32_t)pos / 360)) * 360 - 180;
-//            if (traget > 0)
-//            {
-//                traget = 360;
-//            }
-//            else
-//                traget = 0;
-//            tim_f_sin_set(angle_step * 0);
-//            Cont_Back_init(traget, 30, 5);
-					DscTimer=1000;
             cont_para.state = back;
             return 0;
         }
     }
     if (cont_para.state == back)
     {
-//        cont_para.back.motor.ms_esccape++;
-//        res = motor_speed_cal(0, &speeds, &cont_para.back);
-//        if (res == 0)
-//        {
-//            tim_f_sin_set(0);
-//            return 1;
-//        }
-//        tim_f_sin_set(angle_step * speeds);
-			DscTimer-=1;
-			 tim_f_sin_set(angle_step * cont_para.vel*DscTimer/1000.0f);
-			if(DscTimer<=0)
-			{
-					 tim_f_sin_set(0);
-				return 1;
-			}
+        cont_para.accTimer -= 1;
+        tim_f_sin_set(angle_step * cont_para.vel * cont_para.accTimer / 1000.0f);
+        if (cont_para.accTimer <= 0)
+        {
+            tim_f_sin_set(0);
+            if (cont_para.ReqPause)
+            {
+                cont_para.state = pause;
+                cont_para.ReqPause = 0;
+                return 0;       
+            }
+            return 1;       //END
+        }
+    }
+    if (cont_para.state == pause)
+    {
+        if (cont_para.ReqPause)
+        {
+            cont_para.ReqPause = 0;
+						 cont_para.state = running;
+        }
     }
     return 0;
 }
+
 static uint8_t CONT_handler(void)
 {
     uint8_t res = 0;
@@ -111,16 +109,24 @@ uint8_t CONT_Machine_Init(float vel, uint32_t MillSec)
     Slave1_Set_Machine_Cb(CONT_handler);
     cont_para.Tick = 0;
     cont_para.state = running;
+    cont_para.accTimer = 0;
 #endif
     return 1;
 }
 
 uint8_t Cont_Machine_Stop(void)
 {
-    cont_para.CurrentMillSec = 0;
+    cont_para.accTimer = 0;
     cont_para.state = back;
     return 0;
 }
+
+uint8_t Cont_Machine_Pause(void)
+{
+    cont_para.ReqPause = 1;
+    return 0;
+}
+
 #define abs(n) ((n > 0) ? (n) : (-(n)))
 void Cont_Back_init(float tragetPos, float sps, float accMs)
 {
@@ -144,6 +150,6 @@ uint8_t Cont_Machine_Get_Count(uint32_t *MillSecReq, uint32_t *CurrentMillSec)
     if (MillSecReq != 0)
         *MillSecReq = cont_para.MillSecReq;
     if (CurrentMillSec != 0)
-        *CurrentMillSec = cont_para.CurrentMillSec;
+        *CurrentMillSec = cont_para.Tick;
     return 1;
 }

@@ -16,6 +16,8 @@
 struct
 {
 	uint32_t time;
+	uint32_t RemainTime;
+	uint8_t flag_pause;
 	uint32_t SetSec;
 	float angle;
 	float Vel;
@@ -37,9 +39,32 @@ uint8_t hal_Slave_OVAR_Init(Task_Parameter_Struct* e)
 	return 1;
 }
 
+uint8_t HAL_Slave_OVAR_Pause(uint8_t enable)
+{
+#ifndef STM32F40_41xxx
+	if (enable)
+	{
+		ovar_info.flag_pause = 1;
+		ovar_info.RemainTime = ControlGetTick() - ovar_info.time;
+	}
+	else
+	{
+		ovar_info.time = ControlGetTick() - ovar_info.RemainTime;
+		ovar_info.flag_pause = 0;
+	}
+#else
+	OVAR_Machine_Pause();
+#endif // !STM32F40_41xxx
+	return 1;
+}
+
 uint8_t hal_Slave_OVAR_Get_State(uint32_t* remainingSec, uint32_t* parcent)
 {
 #ifndef STM32F40_41xxx
+	if (ovar_info.flag_pause)
+	{
+		return 1;
+	}
 	uint32_t currentSec = (ControlGetTick() - ovar_info.time) / 1000.0f;
 	if (parcent != 0)
 		*parcent = currentSec * 100 / ovar_info.SetSec;
@@ -98,15 +123,16 @@ static void motor_handle(Task_Parameter_Struct* task, Task_control_info* e)
 	{
 		(CAM_State == 0 && i < 2) ?
 			Ctrl_Msg_Printf("camera error") :
-			Ctrl_Msg_Printf("start after %ds", i);
+			Ctrl_Msg_Printf("start after %ds",camWaitTime_s-i);
 		SaftExitDelay(1000, 0);
 	}
 	hal_Slave_OVAR_Init(task);
 	MYPRINTF("\r\n");
-	uint32_t count,parcent;
+	uint32_t count, parcent;
+	uint8_t pauseFlag = 0, CamIsStop = 0;
 	while (OVAR_flag)
 	{
-		OVAR_flag = hal_Slave_OVAR_Get_State(&count,&parcent);
+		OVAR_flag = hal_Slave_OVAR_Get_State(&count, &parcent);
 		if (LastCount != count)
 		{
 			Ctrl_Msg_Printf("%d OVAR Done:%d%%", e->currentCount, (int)parcent);
@@ -117,12 +143,32 @@ static void motor_handle(Task_Parameter_Struct* task, Task_control_info* e)
 			Ctrl_Msg_Printf("%d:OVAR Terminated", e->currentCount);
 			hal_Slave_OVAR_Stop();
 		}
+		if (e->State_Bit.pause != pauseFlag)
+		{
+			if (e->State_Bit.pause)
+			{
+				HAL_Slave_OVAR_Pause(1);
+				Ctrl_Msg_Printf("%d:OVAR Pause",e->currentCount);
+//				if (CamIsStop == 0)
+//					HAL_CAM_REC_Set(1);
+//				CamIsStop = 1;
+			}
+			else
+			{
+					Ctrl_Msg_Printf("%d OVAR Done:%d%%", e->currentCount, (int)parcent);
+				HAL_Slave_OVAR_Pause(0);
+			}
+		}
+		e->State_Bit.pause = pauseFlag;
 		MYPRINTF("%3d", count);
 		// wait motor infinsh
 		SaftExitDelay(10, 0);
 		MYPRINTF("\r");
 	}
-	Ctrl_Msg_Printf("%d:OVAR Done:100%%", e->currentCount);
+	if (e->State_Bit.Exit != 1)
+	{
+		Ctrl_Msg_Printf("%d:OVAR Done:100%%", e->currentCount);
+	}
 	/*one sec for cam stop*/
 	SaftExitDelay(1000, 0);
 	CAM_State = HAL_CAM_REC_Set(1);

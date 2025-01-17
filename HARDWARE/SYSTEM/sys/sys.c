@@ -49,6 +49,16 @@ __asm int readsps(void)
                 bx lr
 }
 
+typedef void (*bootapp)(void); //定义一个函数类型的参数.
+void JumpBootLoader()
+{
+	  u32 Bootaddr = 0x1FFF0000;
+    bootapp jumpBootLoader;
+    jumpBootLoader = (bootapp) * (vu32 *)(Bootaddr + 4); //系统存储器第二个字为程序开始地址
+    MSR_MSP(*(vu32 *)Bootaddr);                          //初始化堆栈指针
+    jumpBootLoader();   
+
+}
 
 
 

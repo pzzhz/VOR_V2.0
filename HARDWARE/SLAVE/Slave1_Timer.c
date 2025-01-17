@@ -38,7 +38,13 @@ void Slave1_Set_Machine_Cb(Slave_Function_CB cb)
 void Step_Phase_Set(u32 arr, u32 psc)
 {
     if (arr == 0 && psc == 0)
-        TIM_Cmd(TIM1, DISABLE);
+		{
+			extern void Slave1_En_IO(uint8_t state);
+				Slave1_En_IO(0);
+			 TIM_Cmd(TIM1, DISABLE);
+			return;
+		}
+       Slave1_En_IO(1);
 #if 1
     // 此部分需手动修改IO口设置
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;

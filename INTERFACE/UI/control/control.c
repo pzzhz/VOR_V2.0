@@ -140,7 +140,7 @@ uint8_t Ctrl_Write_Ack(uint8_t* msg, uint16_t msg_size,
 	if (Msg_COMPARE("ReqShift", msg))
 	{
 		if (control_info.State_Bit.IsRunning)
-			Start_Stop_Flag = StartCmdStop;
+			Start_Stop_Flag = StartCmdPause;
 		else
 			Start_Stop_Flag = StartCmdBegin;
 	}
@@ -226,7 +226,7 @@ uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info* e, uint8_t LR)
 	static char message[50];
 	uint8_t res = (LR) ? Hal_Rk3588_Readarray(message) : Hal_Rk3588_L_ReadLine(message);
 	if (res == 1) {
-		if (Msg_COMPARE("wifi down", message)) 
+		if (Msg_COMPARE("wifi down", message))
 		{
 			HAL_CAM_SET_Set();
 		}
@@ -261,7 +261,7 @@ uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info* e, uint8_t LR)
 		}
 		else
 		{
-			*Rk_Ack_Count=*Rk_Ack_Count-1;
+			*Rk_Ack_Count = *Rk_Ack_Count - 1;
 		}
 	}
 	if (*flag == Cancel)
@@ -313,7 +313,7 @@ void controlfunction()
 	while (1)
 	{
 		Rk3588_Ack_Cmd_Handle(&control_info, 0);
-		Rk3588_Ack_Cmd_Handle(&control_info,1);
+		Rk3588_Ack_Cmd_Handle(&control_info, 1);
 		if (control_info.State_Bit.Init == 0)
 		{
 			if (control_info.State_Bit.WaitRk == 0)
@@ -327,6 +327,10 @@ void controlfunction()
 				if (Startflag == StartCmdStop)
 				{
 					Task_control_ReqStop(&control_info);
+				}
+				if (Startflag == StartCmdPause)
+				{
+					Task_control_ReqPause(&control_info);
 				}
 
 			}
