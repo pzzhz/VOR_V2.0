@@ -136,7 +136,7 @@ uint8_t ContControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 		}
 		if (e->State_Bit.Exit) // for exit
 		{
-			Ctrl_Msg_Printf("%d:CONT Terminated", e->currentCount);
+			Ctrl_Msg_Printf("%d:CONT #A52A2A Terminated#", e->currentCount);
 			HAL_Slave_CONT_Stop();
 		}
 		if (e->State_Bit.pause != pauseFlag)

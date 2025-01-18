@@ -140,7 +140,7 @@ static void motor_handle(Task_Parameter_Struct* task, Task_control_info* e)
 		}
 		if (e->State_Bit.Exit) // for exit
 		{
-			Ctrl_Msg_Printf("%d:OVAR Terminated", e->currentCount);
+			Ctrl_Msg_Printf("%d:OVAR #A52A2A Terminated#", e->currentCount);
 			hal_Slave_OVAR_Stop();
 		}
 		if (e->State_Bit.pause != pauseFlag)

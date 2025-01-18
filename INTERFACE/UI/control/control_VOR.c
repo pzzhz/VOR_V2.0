@@ -114,7 +114,7 @@ uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 	{
 		(CAM_State == 0 && i < 2) ?
 			Ctrl_Msg_Printf("camera error") :
-			Ctrl_Msg_Printf("start after %ds",camWaitTime_s-i);
+			Ctrl_Msg_Printf("start after %ds", i);
 		SaftExitDelay(1000, 0);
 	}
 	/*motor set running configure*/
@@ -136,7 +136,7 @@ uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 		}
 		if (e->State_Bit.Exit) // for exit
 		{
-			Ctrl_Msg_Printf("%d:VOR Terminated", e->currentCount);
+			Ctrl_Msg_Printf("%d:VOR #A52A2A Terminated#", e->currentCount);
 			HAL_Slave_VOR_Stop();
 		}
 		if (e->State_Bit.pause != pauseFlag)
@@ -145,9 +145,9 @@ uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 			{
 				HAL_Slave_VOR_Pause(1);
 				Ctrl_Msg_Printf("%d:VOR Pause", e->currentCount);
-//				if (CamIsStop == 0)
-//					HAL_CAM_REC_Set(1);
-//				CamIsStop = 1;
+				if (CamIsStop == 0)
+					HAL_CAM_REC_Set(1);
+				CamIsStop = 1;
 			}
 			else
 			{

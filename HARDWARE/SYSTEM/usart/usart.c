@@ -220,20 +220,21 @@ void uart5_init(u32 bound)
 // 重定义fputc函数
 int fputc(int ch, FILE *f)
 {
-    if (usart_switch == 1)
-    {
-        while ((USART1->SR & 0X40) == 0)
-            ; // 循环发送,直到发送完毕
-        USART1->DR = (u8)ch;
-        return ch;
-    }
-    else
-    {
-        while ((USART2->SR & 0X40) == 0)
-            ; // 循环发送,直到发送完毕
-        USART2->DR = (u8)ch;
-        return ch;
-    }
+//    if (usart_switch == 1)
+//    {
+//        while ((USART1->SR & 0X40) == 0)
+//            ; // 循环发送,直到发送完毕
+//        USART1->DR = (u8)ch;
+//        return ch;
+//    }
+//    else
+//    {
+//        while ((USART2->SR & 0X40) == 0)
+//            ; // 循环发送,直到发送完毕
+//        USART2->DR = (u8)ch;
+//        
+	return ch;
+//    }
 }
 #endif
 

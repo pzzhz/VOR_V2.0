@@ -41,7 +41,7 @@ extern "C"
 	{
 		union
 		{
-			uint8_t flag;
+			uint16_t flag;
 			struct
 			{
 				uint8_t Init : 1;
@@ -50,6 +50,7 @@ extern "C"
 				uint8_t Exit : 1;
 				uint8_t finish : 1;
 				uint8_t pause : 1;
+				uint8_t powerUp : 2;
 			};
 		} State_Bit;
 		union

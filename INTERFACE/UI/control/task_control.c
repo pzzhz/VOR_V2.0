@@ -115,7 +115,7 @@ void RK3588_interrupt_Printf(void)
 void task_interval_handle(int index)
 {
 	const uint32_t waitMillSec = 5000;
-	uint32_t time = ControlGetTick(), remainingTime = 0;
+	int32_t time = ControlGetTick(), remainingTime = 0;
 	// uint16_t len = sprintf(msg_buffer, "Interval: ID:%d", index);
 	// Message_Center_Send("PAGE1", 0, msg_buffer, len);
 	/*  Message_Center_Send_prinft(

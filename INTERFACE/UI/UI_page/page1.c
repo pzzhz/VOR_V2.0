@@ -288,8 +288,9 @@ void UI_Task_Msg_Init(lv_obj_t* parent)
 {
 	Msg_Label = lv_label_create(parent);
 	lv_obj_align_to(Msg_Label, start_btn, LV_ALIGN_OUT_BOTTOM_LEFT, -200, -20);
-	lv_label_set_text(Msg_Label, string);
 
+	lv_label_set_text(Msg_Label, string);
+	lv_label_set_recolor(Msg_Label, 1);
 }
 
 static uint8_t StartBtnFlag;
@@ -304,7 +305,7 @@ void UI_Start_Btn_Clicked_Handle(lv_event_t* e)
 			Message_Center_Send_prinft("Ctrl", 0,
 				0,
 				"ReqShift");
-			printf("\r\n clicked \r\n");
+			// printf("\r\n clicked \r\n");
 		}
 		flag = e->code;
 	}
@@ -314,7 +315,7 @@ void UI_Start_Btn_Clicked_Handle(lv_event_t* e)
 			0,
 			"ReqStop");
 		flag = e->code;
-		printf("\r\n press \r\n");
+		// printf("\r\n press \r\n");
 	}
 }
 
