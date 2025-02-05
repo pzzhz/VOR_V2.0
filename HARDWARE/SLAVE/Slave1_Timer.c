@@ -12,12 +12,11 @@ void TIM1_BRK_TIM9_IRQHandler(void)
         {
             uint8_t res = function_cb();
             if (res)
-						{
-							     TIM9->CR1 &= ~TIM_CR1_CEN;
-										extern void Slave1_En_IO(uint8_t state);
-									 Slave1_En_IO(0);
-						}
-           
+            {
+                TIM9->CR1 &= ~TIM_CR1_CEN;
+                extern void Slave1_En_IO(uint8_t state);
+                Slave1_En_IO(0);
+            }
         }
         // 补停机代码
     }
@@ -38,13 +37,11 @@ void Slave1_Set_Machine_Cb(Slave_Function_CB cb)
 void Step_Phase_Set(u32 arr, u32 psc)
 {
     if (arr == 0 && psc == 0)
-		{
-			extern void Slave1_En_IO(uint8_t state);
-				Slave1_En_IO(0);
-			 TIM_Cmd(TIM1, DISABLE);
-			return;
-		}
-       Slave1_En_IO(1);
+    {
+        TIM_Cmd(TIM1, DISABLE);
+        return;
+    }
+    Slave1_En_IO(1);
 #if 1
     // 此部分需手动修改IO口设置
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
@@ -127,7 +124,7 @@ void Slave_server_Init(void)
 #ifdef HARDWARE_TEST
     TIM_TimeBaseInitStructure.TIM_Prescaler = 167; // 定时器分频
 #else
-    TIM_TimeBaseInitStructure.TIM_Prescaler = 336  - 1; // 定时器分频
+    TIM_TimeBaseInitStructure.TIM_Prescaler = 336 - 1; // 定时器分频
 #endif
     TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up; // 向上计数模式
     TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
@@ -182,7 +179,7 @@ void Slave1_Step_Generator_Init(uint32_t arr, uint32_t psc)
     // Enable the TIM1 counter
     TIM1->CR1 |= TIM_CR1_CEN;
     TIM1->CCR1 = arr / 2;
-   
+
     Slave_server_Init();
 }
 
@@ -287,6 +284,12 @@ void tim_f_sin_set(int f)
 uint8_t Slave_Back(int Tag_Pos)
 {
     return 1;
+}
+
+void Slave_Release()
+{
+    Slave1_En_IO(0);
+    TIM_Cmd(TIM1,0);
 }
 
 u8 Slave_Back_spd(int Tag_Pos, int spd)

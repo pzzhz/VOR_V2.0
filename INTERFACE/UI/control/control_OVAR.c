@@ -130,6 +130,7 @@ static void motor_handle(Task_Parameter_Struct* task, Task_control_info* e)
 	MYPRINTF("\r\n");
 	uint32_t count, parcent;
 	uint8_t pauseFlag = 0, CamIsStop = 0;
+	e->State_Bit.pause = 0;
 	while (OVAR_flag)
 	{
 		OVAR_flag = hal_Slave_OVAR_Get_State(&count, &parcent);

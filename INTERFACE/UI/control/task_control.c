@@ -209,12 +209,6 @@ BEGIN_POS:
 		Task_Parameter_Struct* task = &e->taskArray[i];
 		e->currentCount = i;
 		task_interval_handle(i);
-		if (e->State_Bit.Exit)
-		{
-			Rk3588_Task_Cancel;
-			break;
-		}
-
 		uint8_t isretract = 1;
 		switch (task->mode)
 		{
@@ -231,6 +225,12 @@ BEGIN_POS:
 			OvarControlFunction(task, e, isretract);
 			break;
 		default:
+			break;
+		}
+
+		if (e->State_Bit.Exit)
+		{
+			Rk3588_Task_Cancel;
 			break;
 		}
 	}

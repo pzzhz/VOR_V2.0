@@ -53,7 +53,7 @@ extern "C"
 				uint8_t powerUp : 2;
 			};
 		} State_Bit;
-		union
+		struct
 		{
 			 enum
 			{

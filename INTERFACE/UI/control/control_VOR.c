@@ -125,6 +125,7 @@ uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 	uint8_t VOR_machine_flag = 1, pauseFlag = 0, CamIsStop = 0;
 	int32_t LastCount = -1;
 	uint32_t count, parcent;
+	e->State_Bit.pause = 0;
 	/*waiting vor machine finish*/
 	while (VOR_machine_flag)
 	{
@@ -163,7 +164,7 @@ uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 		MYPRINTF("\r");
 	}
 	if (e->State_Bit.Exit == 0)
-		Ctrl_Msg_Printf("%d:VOR Done:100%%");
+		Ctrl_Msg_Printf("%d:VOR Done:100%%", e->currentCount);
 	/*one sec for cam stop*/
 	SaftExitDelay(1000, 0);
 	if (CamIsStop == 0)

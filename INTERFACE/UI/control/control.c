@@ -22,9 +22,9 @@
 #else
 typedef uint32_t TaskHandle_t;
 #endif
-void thread_create(void *function, Task_control_info *e, TaskHandle_t *control_thread, uint16_t sizeofstack);
+void thread_create(void* function, Task_control_info* e, TaskHandle_t* control_thread, uint16_t sizeofstack);
 TaskHandle_t task_ctrl_thread, contrl_thread;
-Task_control_info control_info = {0};
+Task_control_info control_info = { 0 };
 
 #if 0
 UI_Function_struct control_cb_array[control_cb_array_size];
@@ -93,8 +93,8 @@ uint8_t Ctrl_Get_Strat_Cmd()
 	return cmd;
 }
 
-uint8_t Ctrl_Msg_Printf(const char *format,
-						...)
+uint8_t Ctrl_Msg_Printf(const char* format,
+	...)
 {
 	va_list args;
 	va_start(args, format);
@@ -104,13 +104,13 @@ uint8_t Ctrl_Msg_Printf(const char *format,
 }
 
 // return 0 ->ok
-uint8_t Ctrl_Read_Ack(uint8_t *msg, uint16_t msg_size,
-					  uint8_t *src, uint16_t SrcSize)
+uint8_t Ctrl_Read_Ack(uint8_t* msg, uint16_t msg_size,
+	uint8_t* src, uint16_t SrcSize)
 {
 	if (Msg_COMPARE("ReqReadState", msg))
 	{
 		sprintf(src, "ReadState %d %d",
-				control_info.State_Bit.IsRunning, control_info.currentCount);
+			control_info.State_Bit.IsRunning, control_info.currentCount);
 		return 0;
 	}
 
@@ -134,8 +134,8 @@ uint8_t Ctrl_Read_Ack(uint8_t *msg, uint16_t msg_size,
 	return 1;
 }
 
-uint8_t Ctrl_Write_Ack(uint8_t *msg, uint16_t msg_size,
-					   uint8_t *src, uint16_t SrcSize)
+uint8_t Ctrl_Write_Ack(uint8_t* msg, uint16_t msg_size,
+	uint8_t* src, uint16_t SrcSize)
 {
 	if (Msg_COMPARE("ReqShift", msg))
 	{
@@ -155,8 +155,8 @@ uint8_t Ctrl_Write_Ack(uint8_t *msg, uint16_t msg_size,
 	return 0;
 }
 
-uint8_t Maintain_Service_Read_ack(uint8_t *msg, uint16_t msg_size,
-								  uint8_t *src, uint16_t SrcSize)
+uint8_t Maintain_Service_Read_ack(uint8_t* msg, uint16_t msg_size,
+	uint8_t* src, uint16_t SrcSize)
 {
 	if (Msg_COMPARE("Camere LED", msg))
 	{
@@ -215,16 +215,16 @@ uint8_t ctrlWaitRk3588()
 	return 0;
 }
 
-uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info *e, uint8_t LR)
+uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info* e, uint8_t LR)
 {
 	const uint16_t Rk_Ack_Expiration = 200; // 2000ms
 	static uint16_t Rk_Ack_CountL, Rk_Ack_CountR;
 	static uint8_t last_Rk3588_FlagL, last_Rk3588_FlagR;
-	uint16_t *Rk_Ack_Count = (LR) ? &Rk_Ack_CountL : &Rk_Ack_CountR;
-	uint8_t *last_Rk3588_Flag = (LR) ? &last_Rk3588_FlagL : &last_Rk3588_FlagR;
-	uint8_t *flag = (LR) ? &e->Rk3588_Flag.Lflag : &e->Rk3588_Flag.Rflag;
+	uint16_t* Rk_Ack_Count = (LR) ? &Rk_Ack_CountL : &Rk_Ack_CountR;
+	uint8_t* last_Rk3588_Flag = (LR) ? &last_Rk3588_FlagL : &last_Rk3588_FlagR;
+	uint8_t* flag = (LR) ? &e->Rk3588_Flag.Lflag : &e->Rk3588_Flag.Rflag;
 	static char message[50];
-	uint8_t res = (LR) ? Hal_Rk3588_Readarray(message) : Hal_Rk3588_L_ReadLine(message);
+	uint8_t res = (LR) ? Hal_Rk3588_Readarray(message) : Hal_Rk3588_L_Readarray(message);
 	if (res == 1)
 	{
 		if (Msg_COMPARE("wifi down", message))
@@ -246,7 +246,15 @@ uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info *e, uint8_t LR)
 		}
 		if (Msg_COMPARE("ready", message))
 		{
-			e->State_Bit.powerUp= 0; // left 0:->01'2b right 1:->10'2b
+			e->State_Bit.powerUp = 0; // left 0:->01'2b right 1:->10'2b
+		}
+		if(Msg_COMPARE("DFU",message))
+		{
+			EnterCrital();
+#ifdef STM32F40_41xxx
+			extern void JumpBootLoader();
+			JumpBootLoader();
+#endif
 		}
 	}
 	if (*last_Rk3588_Flag != *flag)
@@ -276,7 +284,7 @@ uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info *e, uint8_t LR)
 			e->State_Bit.WaitRk = 1;
 			extern void RK3588_terminal_Printf(uint8_t LR);
 			RK3588_terminal_Printf(LR);
-			Ctrl_Msg_Printf("Cleaning Video");
+			//Ctrl_Msg_Printf("Cleaning Video");
 			*Rk_Ack_Count = Rk_Ack_Expiration;
 		}
 		else
@@ -288,11 +296,11 @@ uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info *e, uint8_t LR)
 	*last_Rk3588_Flag = *flag;
 }
 
-void Ctrl_info_Indicator(Task_control_info *e)
+void Ctrl_info_Indicator(Task_control_info* e)
 {
 	static int16_t count;
 	static uint8_t IntCount;
-	const char dot[3][4] = {".", "..", "..."};
+	const char dot[3][4] = { ".", "..", "..." };
 	count++;
 	if (count < 100)
 		return;
@@ -302,7 +310,10 @@ void Ctrl_info_Indicator(Task_control_info *e)
 	if (e->State_Bit.powerUp)
 		Ctrl_Msg_Printf("Initializing%s", dot[IntCount]);
 	if (e->State_Bit.WaitRk)
+	{
 		Ctrl_Msg_Printf("proceeding video");
+		//Ctrl_Msg_Printf("proceeding video %d %d", e->Rk3588_Flag.Lflag, e->Rk3588_Flag.Rflag);
+	}
 	IntCount = (IntCount >= 2) ? 0 : IntCount + 1;
 }
 
@@ -337,8 +348,8 @@ void controlfunction()
 	control_info.State_Bit.powerUp = 3;
 	while (1)
 	{
-		Rk3588_Ack_Cmd_Handle(&control_info, 0);
-		Rk3588_Ack_Cmd_Handle(&control_info, 1);
+		Rk3588_Ack_Cmd_Handle(&control_info, 0); 
+		Rk3588_Ack_Cmd_Handle(&control_info, 1);//(L) pc using com 1 stm32 using uart1
 		Ctrl_info_Indicator(&control_info);
 		if (control_info.State_Bit.Init == 0)
 		{
@@ -359,11 +370,12 @@ void controlfunction()
 				{
 					Task_control_ReqPause(&control_info);
 				}
-			}else
+			}
+			else
 			{
 				if (Startflag == StartCmdStop)
 				{
-					control_info.State_Bit.powerUp =0;
+					control_info.State_Bit.powerUp = 0;
 				}
 			}
 		}
@@ -377,33 +389,32 @@ void controlfunction()
 #ifndef STM32F40_41xxx
 		control_info.State_Bit.powerUp = 0;
 		control_info.Rk3588_Flag.Lflag = 0;
-		control_info.Rk3588_Flag.Rflag = 0;
 #endif
 		ControlDelay(10);
 		// e.ExitFlag = 1;
 	}
 }
 
-void thread_create(void *function, Task_control_info *e, TaskHandle_t *control_thread, uint16_t sizeofstack)
+void thread_create(void* function, Task_control_info* e, TaskHandle_t* control_thread, uint16_t sizeofstack)
 {
 #ifndef STM32F40_41xxx
 	HANDLE hThread;
 	DWORD dwThreadId;
 	hThread = CreateThread(NULL,
-						   0,
-						   function,
-						   e,
-						   0,
-						   &dwThreadId);
+		0,
+		function,
+		e,
+		0,
+		&dwThreadId);
 #else
 	//	static TaskHandle_t control_thread;
 	volatile BaseType_t res =
 		xTaskCreate((TaskFunction_t)function,
-					(const char *)"Outside_motor",
-					(uint16_t)sizeofstack,
-					(void *)e,
-					(UBaseType_t)2,
-					(TaskHandle_t *)&control_thread);
+			(const char*)"Outside_motor",
+			(uint16_t)sizeofstack,
+			(void*)e,
+			(UBaseType_t)2,
+			(TaskHandle_t*)&control_thread);
 #endif
 }
 

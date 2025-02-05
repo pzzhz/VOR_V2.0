@@ -70,7 +70,7 @@ uint8_t Slave_motor(void)
     }
     if (vor_para.state == pause)
     {
-        tim_f_sin_set(0);
+        Slave_Release();
         if (vor_para.RepPause)
         {
             vor_para.state = running;

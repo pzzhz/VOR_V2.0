@@ -125,6 +125,7 @@ uint8_t ContControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 	int32_t LastCount = -1;
 	// motor initial
 	uint32_t count, parcent;
+	e->State_Bit.pause = 0;
 	while (CONT_flag)
 	{
 		CONT_flag = HAL_Slave_CONT_Get_State(&count, &parcent);

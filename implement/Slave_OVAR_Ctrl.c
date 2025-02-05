@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-24 14:44:19
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
- * @LastEditTime: 2025-01-17 15:04:38
+ * @LastEditTime: 2025-01-18 19:33:49
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\implement\Slave_Vor_Ctrl.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -61,6 +61,7 @@ static uint8_t motor_set(void)
         if (ovar_para.accTimer <= 0)
         {
             tim_f_sin_set(0);
+            Slave_Release();
             if (ovar_para.ReqPause)
             {
                 ovar_para.state = pause;
@@ -72,6 +73,7 @@ static uint8_t motor_set(void)
     }
     if (ovar_para.state == pause)
     {
+        Slave_Release();
         if (ovar_para.ReqPause)
         {
             ovar_para.ReqPause = 0;
