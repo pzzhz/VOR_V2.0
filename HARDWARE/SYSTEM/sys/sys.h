@@ -85,6 +85,7 @@ void INTX_DISABLE(void);//�ر������ж�
 void INTX_ENABLE(void);	//���������ж�
 void MSR_MSP(u32 addr);	//���ö�ջ��ַ 
 int readsps(void);
+void DFU_PowerUp_Detection(void);
 #endif
 
 

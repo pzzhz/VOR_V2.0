@@ -48,25 +48,11 @@ __asm int readsps(void)
 				bx lr
 }
 
-void ResetSystem()
-{
-	RCC->AHB1RSTR = 0xffffffff;
-	RCC->AHB2RSTR = 0xffffffff;
-	RCC->AHB3RSTR = 0xffffffff;
-	RCC->APB1RSTR = 0xffffffff;
-	RCC->APB2RSTR = 0xffffffff;
-
-	RCC->AHB1RSTR = 0;
-	RCC->AHB2RSTR = 0;
-	RCC->AHB3RSTR = 0;
-	RCC->APB1RSTR = 0;
-	RCC->APB2RSTR = 0;
-}
-
+uint8_t *dfuFlag=(uint8_t *)0x2001FFF5;
 typedef void (*bootapp)(void); // 定义一个函数类型的参数.
 void JumpBootLoader()
 {
-	ResetSystem();
+
 	
 	u32 Bootaddr = 0x1FFF0000;
 	bootapp jumpBootLoader;
@@ -75,4 +61,21 @@ void JumpBootLoader()
 	jumpBootLoader();
 }
 
+void RequestEnterDFU(void)
+{
+	*dfuFlag=0xAA;
+	SCB->AIRCR = (0X5FA << 16) + 4; //软件复位
+}
+
+void DFU_PowerUp_Detection()
+{
+	if (*dfuFlag ==0xAA)    //判断上次复位是否为软件复位
+    {
+			*dfuFlag=0;
+        RCC->CSR = 0;              //清除标志位
+        JumpBootLoader();                    //进入bootloader
+    }
+    RCC->CSR=RCC_CSR_RMVF; 
+		*dfuFlag=0;
+}
 

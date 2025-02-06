@@ -64,7 +64,7 @@ void Continue_init(lv_obj_t* parent)
 }
 #endif
 
-const char* Set_item = "VOR\n""CONT\n""OVAR";
+const char* Set_item = "VOR\n""OKR\n""VOR+OKR\n""CONT\n""OVAR\n";
 typedef struct
 {
 	struct {
@@ -99,6 +99,14 @@ static void handler(UI_Dropdown_Struct* e)
 	{
 		ui_mode_cb.cb[Task_VOR].hidden(0);
 	}
+	if (strncmp("OKR", str, 3) == 0)
+	{
+		ui_mode_cb.cb[Task_VOR].hidden(0);
+	}
+	if (strncmp("VOR+OKR", str, 3) == 0)
+	{
+		ui_mode_cb.cb[Task_VOR].hidden(0);
+	}
 	if (strncmp("CONT", str, 4) == 0)
 	{
 		ui_mode_cb.cb[Task_Continue].hidden(0);
@@ -118,6 +126,17 @@ uint8_t UI_Parameter_Read(Task_Parameter_Struct* e)
 	if (strncmp("VOR", str, 3) == 0)
 	{
 		res = ui_mode_cb.cb[Task_VOR].Get(e);
+		e->VOR.ExMode = Ex_VOR;
+	}
+	if (strncmp("OKR", str, 3) == 0)
+	{
+		res = ui_mode_cb.cb[Task_VOR].Get(e);
+		e->VOR.ExMode = Ex_OKR;
+	}
+	if (strncmp("VOR+OKR", str, 6) == 0)
+	{
+		res = ui_mode_cb.cb[Task_VOR].Get(e);
+		e->VOR.ExMode = Ex_BOTH;
 	}
 	if (strncmp("CONT", str, 4) == 0)
 	{

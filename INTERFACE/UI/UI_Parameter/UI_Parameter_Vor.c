@@ -7,7 +7,9 @@
 const char* Vor_VelItem = "5/s\n""10/s\n""20/s\n""30/s\n" "40/s\n""50/s\n""60/s\n""80/s";
 const char* Vor_FreqItem = "0.1HZ\n"
 "0.2HZ\n"
+"0.3HZ\n"
 "0.5HZ\n"
+"0.6HZ\n"
 "0.8HZ\n"
 "1.0HZ\n"
 "1.6HZ\n"

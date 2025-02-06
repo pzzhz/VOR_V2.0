@@ -13,10 +13,16 @@ void TIM1_BRK_TIM9_IRQHandler(void)
             uint8_t res = function_cb();
             if (res)
             {
-                TIM9->CR1 &= ~TIM_CR1_CEN;
+                // TIM9->CR1 &= ~TIM_CR1_CEN;
+                function_cb = 0;
                 extern void Slave1_En_IO(uint8_t state);
                 Slave1_En_IO(0);
             }
+        }
+        else
+        {
+            extern void Motor_Spd_Pid(float speed);
+            Motor_Spd_Pid(0);                           //avoid c601 unexpect movement
         }
         // ²¹Í£»ú´úÂë
     }
@@ -289,7 +295,7 @@ uint8_t Slave_Back(int Tag_Pos)
 void Slave_Release()
 {
     Slave1_En_IO(0);
-    TIM_Cmd(TIM1,0);
+    TIM_Cmd(TIM1, 0);
 }
 
 u8 Slave_Back_spd(int Tag_Pos, int spd)

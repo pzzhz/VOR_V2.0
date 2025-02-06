@@ -119,6 +119,21 @@ void Set_table_Cell_Text(lv_obj_t* obj, Task_Parameter_Struct* e)
 	}
 }
 
+const char* TaskNameTransLate(Task_Parameter_Struct t)
+{
+	static const char mode_name_array[][8] = { "VOR","OKR","VOR+OKR" };
+	static const char mode_name_array2[][8] = { "VOR","CONT", "OVAR" };
+	//注意 这里不是
+	uint16_t array_index = t.mode;
+	if (t.mode == Task_VOR)
+	{
+		array_index += t.VOR.ExMode;
+		return mode_name_array[(array_index)];
+	}
+	array_index = t.mode;
+	return mode_name_array2[(array_index)];
+}
+
 #define SPRINTF sprintf_s
 void ui1_(Table_Property* p)
 {
@@ -126,59 +141,13 @@ void ui1_(Table_Property* p)
 	if (p->Updata_Source)
 	{
 		Task_Parameter_Struct* task_info = p->Updata_Source;
-		const char mode_name_array[4][6] = { "NULL","VOR", "CONT","OVAR" };
-		uint16_t array_index = task_info->mode + 1;
-		if (array_index >= 0x04)
-		{
-			array_index = 0;
-		}
-		const char* mode_Name = mode_name_array[(array_index)];
-		lv_table_set_cell_value_fmt(p->obj, 0, 0, "%s,%d", mode_Name, index);
+		const	 char* str = TaskNameTransLate(*task_info);
+		lv_table_set_cell_value_fmt(p->obj, 0, 0, "%s,%d",
+			str, index);
 		Set_table_Cell_Text(p->obj, task_info);
 	}
 }
-//uint8_t Control_btn_communication(uint8_t message[50], uint8_t* cmd)
-//{
-//	char* CMD = cmd;
-//	if (CmdCheck(cmd, CMD_BTN_ADD) == 0)
-//	{
-//		// 执�?�添�?
-//	}
-//	if (Control_Add_Task.flag == Flag_required)
-//	{
-//		uint16_t index = Control_Add_Task.fouce_index;
-//		Control_Add_Task.info_pt = Task_Stroage_Insert(Control_Add_Task.info, index);
-//		if (Control_Add_Task.info_pt != 0)
-//			Control_Add_Task.flag = Flag_OKNE; // 让参数继�?运�??
-//		else
-//			Control_Add_Task.flag = Flag_Error;
-//		return 0;
-//	}
-//	if (Control_del_Task.flag == Flag_required)
-//	{
-//		uint16_t index = Control_del_Task.fouce_index;
-//		if (Task_Stroage_delByID(index))
-//			Control_del_Task.flag = Flag_OKNE; // 让参数继�?运�??
-//		else
-//			Control_del_Task.flag = Flag_Error;
-//		return 0;
-//	}
-//	if (Control_Save_Task.flag == Flag_required)
-//	{
-//		uint16_t index = Control_Save_Task.fouce_index;
-//		if (Control_Save_Task.para == 0)
-//		{
-//			Control_Save_Task.flag = Flag_Error;
-//		}
-//		else
-//		{
-//			memcpy(Control_Save_Task.para, &Control_Save_Task.Set, sizeof(Task_Parameter_Struct));
-//			Control_Save_Task.flag = Flag_OKNE;
-//		}
-//		return 0;
-//	}
-//	return 0;
-//}
+
 
 void UI_Task_Btn_ADD_Callback(uint16_t fouces_index, Task_Parameter_Struct* pt)
 {
@@ -580,6 +549,15 @@ void UI_Page1_Respone_Updata_Msg(uint8_t flag, uint16_t ID)
 	}
 }
 
+void UI_DFU_Display()
+{
+	
+		lv_obj_t* mbox1 = lv_msgbox_create(NULL, "\n		    DFU Fireware Update",
+			"",
+			0, false);
+		lv_obj_center(mbox1);
+}
+
 void UI_Page1_Timer_UIupdata_handle(lv_timer_t* t)
 {
 	UI_Page1_Btn_Refulsh();
@@ -664,5 +642,4 @@ void Page1_init(lv_obj_t* parent)
 
 	lv_timer_create(UI_Page1_Timer_handle, 5, 0);
 	lv_timer_create(UI_Page1_Timer_UIupdata_handle, 100, 0);
-
 }

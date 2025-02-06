@@ -63,7 +63,7 @@ uint8_t hal_Slave_OVAR_Get_State(uint32_t* remainingSec, uint32_t* parcent)
 #ifndef STM32F40_41xxx
 	if (ovar_info.flag_pause)
 	{
-		return 1;
+		return Imp_pause;
 	}
 	uint32_t currentSec = (ControlGetTick() - ovar_info.time) / 1000.0f;
 	if (parcent != 0)
@@ -71,10 +71,10 @@ uint8_t hal_Slave_OVAR_Get_State(uint32_t* remainingSec, uint32_t* parcent)
 	if (currentSec < ovar_info.SetSec)
 	{
 		*remainingSec = ovar_info.SetSec - currentSec;
-		return 1;
+		return Imp_running;
 	}
 	*remainingSec = 0;
-	return 0;
+	return Imp_finsih;
 #else
 	uint32_t counterReq = 0, CurrentCount = 0;
 	uint8_t res = OVAR_Machine_Get_Count(&counterReq, &CurrentCount);

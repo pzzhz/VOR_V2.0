@@ -83,8 +83,8 @@ void RK3588_SendTaskInfo(uint16_t tasksize, uint8_t LR)
 			break;
 		}
 	}
-	(LR) ? Rk3588_Printf("@") :
-		Rk3588_L_Printf("@");
+	(LR) ? Rk3588_Printf("@\r\n") :
+		Rk3588_L_Printf("@\r\n");
 	free(mousename);
 }
 

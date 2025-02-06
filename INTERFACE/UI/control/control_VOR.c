@@ -21,6 +21,7 @@
  // 无UI控制
 // 返回message
 
+
 struct
 {
 	uint32_t time;
@@ -40,7 +41,7 @@ uint8_t HAL_Slave_VOR_Init(Task_Parameter_Struct* e)
 	vor_info.flag_pause = 0;
 #else
 	if (e->mode == Task_VOR)
-		VOR_Machine_Init(e->VOR.Freq, e->VOR.Vel, e->VOR.Counter);
+		VOR_Machine_Init(e->VOR.Freq, e->VOR.Vel, e->VOR.Counter,e->VOR.ExMode);
 #endif // !STM32F40_41xxx
 
 	return 1;
@@ -101,6 +102,12 @@ uint8_t HAL_Slave_VOR_Get_State(uint32_t* remainingCount, uint32_t* parcent)
 #endif // !STM32F40_41xxx
 }
 
+const char* ModeStr(Task_Parameter_Struct* task)
+{
+	static const char str[][7] = { "VOR","OKR","VOR+OKR" };
+	return str[task->VOR.ExMode];
+}
+
 uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 {
 	const int camWaitTime_s = 5;
@@ -132,12 +139,12 @@ uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 		VOR_machine_flag = HAL_Slave_VOR_Get_State(&count, &parcent);
 		if (LastCount != count && e->State_Bit.pause == 0)
 		{
-			Ctrl_Msg_Printf("%d:VOR Done:%d%%", e->currentCount, parcent);
+			Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount, ModeStr(task), parcent);
 			LastCount = count;
 		}
 		if (e->State_Bit.Exit) // for exit
 		{
-			Ctrl_Msg_Printf("%d:VOR #A52A2A Terminated#", e->currentCount);
+			Ctrl_Msg_Printf("%d:%s #A52A2A Terminated#", e->currentCount, ModeStr(task));
 			HAL_Slave_VOR_Stop();
 		}
 		if (e->State_Bit.pause != pauseFlag)
@@ -145,14 +152,14 @@ uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 			if (e->State_Bit.pause)
 			{
 				HAL_Slave_VOR_Pause(1);
-				Ctrl_Msg_Printf("%d:VOR Pause", e->currentCount);
+				Ctrl_Msg_Printf("%d:%s Pause", e->currentCount, ModeStr(task));
 				if (CamIsStop == 0)
 					HAL_CAM_REC_Set(1);
 				CamIsStop = 1;
 			}
 			else
 			{
-				Ctrl_Msg_Printf("%d:VOR Done:%d%%", e->currentCount, parcent);
+				Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount, ModeStr(task), parcent);
 				HAL_Slave_VOR_Pause(0);
 			}
 		}
@@ -164,7 +171,7 @@ uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 		MYPRINTF("\r");
 	}
 	if (e->State_Bit.Exit == 0)
-		Ctrl_Msg_Printf("%d:VOR Done:100%%", e->currentCount);
+		Ctrl_Msg_Printf("%d:%s Done:100%%", e->currentCount, ModeStr(task));
 	/*one sec for cam stop*/
 	SaftExitDelay(1000, 0);
 	if (CamIsStop == 0)

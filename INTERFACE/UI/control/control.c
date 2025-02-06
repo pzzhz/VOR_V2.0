@@ -250,10 +250,9 @@ uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info* e, uint8_t LR)
 		}
 		if(Msg_COMPARE("DFU",message))
 		{
-			EnterCrital();
 #ifdef STM32F40_41xxx
-			extern void JumpBootLoader();
-			JumpBootLoader();
+			extern void RequestEnterDFU(void);
+			RequestEnterDFU();
 #endif
 		}
 	}
@@ -388,8 +387,9 @@ void controlfunction()
 		}
 #ifndef STM32F40_41xxx
 		control_info.State_Bit.powerUp = 0;
-		control_info.Rk3588_Flag.Lflag = 0;
+		control_info.Rk3588_Flag.Rflag = 0;
 #endif
+		control_info.Rk3588_Flag.Lflag = 0;
 		ControlDelay(10);
 		// e.ExitFlag = 1;
 	}

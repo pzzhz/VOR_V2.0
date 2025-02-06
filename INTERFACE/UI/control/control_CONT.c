@@ -77,17 +77,17 @@ uint8_t HAL_Slave_CONT_Get_State(uint32_t* remainingSec, uint32_t* parcent)
 {
 #ifndef STM32F40_41xxx
 	if (Cont_info.flag_pause)
-		return 1;
+		return Imp_pause;
 	uint32_t currentSec = (ControlGetTick() - Cont_info.time) / 1000.0f;
 	if (parcent != 0)
 		*parcent = currentSec * 100 / Cont_info.SetSec;
 	if (currentSec < Cont_info.SetSec)
 	{
 		*remainingSec = Cont_info.SetSec - currentSec;
-		return 1;
+		return  Imp_running;
 	}
 	*remainingSec = 0;
-	return 0;
+	return  Imp_finsih;
 #else
 	uint32_t MillSecReq = 0, CurrentMillSec = 0;
 	uint8_t res = Cont_Machine_Get_Count(&MillSecReq, &CurrentMillSec);
@@ -114,7 +114,7 @@ uint8_t ContControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 	{
 		(CAM_State == 0 && i < 2) ?
 			Ctrl_Msg_Printf("camera error") :
-			Ctrl_Msg_Printf("start after %ds", camWaitTime_s-i);
+			Ctrl_Msg_Printf("start after %ds", camWaitTime_s - i);
 		SaftExitDelay(1000, 0);
 	}
 	/*--cam rec*/
@@ -129,7 +129,7 @@ uint8_t ContControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 	while (CONT_flag)
 	{
 		CONT_flag = HAL_Slave_CONT_Get_State(&count, &parcent);
-		if (LastCount != count&&e->State_Bit.pause==0)
+		if (LastCount != count && e->State_Bit.pause == 0)
 		{
 			Ctrl_Msg_Printf("%d:CONT Done:%d%%", e->currentCount, parcent);
 			// HAL_Set_UI_Page1_Msg("Count:%d", count);
@@ -146,9 +146,9 @@ uint8_t ContControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 			{
 				HAL_Slave_CONT_Pause(1);
 				Ctrl_Msg_Printf("%d:CONT Pause", e->currentCount);
-//				if (CamIsStop == 0)
-//					HAL_CAM_REC_Set(1);
-//				CamIsStop = 1;
+				//				if (CamIsStop == 0)
+				//					HAL_CAM_REC_Set(1);
+				//				CamIsStop = 1;
 			}
 			else
 			{

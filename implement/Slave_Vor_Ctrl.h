@@ -15,7 +15,7 @@ extern "C"
 {
 #endif
 
-    uint8_t VOR_Machine_Init(float freq, float vel, uint32_t count);
+    uint8_t VOR_Machine_Init(float freq, float vel, uint32_t count, uint8_t Exmode);
     uint8_t VOR_Machine_Get_Count(uint32_t *counterReq, uint32_t *CurrentCounter);
     uint8_t VOR_Machine_Stop(void);
     uint8_t VOR_Machine_Pause(void);

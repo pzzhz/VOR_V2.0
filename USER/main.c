@@ -86,6 +86,7 @@ void get_pt()
 int main(void)
 {
     delay_init(168); // ≥ı ºªØ—” ±∫Ø??
+	DFU_PowerUp_Detection();
     TaskHandle_t handle;
     xTaskCreate((TaskFunction_t)LVGL_HANDLER,
                 (const char *)"Outside_motor",
