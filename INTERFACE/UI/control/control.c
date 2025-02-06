@@ -362,7 +362,7 @@ void controlfunction()
 					Task_control_Begin(&control_info);
 				}
 				if (Startflag == StartCmdStop)
-				{
+				{ 
 					Task_control_ReqStop(&control_info);
 				}
 				if (Startflag == StartCmdPause)

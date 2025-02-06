@@ -479,11 +479,6 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\c610\C610.c</FilePath>
             </File>
-            <File>
-              <FileName>pid.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\c610\pid.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -887,6 +882,11 @@
         <Group>
           <GroupName>lv_extra</GroupName>
           <Files>
+            <File>
+              <FileName>pid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\c610\pid.c</FilePath>
+            </File>
             <File>
               <FileName>lv_theme_default.c</FileName>
               <FileType>1</FileType>
@@ -2186,11 +2186,6 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\c610\C610.c</FilePath>
             </File>
-            <File>
-              <FileName>pid.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\HARDWARE\c610\pid.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -2663,6 +2658,11 @@
         <Group>
           <GroupName>lv_extra</GroupName>
           <Files>
+            <File>
+              <FileName>pid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\c610\pid.c</FilePath>
+            </File>
             <File>
               <FileName>lv_theme_default.c</FileName>
               <FileType>1</FileType>

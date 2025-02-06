@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-24 14:44:19
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
- * @LastEditTime: 2025-01-18 19:33:49
+ * @LastEditTime: 2025-02-06 15:53:35
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\implement\Slave_Vor_Ctrl.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -13,6 +13,8 @@
 #include "delay.h"
 #include "../HARDWARE/SLAVE/Slave1_IO.h"
 #include "../HARDWARE/SLAVE/Slave1_Timer.h"
+
+#define PauseResetTick (1)
 
 typedef struct
 {
@@ -78,6 +80,9 @@ static uint8_t motor_set(void)
         {
             ovar_para.ReqPause = 0;
             ovar_para.state = running;
+#if (PauseResetTick)
+            ovar_para.Tick = 0; // wh
+#endif
         }
     }
     return 0;
@@ -108,7 +113,7 @@ uint8_t OVAR_Machine_Init(float vel, uint32_t MillSec)
     ovar_para.vel = vel;
     ovar_para.MillSecReq = MillSec;
     ovar_para.Tick = 0;
-    ovar_para.accTimer=0;
+    ovar_para.accTimer = 0;
     ovar_para.state = running;
     Slave1_Step_Generator_Init(50000, 10);
     Slave1_Set_Machine_Cb(OVAR_handler);
@@ -147,10 +152,14 @@ void OVAR_Back_init(float tragetPos, float sps, float accMs)
 uint8_t OVAR_Machine_Get_Count(uint32_t *MillSecReq, uint32_t *CurrentMillSec)
 {
     if (ovar_para.state == end)
-        return 0;
+        return Imp_finsih;
     if (MillSecReq != 0)
         *MillSecReq = ovar_para.MillSecReq;
     if (CurrentMillSec != 0)
         *CurrentMillSec = ovar_para.Tick;
-    return 1;
+    if (ovar_para.ReqPause == 1)
+        return Imp_pausing;
+    if (ovar_para.state == pause)
+        return Imp_paused;
+    return Imp_running;
 }

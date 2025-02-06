@@ -24,7 +24,7 @@ extern "C"
 	{
 		Imp_finsih=0,
 		Imp_paused,
-		Imp_pauseing,
+		Imp_pausing,
 		Imp_running
 	}Imp_State;
 

@@ -114,23 +114,24 @@ void RK3588_interrupt_Printf(void)
 
 void task_interval_handle(int index)
 {
-	const uint32_t waitMillSec = 5000;
-	int32_t time = ControlGetTick(), remainingTime = 0;
+	const uint32_t waitMillSec = 5000,delayMS=100;
+	uint16_t count= waitMillSec/ delayMS-1;
+	//int32_t time = ControlGetTick(), remainingTime = 0;
 	// uint16_t len = sprintf(msg_buffer, "Interval: ID:%d", index);
 	// Message_Center_Send("PAGE1", 0, msg_buffer, len);
 	/*  Message_Center_Send_prinft(
 		  "PAGE1", 0, 0,
 		  "Interval: ID:%d", index);*/
 		  /*HAL_Set_UI_Page1_Msg("Interval: ID:%d", index);*/
-	while (remainingTime < waitMillSec)
+	while (count)
 	{
-		remainingTime = ControlGetTick() - time;
-		Ctrl_Msg_Printf("interval %ds",(waitMillSec- remainingTime) / 1000);
+		Ctrl_Msg_Printf("interval %ds", count/10+1);
+		count--;
 		if (control->State_Bit.Exit) // for exit
 		{
 			return;
 		}
-		ControlDelay(100);
+		ControlDelay(delayMS);
 	}
 }
 

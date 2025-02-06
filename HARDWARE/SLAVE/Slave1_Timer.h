@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com
  * @Date: 2024-08-05 14:28:29
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
- * @LastEditTime: 2025-01-18 19:31:52
+ * @LastEditTime: 2025-02-06 15:31:41
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\HARDWARE\SLAVE\Slave1_Timer.h
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -24,6 +24,13 @@ extern "C"
         Slave_CMD_Back_N,
         Slave_CMD_Back_Sin,
     } Slave1_CMD_Typed;
+    	typedef enum
+	{
+		Imp_finsih=0,
+		Imp_paused,
+		Imp_pausing,
+		Imp_running
+	}Imp_State;
     void Slave1_Step_Generator_Init(uint32_t arr, uint32_t psc);
     void Slave1_Set_Machine_Cb(Slave_Function_CB cb);
     void tim_f_sin_set(int f);

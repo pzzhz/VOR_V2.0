@@ -1,8 +1,8 @@
 /*
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-22 16:00:07
- * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-08-08 11:11:54
+ * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
+ * @LastEditTime: 2025-02-06 16:47:30
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\INTERFACE\UI\control\control_VOR.c
  * @Description: 这是默�?��?�置,请�?�置`customMade`, 打开koroFileHeader查看配置 进�?��?�置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -18,9 +18,8 @@
 #else
 #include "../implement/Slave_Vor_Ctrl.h"
 #endif // use_windows
- // 无UI控制
+	   // 无UI控制
 // 返回message
-
 
 struct
 {
@@ -32,7 +31,7 @@ struct
 	float Freq;
 } vor_info;
 
-uint8_t HAL_Slave_VOR_Init(Task_Parameter_Struct* e)
+uint8_t HAL_Slave_VOR_Init(Task_Parameter_Struct *e)
 {
 #ifndef STM32F40_41xxx
 	vor_info.time = ControlGetTick();
@@ -41,7 +40,7 @@ uint8_t HAL_Slave_VOR_Init(Task_Parameter_Struct* e)
 	vor_info.flag_pause = 0;
 #else
 	if (e->mode == Task_VOR)
-		VOR_Machine_Init(e->VOR.Freq, e->VOR.Vel, e->VOR.Counter,e->VOR.ExMode);
+		VOR_Machine_Init(e->VOR.Freq, e->VOR.Vel, e->VOR.Counter, e->VOR.ExMode);
 #endif // !STM32F40_41xxx
 
 	return 1;
@@ -77,21 +76,21 @@ uint8_t HAL_Slave_VOR_Pause(uint8_t enable)
 	return 1;
 }
 
-uint8_t HAL_Slave_VOR_Get_State(uint32_t* remainingCount, uint32_t* parcent)
+uint8_t HAL_Slave_VOR_Get_State(uint32_t *remainingCount, uint32_t *parcent)
 {
 #ifndef STM32F40_41xxx
 	if (vor_info.flag_pause)
-		return 1;
+		return Imp_paused;
 	uint32_t currentCount = vor_info.Freq * (ControlGetTick() - vor_info.time) / 1000.0f;
 	if (parcent != 0)
 		*parcent = currentCount * 100 / vor_info.SetCount;
 	if (currentCount < vor_info.SetCount)
 	{
 		*remainingCount = vor_info.SetCount - currentCount;
-		return 1;
+		return Imp_running;
 	}
 	*remainingCount = 0;
-	return 0;
+	return Imp_finsih;
 #else
 	uint32_t counterReq = 0, CurrentCount = 0;
 	uint8_t res = VOR_Machine_Get_Count(&counterReq, &CurrentCount);
@@ -102,13 +101,13 @@ uint8_t HAL_Slave_VOR_Get_State(uint32_t* remainingCount, uint32_t* parcent)
 #endif // !STM32F40_41xxx
 }
 
-const char* ModeStr(Task_Parameter_Struct* task)
+const char *ModeStr(Task_Parameter_Struct *task)
 {
-	static const char str[][7] = { "VOR","OKR","VOR+OKR" };
+	static const char str[][7] = {"VOR", "OKR", "VOR+OKR"};
 	return str[task->VOR.ExMode];
 }
 
-uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
+uint8_t VorControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 {
 	const int camWaitTime_s = 5;
 	e->UI_para.state = ready;
@@ -116,12 +115,11 @@ uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 	MYPRINTF("\r\n");
 	// 执�?�部�?
 	MYPRINTF("\r\n");
+	Pause_Resume:
 	uint8_t CAM_State = HAL_CAM_REC_Set(1);
 	for (int i = 0; i < camWaitTime_s; i++)
 	{
-		(CAM_State == 0 && i < 2) ?
-			Ctrl_Msg_Printf("camera error") :
-			Ctrl_Msg_Printf("start after %ds", i);
+		(CAM_State == 0 && i < 2) ? Ctrl_Msg_Printf("camera error") : Ctrl_Msg_Printf("Run after %ds", camWaitTime_s-i);
 		SaftExitDelay(1000, 0);
 	}
 	/*motor set running configure*/
@@ -129,7 +127,7 @@ uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 	/*notice control thread current state*/
 	e->UI_para.state = taskruning;
 	/*get vor machine flag*/
-	uint8_t VOR_machine_flag = 1, pauseFlag = 0, CamIsStop = 0;
+	uint8_t VOR_machine_flag = 1, CamIsStop = 0;
 	int32_t LastCount = -1;
 	uint32_t count, parcent;
 	e->State_Bit.pause = 0;
@@ -137,7 +135,7 @@ uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 	while (VOR_machine_flag)
 	{
 		VOR_machine_flag = HAL_Slave_VOR_Get_State(&count, &parcent);
-		if (LastCount != count && e->State_Bit.pause == 0)
+		if (LastCount != count && VOR_machine_flag == Imp_running)
 		{
 			Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount, ModeStr(task), parcent);
 			LastCount = count;
@@ -147,23 +145,26 @@ uint8_t VorControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 			Ctrl_Msg_Printf("%d:%s #A52A2A Terminated#", e->currentCount, ModeStr(task));
 			HAL_Slave_VOR_Stop();
 		}
-		if (e->State_Bit.pause != pauseFlag)
+		if (e->State_Bit.pause == 1)
 		{
-			if (e->State_Bit.pause)
+			if (VOR_machine_flag == Imp_running)
 			{
 				HAL_Slave_VOR_Pause(1);
 				Ctrl_Msg_Printf("%d:%s Pause", e->currentCount, ModeStr(task));
-				if (CamIsStop == 0)
-					HAL_CAM_REC_Set(1);
-				CamIsStop = 1;
+				// if (CamIsStop == 0)
+				// 	HAL_CAM_REC_Set(1);
+				// CamIsStop = 1;
+				HAL_CAM_REC_Set(1);
 			}
-			else
+			else if (VOR_machine_flag == Imp_paused)
 			{
-				Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount, ModeStr(task), parcent);
-				HAL_Slave_VOR_Pause(0);
+				goto Pause_Resume;
+				//Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount, ModeStr(task), parcent);
+				//HAL_Slave_VOR_Pause(0);
+				//HAL_CAM_REC_Set(1);
 			}
+			e->State_Bit.pause = 0;
 		}
-		pauseFlag = e->State_Bit.pause;
 		MYPRINTF("%3d", count);
 		// wait motor infinsh
 		SaftExitDelay(50, 0);
