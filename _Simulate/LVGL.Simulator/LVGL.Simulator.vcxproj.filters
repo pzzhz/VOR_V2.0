@@ -113,6 +113,18 @@
     <ClCompile Include="..\..\commuication\rk3588_uart.c">
       <Filter>UI\commuication</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\INTERFACE\UI\UI_Parameter\UI_Parameter_TC.c">
+      <Filter>UI\UI_Parameter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INTERFACE\UI\UI_Parameter\UI_Parameter_VHIT.c">
+      <Filter>UI\UI_Parameter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INTERFACE\UI\control\control_TC.c">
+      <Filter>UI\control\mode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INTERFACE\UI\control\control_VHIT.c">
+      <Filter>UI\control\mode</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LVGL.Simulator.rc" />

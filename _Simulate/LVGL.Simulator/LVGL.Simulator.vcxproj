@@ -62,6 +62,8 @@
     <ClCompile Include="..\..\INTERFACE\UI\control\control_CONT.c" />
     <ClCompile Include="..\..\INTERFACE\UI\control\control_Hardware_API.c" />
     <ClCompile Include="..\..\INTERFACE\UI\control\control_OVAR.c" />
+    <ClCompile Include="..\..\INTERFACE\UI\control\control_TC.c" />
+    <ClCompile Include="..\..\INTERFACE\UI\control\control_VHIT.c" />
     <ClCompile Include="..\..\INTERFACE\UI\control\control_VOR.c" />
     <ClCompile Include="..\..\INTERFACE\UI\control\task_control.c" />
     <ClCompile Include="..\..\INTERFACE\UI\other\list.c" />
@@ -79,6 +81,8 @@
     <ClCompile Include="..\..\INTERFACE\UI\UI_Parameter\UI_Parameter_Cont.c" />
     <ClCompile Include="..\..\INTERFACE\UI\UI_Parameter\UI_Parameter_Ovar.c" />
     <ClCompile Include="..\..\INTERFACE\UI\UI_Parameter\UI_Parameter_Set.c" />
+    <ClCompile Include="..\..\INTERFACE\UI\UI_Parameter\UI_Parameter_TC.c" />
+    <ClCompile Include="..\..\INTERFACE\UI\UI_Parameter\UI_Parameter_VHIT.c" />
     <ClCompile Include="..\..\INTERFACE\UI\UI_Parameter\UI_Parameter_Vor.c" />
     <ClCompile Include="GUI\arrow_rotate_right.c" />
     <ClCompile Include="GUI\GUI_BackGround.c" />

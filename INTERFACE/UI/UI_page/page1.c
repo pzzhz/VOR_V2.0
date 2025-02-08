@@ -116,25 +116,34 @@ void Set_table_Cell_Text(lv_obj_t* obj, Task_Parameter_Struct* e)
 		sprintf(strs, "%.0f°/s", e->OVAR.Vel);
 		lv_table_set_cell_value_fmt(obj, 0, 3, "%s", strs);
 		break;
+	case Task_VHIT:
+		lv_table_set_cell_value_fmt(obj, 0, 1, "%d", (int)e->VHIT.Counter);
+		lv_table_set_cell_value_fmt(obj, 0, 2, "%s", (e->VHIT.IsCW) ? "CW" : "CCW");
+		break;
+	case Task_TC:
+		lv_table_set_cell_value_fmt(obj, 0, 1, "%d", (int)e->TC.Sec);
+		sprintf(strs, "%.0f°/s", e->TC.Vel);
+		lv_table_set_cell_value_fmt(obj, 0, 2, "%s", strs);
+		break;
 	}
 }
 //char *
 const char* TaskNameTransLate(Task_Parameter_Struct t)
 {
-	static const char mode_name_array[][10] = { "VOR","OKR","VOR+OKR","VOR+OKR*"};
-	static const char mode_name_array2[][10] = { "VOR","CONT", "OVAR" };
+	static const char mode_name_array[][10] = { "VOR","OKR","VOR+OKR","VOR+OKR*" };
+	static const char mode_name_array2[][10] = { "VOR","CONT", "OVAR","VHIT","TC" };
 	//注意 这里不是
 	uint16_t array_index = t.mode;
 	if (t.mode == Task_VOR)
 	{
 		array_index += t.VOR.ExMode;
-		if(array_index>=sizeof(mode_name_array))
-					array_index=0;
+		if (array_index >= sizeof(mode_name_array))
+			array_index = 0;
 		return mode_name_array[(array_index)];
 	}
 	array_index = t.mode;
-	if(array_index>=sizeof(mode_name_array2))
-	array_index=0;
+	if (array_index >= sizeof(mode_name_array2))
+		array_index = 0;
 	return mode_name_array2[(array_index)];
 }
 
@@ -554,11 +563,11 @@ void UI_Page1_Respone_Updata_Msg(uint8_t flag, uint16_t ID)
 
 void UI_DFU_Display()
 {
-	
-		lv_obj_t* mbox1 = lv_msgbox_create(NULL, "\n		    DFU Fireware Update",
-			"",
-			0, false);
-		lv_obj_center(mbox1);
+
+	lv_obj_t* mbox1 = lv_msgbox_create(NULL, "\n		    DFU Fireware Update",
+		"",
+		0, false);
+	lv_obj_center(mbox1);
 }
 
 void UI_Page1_Timer_UIupdata_handle(lv_timer_t* t)

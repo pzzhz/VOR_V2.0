@@ -51,6 +51,7 @@ extern "C"
     //VHIT
     typedef struct {
         uint32_t Counter;
+        uint8_t IsCW;
     }Task_Parameter_VHIT;
     //TC
     typedef struct {

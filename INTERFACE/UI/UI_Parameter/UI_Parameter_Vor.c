@@ -61,7 +61,7 @@ static void rotate_dir_buttum_handler(lv_event_t* e)
 }
 
 
-void handler(UI_Dropdown_Struct* e)
+static void handler(UI_Dropdown_Struct* e)
 {
     LV_LOG_USER("ss %d", e->Click_Index);
 }

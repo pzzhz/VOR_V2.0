@@ -7,6 +7,8 @@
 #include "../UI_Parameter/UI_Parameter_Cont.h"
 #include "../UI_Parameter/UI_Parameter_Vor.h"
 #include "../UI_Parameter/UI_Parameter_Ovar.h"
+#include "../UI_Parameter/UI_Parameter_TC.h"
+#include "../UI_Parameter/UI_Parameter_VHIT.h"
 /*****************************************************/
 #define LV_SYMBOL_rotate_right "\xEF\x80\x9E"
 /*Add a border with bg_color*/
@@ -64,7 +66,7 @@ void Continue_init(lv_obj_t* parent)
 }
 #endif
 
-const char* Set_item = "VOR\n""OKR\n""VOR+OKR\n""VOR+OKR*\n""CONT\n""OVAR";
+const char* Set_item = "VOR\n""OKR\n""VOR+OKR\n""VOR+OKR*\n""CONT\n""OVAR\n""VHIT\n""TC";
 typedef struct
 {
 	struct {
@@ -75,9 +77,10 @@ typedef struct
 	}Mode;
 	lv_obj_t* Context_Box;
 }UI_parameter_Set_Type;
+#define UI_Parameter_Handler_Size 6
 typedef struct
 {
-	UI_Parameter_Handler cb[4];
+	UI_Parameter_Handler cb[UI_Parameter_Handler_Size];
 }UI_parameter_cb;
 UI_parameter_cb ui_mode_cb;
 static UI_parameter_Set_Type mode_set;
@@ -90,7 +93,7 @@ static void handler(UI_Dropdown_Struct* e)
 	lv_obj_t* obj = e->dropdown;
 	char* str = mode_set.Mode.str;
 	lv_dropdown_get_selected_str(obj, str, 10);
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < UI_Parameter_Handler_Size; i++)
 	{
 		if (ui_mode_cb.cb[i].hidden != 0)
 			ui_mode_cb.cb[i].hidden(1);
@@ -118,6 +121,14 @@ static void handler(UI_Dropdown_Struct* e)
 	if (Msg_COMPARE("OVAR", str))
 	{
 		ui_mode_cb.cb[Task_OVAR].hidden(0);
+	}
+	if (Msg_COMPARE("TC", str))
+	{
+		ui_mode_cb.cb[Task_TC].hidden(0);
+	}
+	if (Msg_COMPARE("VHIT", str))
+	{
+		ui_mode_cb.cb[Task_VHIT].hidden(0);
 	}
 
 }
@@ -154,6 +165,14 @@ uint8_t UI_Parameter_Read(Task_Parameter_Struct* e)
 	if (Msg_COMPARE("OVAR", str))
 	{
 		res = ui_mode_cb.cb[Task_OVAR].Get(e);
+	}
+	if (Msg_COMPARE("TC", str))
+	{
+		res = ui_mode_cb.cb[Task_TC].Get(e);
+	}
+	if (Msg_COMPARE("VHIT", str))
+	{
+		res = ui_mode_cb.cb[Task_VHIT].Get(e);
 	}
 	return res;
 }
@@ -199,9 +218,13 @@ void Mode_init(lv_obj_t* parent)
 	ui_mode_cb.cb[Task_VOR] = VOR_init(parent, -15, 130);
 	ui_mode_cb.cb[Task_Continue] = Continue_init(parent, -15, 130);
 	ui_mode_cb.cb[Task_OVAR] = OVAR_init(parent, -15, 130);
+	ui_mode_cb.cb[Task_VHIT] = VHIT_init(parent, -15, 130);
+	ui_mode_cb.cb[Task_TC] = TC_init(parent, -15, 130);
 
 	ui_mode_cb.cb[Task_Continue].hidden(1);
 	ui_mode_cb.cb[Task_OVAR].hidden(1);
+	ui_mode_cb.cb[Task_VHIT].hidden(1);
+	ui_mode_cb.cb[Task_TC].hidden(1);
 	/*
 	 ui_mode_cb.cb[0].hidden(1);*/
 	return;
