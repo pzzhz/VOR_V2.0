@@ -13,17 +13,18 @@ void TIM1_BRK_TIM9_IRQHandler(void)
             uint8_t res = function_cb();
             if (res)
             {
-                // TIM9->CR1 &= ~TIM_CR1_CEN;
                 function_cb = 0;
                 extern void Slave1_En_IO(uint8_t state);
                 Slave1_En_IO(0);
             }
         }
-        else
-        {
-            extern void Motor_Spd_Pid(float speed);
-            Motor_Spd_Pid(0);                           //avoid c601 unexpect movement
-        }
+				else
+						{
+							extern void Motor_Set_Speed(float speed);
+							Motor_Set_Speed(0);
+						}
+        extern void Motor_Spd_Pid();
+        Motor_Spd_Pid(); // avoid c601 unexpect movement
         // ²¹Í£»ú´úÂë
     }
     TIM9->SR = (uint16_t)~TIM_IT_Update;

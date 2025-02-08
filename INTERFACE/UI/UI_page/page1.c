@@ -118,19 +118,23 @@ void Set_table_Cell_Text(lv_obj_t* obj, Task_Parameter_Struct* e)
 		break;
 	}
 }
-
+//char *
 const char* TaskNameTransLate(Task_Parameter_Struct t)
 {
-	static const char mode_name_array[][8] = { "VOR","OKR","VOR+OKR" };
-	static const char mode_name_array2[][8] = { "VOR","CONT", "OVAR" };
+	static const char mode_name_array[][10] = { "VOR","OKR","VOR+OKR","VOR+OKR*"};
+	static const char mode_name_array2[][10] = { "VOR","CONT", "OVAR" };
 	//注意 这里不是
 	uint16_t array_index = t.mode;
 	if (t.mode == Task_VOR)
 	{
 		array_index += t.VOR.ExMode;
+		if(array_index>=sizeof(mode_name_array))
+					array_index=0;
 		return mode_name_array[(array_index)];
 	}
 	array_index = t.mode;
+	if(array_index>=sizeof(mode_name_array2))
+	array_index=0;
 	return mode_name_array2[(array_index)];
 }
 
@@ -141,9 +145,8 @@ void ui1_(Table_Property* p)
 	if (p->Updata_Source)
 	{
 		Task_Parameter_Struct* task_info = p->Updata_Source;
-		const	 char* str = TaskNameTransLate(*task_info);
 		lv_table_set_cell_value_fmt(p->obj, 0, 0, "%s,%d",
-			str, index);
+			TaskNameTransLate(*task_info), index);
 		Set_table_Cell_Text(p->obj, task_info);
 	}
 }

@@ -148,6 +148,7 @@ static void motor_handle(Task_Parameter_Struct *task, Task_control_info *e)
 			{
 				HAL_Slave_OVAR_Pause(1);
 				HAL_CAM_REC_Set(1);
+                Rk3588_Send_Pause;
 				Ctrl_Msg_Printf("%d:OVAR Pause", e->currentCount);
 				//				if (CamIsStop == 0)
 				//					HAL_CAM_REC_Set(1);

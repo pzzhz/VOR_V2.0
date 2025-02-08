@@ -20,34 +20,40 @@ extern "C"
 #else
 #define MYPRINTF(...)
 #endif
-	typedef enum
-	{
-		Imp_finsih=0,
-		Imp_paused,
-		Imp_pausing,
-		Imp_running
-	}Imp_State;
 
+#define Rk3588_Send_Pause                   \
+    {                                       \
+        e->Rk3588_Flag.Lflag = Pause; \
+        e->Rk3588_Flag.Rflag = Pause; \
+    }
 
-	uint8_t HAL_Incline_Init(float angle, uint32_t time);
-	uint8_t HAL_Incline_Get_State(float* angle);
-	uint8_t HAL_Incline_Fouces_Move(int8_t direction);
+    typedef enum
+    {
+        Imp_finsih = 0,
+        Imp_paused,
+        Imp_pausing,
+        Imp_running
+    } Imp_State;
 
-	uint8_t HAL_CAM_Init(void);
-	uint8_t HAL_CAM_REC_Set(uint8_t flag);
-	uint8_t HAL_CAM_SET_Set(void);
-	uint8_t HAL_CAM_SET_sign_led(void);
-	uint8_t HAL_CAM_SET_Led_Voltage(uint16_t Millivol);
-	uint8_t HAL_IMU_GET_Angle(float* angle);
+    uint8_t HAL_Incline_Init(float angle, uint32_t time);
+    uint8_t HAL_Incline_Get_State(float *angle);
+    uint8_t HAL_Incline_Fouces_Move(int8_t direction);
 
-	// uint8_t HAL_Control_Get_Start_Cmd(Start_Cmd_Type *cmd);
-	uint8_t HAL_Set_UI_Page1_Msg(const char* format, ...);
-	uint16_t HAL_Task_GetArray(Task_Parameter_Struct* taskarray, uint16_t arraySize);
+    uint8_t HAL_CAM_Init(void);
+    uint8_t HAL_CAM_REC_Set(uint8_t flag);
+    uint8_t HAL_CAM_SET_Set(void);
+    uint8_t HAL_CAM_SET_sign_led(void);
+    uint8_t HAL_CAM_SET_Led_Voltage(uint16_t Millivol);
+    uint8_t HAL_IMU_GET_Angle(float *angle);
 
-	uint8_t HAL_Get_UI_MouseName(char* str, uint16_t size);
-	uint8_t HAL_FAN_Set(uint8_t pwm_precent);
+    // uint8_t HAL_Control_Get_Start_Cmd(Start_Cmd_Type *cmd);
+    uint8_t HAL_Set_UI_Page1_Msg(const char *format, ...);
+    uint16_t HAL_Task_GetArray(Task_Parameter_Struct *taskarray, uint16_t arraySize);
 
-	uint8_t HAL_API_INIT(void);
+    uint8_t HAL_Get_UI_MouseName(char *str, uint16_t size);
+    uint8_t HAL_FAN_Set(uint8_t pwm_precent);
+
+    uint8_t HAL_API_INIT(void);
 
 #ifdef __cplusplus
 }

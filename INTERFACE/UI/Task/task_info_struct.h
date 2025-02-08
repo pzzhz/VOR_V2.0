@@ -27,7 +27,8 @@ extern "C"
     {
         Ex_VOR=0,
         Ex_OKR,
-        Ex_BOTH
+        Ex_BOTH,
+        Ex_BOTH_R
     }Task_Parameter_VOR_Exmode;
     //VOR
     typedef struct {

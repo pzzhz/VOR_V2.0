@@ -90,7 +90,7 @@ int main(void)
     TaskHandle_t handle;
     xTaskCreate((TaskFunction_t)LVGL_HANDLER,
                 (const char *)"Outside_motor",
-                (uint16_t)4096,
+                (uint16_t)6000,
                 (void *)NULL,
                 (UBaseType_t)3,
                 (TaskHandle_t *)&handle);

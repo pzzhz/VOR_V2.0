@@ -17,12 +17,13 @@
 
 int sin_time = 0;
 int tim_count, last_count, plus_f = 1;
-extern void Motor_Spd_Pid(float speed);
+extern void Motor_Set_Speed(float speed);
 typedef enum
 {
     Ex_VOR = 0,
     Ex_OKR,
-    Ex_BOTH
+    Ex_BOTH,
+    Ex_BOTH_R
 } VOR_Exmode;
 typedef struct
 {
@@ -52,11 +53,15 @@ extern uint8_t HAL_CAM_SET_sign_led(void);
 
 void MotorSpeedSet(float sin_data)
 {
-    if (vor_para.ExMode == Ex_BOTH || vor_para.ExMode == Ex_OKR)
-        Motor_Spd_Pid(-vor_para.vel * sin_data * 33.33);
+    if (vor_para.ExMode == Ex_BOTH ||
+        vor_para.ExMode == Ex_OKR)
+        Motor_Set_Speed(-vor_para.vel * sin_data );
+    else if (vor_para.ExMode == Ex_BOTH_R)
+        Motor_Set_Speed(vor_para.vel * sin_data );
     else
-        Motor_Spd_Pid(0);
-    if (vor_para.ExMode == Ex_BOTH || vor_para.ExMode == Ex_VOR)
+        Motor_Set_Speed(0);
+
+    if (vor_para.ExMode != Ex_OKR)
         tim_f_sin_set(angle_step * sin_data * vor_para.vel);
     else
         tim_f_sin_set(0);
@@ -111,7 +116,7 @@ uint8_t VOR_handler(void)
     res = Slave_motor();
     if (res)
     {
-        Motor_Spd_Pid(0);
+        Motor_Set_Speed(0);
         vor_para.state = end;
         return 1; // end turn off tim4
     }

@@ -160,7 +160,7 @@ void lv_example_menu_55(lv_obj_t* parent, lv_obj_t* obj)
 {
 	/*Create a list*/
 	lv_obj_t* list1 = lv_list_create(parent);
-	lv_obj_add_flag(list1, LV_OBJ_FLAG_SCROLLABLE);
+	lv_obj_clear_flag(list1, LV_OBJ_FLAG_SCROLLABLE);
 	lv_obj_set_size(list1, 400, 400);
 	lv_obj_center(list1);
 

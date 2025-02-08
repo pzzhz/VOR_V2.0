@@ -103,7 +103,7 @@ uint8_t HAL_Slave_VOR_Get_State(uint32_t *remainingCount, uint32_t *parcent)
 
 const char *ModeStr(Task_Parameter_Struct *task)
 {
-	static const char str[][7] = {"VOR", "OKR", "VOR+OKR"};
+	static const char str[][10] = {"VOR", "OKR", "VOR+OKR","VOR+OKR*"};
 	return str[task->VOR.ExMode];
 }
 
@@ -151,6 +151,7 @@ uint8_t VorControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 			{
 				HAL_Slave_VOR_Pause(1);
 				Ctrl_Msg_Printf("%d:%s Pause", e->currentCount, ModeStr(task));
+                Rk3588_Send_Pause;
 				// if (CamIsStop == 0)
 				// 	HAL_CAM_REC_Set(1);
 				// CamIsStop = 1;

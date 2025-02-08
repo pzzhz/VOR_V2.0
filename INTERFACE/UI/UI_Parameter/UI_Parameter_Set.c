@@ -64,7 +64,7 @@ void Continue_init(lv_obj_t* parent)
 }
 #endif
 
-const char* Set_item = "VOR\n""OKR\n""VOR+OKR\n""CONT\n""OVAR\n";
+const char* Set_item = "VOR\n""OKR\n""VOR+OKR\n""VOR+OKR*\n""CONT\n""OVAR";
 typedef struct
 {
 	struct {
@@ -82,7 +82,7 @@ typedef struct
 UI_parameter_cb ui_mode_cb;
 static UI_parameter_Set_Type mode_set;
 
-
+#define Msg_COMPARE(a,b) (strncmp(a,b,sizeof(a)-1)==0) //前必须是const字符串
 
 static void handler(UI_Dropdown_Struct* e)
 {
@@ -90,28 +90,32 @@ static void handler(UI_Dropdown_Struct* e)
 	lv_obj_t* obj = e->dropdown;
 	char* str = mode_set.Mode.str;
 	lv_dropdown_get_selected_str(obj, str, 10);
-	for (int i = 0;i < 4;i++)
+	for (int i = 0; i < 4; i++)
 	{
 		if (ui_mode_cb.cb[i].hidden != 0)
 			ui_mode_cb.cb[i].hidden(1);
 	}
-	if (strncmp("VOR", str, 3) == 0)
+	if (Msg_COMPARE("VOR", str))
 	{
 		ui_mode_cb.cb[Task_VOR].hidden(0);
 	}
-	if (strncmp("OKR", str, 3) == 0)
+	if (Msg_COMPARE("OKR", str))
 	{
 		ui_mode_cb.cb[Task_VOR].hidden(0);
 	}
-	if (strncmp("VOR+OKR", str, 3) == 0)
+	if (Msg_COMPARE("VOR+OKR", str))
 	{
 		ui_mode_cb.cb[Task_VOR].hidden(0);
 	}
-	if (strncmp("CONT", str, 4) == 0)
+	if (Msg_COMPARE("VOR+OKR*", str))
+	{
+		ui_mode_cb.cb[Task_VOR].hidden(0);
+	}
+	if (Msg_COMPARE("CONT", str))
 	{
 		ui_mode_cb.cb[Task_Continue].hidden(0);
 	}
-	if (strncmp("OVAR", str, 4) == 0)
+	if (Msg_COMPARE("OVAR", str))
 	{
 		ui_mode_cb.cb[Task_OVAR].hidden(0);
 	}
@@ -123,26 +127,31 @@ uint8_t UI_Parameter_Read(Task_Parameter_Struct* e)
 {
 	uint8_t res = 0;
 	char* str = mode_set.Mode.str;
-	if (strncmp("VOR", str, 3) == 0)
+	if (Msg_COMPARE("VOR", str))
 	{
 		res = ui_mode_cb.cb[Task_VOR].Get(e);
 		e->VOR.ExMode = Ex_VOR;
 	}
-	if (strncmp("OKR", str, 3) == 0)
+	if (Msg_COMPARE("OKR", str))
 	{
 		res = ui_mode_cb.cb[Task_VOR].Get(e);
 		e->VOR.ExMode = Ex_OKR;
 	}
-	if (strncmp("VOR+OKR", str, 6) == 0)
+	if (Msg_COMPARE("VOR+OKR", str))
 	{
 		res = ui_mode_cb.cb[Task_VOR].Get(e);
 		e->VOR.ExMode = Ex_BOTH;
 	}
-	if (strncmp("CONT", str, 4) == 0)
+	if (Msg_COMPARE("VOR+OKR*", str))
+	{
+		res = ui_mode_cb.cb[Task_VOR].Get(e);
+		e->VOR.ExMode = Ex_BOTH_R;
+	}
+	if (Msg_COMPARE("CONT", str))
 	{
 		res = ui_mode_cb.cb[Task_Continue].Get(e);
 	}
-	if (strncmp("OVAR", str, 4) == 0)
+	if (Msg_COMPARE("OVAR", str))
 	{
 		res = ui_mode_cb.cb[Task_OVAR].Get(e);
 	}

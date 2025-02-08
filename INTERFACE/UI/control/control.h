@@ -60,6 +60,7 @@ extern "C"
 				Rk3588_Uart_Idle,
 				SendTaskArray,
 				Cancel,
+                Pause,
 			} Rk3588_Flag_Typed;
 			uint8_t Lflag;
 			uint8_t Rflag;

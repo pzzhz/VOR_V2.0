@@ -70,17 +70,23 @@ int16_t C610_PID_CAL(C610_Pid *PID, motor_measure_t *m, float Speed)
     MotorPower = pid_calc(&PID->I, m->given_current, TargetCurrent);
     return (int16_t)MotorPower;
 }
-float factor = 1.75;
-void Motor_Spd_Pid(float speed)
+float factor = -65;
+float C610_Set_Speed = 0;
+void Motor_Set_Speed(float speed)
 {
-    if (speed == 0)
+    C610_Set_Speed=speed;
+}
+
+void Motor_Spd_Pid(void)
+{
+    if (C610_Set_Speed == 0)
     {
         C610_Current_Cmd2(0, 0, 0, 0);
         return;
     }
     int16_t pwm;
-    float C610_Speed = -speed * 60.0f * 36.0f / factor;
-    pwm = C610_PID_CAL(&rotate.pid[0], &motor_chassis[0], speed);
+    float C610_Speed = -(C610_Set_Speed) * (60.0f * 36.0f) / factor;
+    pwm = C610_PID_CAL(&rotate.pid[0], &motor_chassis[0], C610_Speed);
     C610_Current_Cmd2(pwm, 0, 0, 0);
 }
 

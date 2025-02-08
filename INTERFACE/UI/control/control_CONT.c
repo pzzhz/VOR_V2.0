@@ -4,7 +4,7 @@
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
  * @LastEditTime: 2025-02-06 16:56:05
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\INTERFACE\UI\control\control_VOR.c
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ * @Description: 这是默�?��?�置,请�?�置`customMade`, 打开koroFileHeader查看配置 进�?��?�置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 #include "control_CONT.h"
 #include "control_Hardware_API.h"
@@ -105,7 +105,7 @@ uint8_t ContControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 	e->UI_para.state = ready;
 	MYPRINTF("\r\n Cont begin");
 	MYPRINTF("\r\n");
-	// 执行部分
+	// 执�?�部�?
 	MYPRINTF("\r\n");
 	Pause_Resume:
 	/*cam rec*/
@@ -119,7 +119,7 @@ uint8_t ContControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 	/*begin motion*/
 	HAL_Slave_CONT_Init(task);
 	e->UI_para.state = taskruning;
-	uint8_t CONT_flag = 1, CamIsStop = 0; // 防止启动时候发生意外触发
+	uint8_t CONT_flag = 1, CamIsStop = 0; // 防�?�启动时候发生意外触�?
 	int32_t LastCount = -1;
 	// motor initial
 	uint32_t count, parcent;
@@ -144,6 +144,7 @@ uint8_t ContControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 			{
 				HAL_Slave_CONT_Pause(1);
 				HAL_CAM_REC_Set(1);
+                Rk3588_Send_Pause;
 				Ctrl_Msg_Printf("%d:CONT Pause", e->currentCount);
 			}
 			else if (CONT_flag == Imp_paused)
