@@ -35,7 +35,7 @@ typedef struct
 } Cont_Machine_parameter;
 Cont_Machine_parameter cont_para;
 #define Pi 3.1415926
-float speeds = 0;
+
 
 extern void Motor_Set_Speed(float speed);
 

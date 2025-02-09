@@ -24,6 +24,9 @@
 #include "control_VOR.h"
 #include "control_CONT.h"
 #include "control_OVAR.h"
+#include "control_VHIT.h"
+#include "control_TC.h"
+
 #include <stdarg.h>
 
 Task_Parameter_Struct TaskArray[10];
@@ -33,7 +36,10 @@ typedef struct
     uint32_t remainingTime;
 } Task_Control_Status;
 // static char msg_buffer[50];
-
+#define RKPrint(...)                                    \
+    {                                                 \
+        (LR) ? Rk3588_Printf(__VA_ARGS__) : Rk3588_L_Printf(__VA_ARGS__); \
+    }
 static Task_control_info *control;
 extern uint8_t Ctrl_Msg_Printf(const char *format,
                                ...);
@@ -53,24 +59,24 @@ extern void Rk3588_L_Printf(const char *strOutputString, ...);
 
 void PrintfInfo(Task_Parameter_Struct *e, char *mousename, uint8_t LR)
 {
-    static const char vorstrList[][10] = {"VOR", "OKR", "VOR+OKR", "VOR+OKR*"};
+    static const char vorstrList[][10] = {"VOR", "OKR", "VOR_OKR", "VOR_OKRR"};
     const char *vorStr = vorstrList[e->VOR.ExMode];
     switch (e->mode)
     {
     case Task_VOR:
-        (LR) ? Rk3588_Printf("&%s_%s_T%dV%dF%02d", mousename, vorStr, e->VOR.Counter, (int)e->VOR.Vel, (int)(e->VOR.Freq * 10.0f)) : Rk3588_L_Printf("&%s_VOR_T%dV%dF%02d", mousename, e->VOR.Counter, (int)e->VOR.Vel, (int)(e->VOR.Freq * 10.0f));
+        RKPrint("&%s_%s_T%dV%dF%02d", mousename, vorStr, e->VOR.Counter, (int)e->VOR.Vel, (int)(e->VOR.Freq * 10.0f));
         break;
     case Task_Continue:
-        (LR) ? Rk3588_Printf("&%s_CONT_S%dV%d", mousename, e->CONT.Sec, (int)e->CONT.Vel) : Rk3588_L_Printf("&%s_CONT_S%dV%d", mousename, e->CONT.Sec, (int)e->CONT.Vel);
+        RKPrint("&%s_CONT_S%dV%d", mousename, e->CONT.Sec, (int)e->CONT.Vel);
         break;
     case Task_OVAR:
-        (LR) ? Rk3588_Printf("&%s_OVAR_S%dV%dI%02d", mousename, e->OVAR.Sec, (int)e->OVAR.Vel, (int)(e->OVAR.Inc_Degree)) : Rk3588_L_Printf("&%s_OVAR_S%dV%dI%02d", mousename, e->OVAR.Sec, (int)e->OVAR.Vel, (int)(e->OVAR.Inc_Degree));
+        RKPrint("&%s_OVAR_S%dV%dI%02d", mousename, e->OVAR.Sec, (int)e->OVAR.Vel, (int)(e->OVAR.Inc_Degree));
         break;
     case Task_VHIT:
-        (LR) ? Rk3588_Printf("&%s_VHIT_T%d", mousename, e->VHIT.Counter) : Rk3588_L_Printf("&%s_VHIT_T%d", mousename, e->VHIT.Counter);
+        RKPrint("&%s_VHIT_T%d%s", mousename, e->VHIT.Counter, (e->VHIT.IsCW) ? "CW" : "CCW");
         break;
     case Task_TC:
-        (LR) ? Rk3588_Printf("&%s_TC_S%dV%d", mousename, e->TC.Sec, e->TC.Vel) : Rk3588_L_Printf("&%s_TC_S%dV%d", mousename, e->TC.Sec, e->TC.Vel);
+        RKPrint("&%s_TC_S%dV%d", mousename, e->TC.Counter, e->TC.Vel);
         break;
 
     default:
@@ -235,6 +241,12 @@ BEGIN_POS:
             if (i < (task_size - 1) && e->taskArray[i + 1].mode == Task_OVAR)
                 isretract = 0;
             OvarControlFunction(task, e, isretract);
+            break;
+        case Task_TC:
+            TcControlFunction(task, e);
+            break;
+        case Task_VHIT:
+            VHITControlFunction(task, e);
             break;
         default:
             break;

@@ -3,7 +3,7 @@
  * @Date: 2024-07-22 16:00:07
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
  * @LastEditTime: 2025-02-06 16:47:30
- * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\INTERFACE\UI\control\control_VOR.c
+ * @FilePath: \USERd:\workfile\项目3 vor\software\TC_V2.0\INTERFACE\UI\control\control_TC.c
  * @Description: 这是默�?��?�置,请�?�置`customMade`, 打开koroFileHeader查看配置 进�?��?�置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 #include "control_TC.h"
@@ -16,11 +16,11 @@
 #include "Windows.h"
 #include <stdio.h>
 #else
-#include "../implement/Slave_Vor_Ctrl.h"
+#include "../implement/Slave_TC_Ctrl.h"
 #endif // use_windows
-	   // 无UI控制
+ // 无UI控制
 // 返回message
-
+const int singalCount = 1 * 1000;
 struct
 {
 	uint32_t time;
@@ -28,72 +28,70 @@ struct
 	uint8_t flag_pause;
 	uint32_t SetCount;
 	float Vel;
-	float Freq;
-} vor_info;
+} tc_info;
 
-uint8_t HAL_Slave_VOR_Init(Task_Parameter_Struct *e)
+uint8_t HAL_Slave_TC_Init(Task_Parameter_Struct* e)
 {
 #ifndef STM32F40_41xxx
-	vor_info.time = ControlGetTick();
-	vor_info.Freq = e->VOR.Freq;
-	vor_info.SetCount = e->VOR.Counter;
-	vor_info.flag_pause = 0;
+	tc_info.time = ControlGetTick();
+	tc_info.SetCount = e->TC.Counter;
+	tc_info.flag_pause = 0;
 #else
-	if (e->mode == Task_VOR)
-		VOR_Machine_Init(e->VOR.Freq, e->VOR.Vel, e->VOR.Counter, e->VOR.ExMode);
+	if (e->mode == Task_TC)
+		TC_Machine_Init(e->TC.Counter,e->TC.Vel);
 #endif // !STM32F40_41xxx
 
 	return 1;
 }
 
-uint8_t HAL_Slave_VOR_Stop(void)
+uint8_t HAL_Slave_TC_Stop(void)
 {
 #ifndef STM32F40_41xxx
-	uint32_t currentCount = vor_info.Freq * (ControlGetTick() - vor_info.time) / 1000.0f;
-	vor_info.SetCount = currentCount + 1;
+	uint32_t currentCount = (ControlGetTick() - tc_info.time) / singalCount;
+	tc_info.SetCount = currentCount + 1;
 #else
-	VOR_Machine_Stop();
+	TC_Machine_Stop();
 #endif // !STM32F40_41xxx
 	return 1;
 }
 
-uint8_t HAL_Slave_VOR_Pause(uint8_t enable)
+uint8_t HAL_Slave_TC_Pause(uint8_t enable)
 {
 #ifndef STM32F40_41xxx
 	if (enable)
 	{
-		vor_info.flag_pause = 1;
-		vor_info.RemainTime = ControlGetTick() - vor_info.time;
+		tc_info.flag_pause = 1;
+		tc_info.RemainTime = ControlGetTick() - tc_info.time;
 	}
 	else
 	{
-		vor_info.time = ControlGetTick() - vor_info.RemainTime;
-		vor_info.flag_pause = 0;
+		tc_info.time = ControlGetTick() - tc_info.RemainTime;
+		tc_info.flag_pause = 0;
 	}
 #else
-	VOR_Machine_Pause();
+	TC_Machine_Pause();
 #endif // !STM32F40_41xxx
 	return 1;
 }
 
-uint8_t HAL_Slave_VOR_Get_State(uint32_t *remainingCount, uint32_t *parcent)
+uint8_t HAL_Slave_TC_Get_State(uint32_t* remainingCount, uint32_t* parcent)
 {
 #ifndef STM32F40_41xxx
-	if (vor_info.flag_pause)
+	if (tc_info.flag_pause)
 		return Imp_paused;
-	uint32_t currentCount = vor_info.Freq * (ControlGetTick() - vor_info.time) / 1000.0f;
+	uint32_t currentCount = (ControlGetTick() - tc_info.time) / singalCount;
 	if (parcent != 0)
-		*parcent = currentCount * 100 / vor_info.SetCount;
-	if (currentCount < vor_info.SetCount)
+		*parcent = currentCount * 100 / tc_info.SetCount;
+	if (currentCount < tc_info.SetCount)
 	{
-		*remainingCount = vor_info.SetCount - currentCount;
+		*remainingCount = tc_info.SetCount - currentCount;
 		return Imp_running;
 	}
 	*remainingCount = 0;
 	return Imp_finsih;
 #else
 	uint32_t counterReq = 0, CurrentCount = 0;
-	uint8_t res = VOR_Machine_Get_Count(&counterReq, &CurrentCount);
+	uint8_t res = TC_Machine_Get_Count(&counterReq, &CurrentCount);
 	if (parcent != 0 && counterReq != 0)
 		*parcent = CurrentCount * 100 / counterReq;
 	*remainingCount = counterReq - CurrentCount;
@@ -103,7 +101,7 @@ uint8_t HAL_Slave_VOR_Get_State(uint32_t *remainingCount, uint32_t *parcent)
 
 
 
-uint8_t TcControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
+uint8_t TcControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 {
 	const int camWaitTime_s = 5;
 	e->UI_para.state = ready;
@@ -111,53 +109,53 @@ uint8_t TcControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 	MYPRINTF("\r\n");
 	// 执�?�部�?
 	MYPRINTF("\r\n");
-	Pause_Resume:
+Pause_Resume:
 	uint8_t CAM_State = HAL_CAM_REC_Set(1);
 	for (int i = 0; i < camWaitTime_s; i++)
 	{
-		(CAM_State == 0 && i < 2) ? Ctrl_Msg_Printf("camera error") : Ctrl_Msg_Printf("Run after %ds", camWaitTime_s-i);
+		(CAM_State == 0 && i < 2) ? Ctrl_Msg_Printf("camera error") : Ctrl_Msg_Printf("Run after %ds", camWaitTime_s - i);
 		SaftExitDelay(1000, 0);
 	}
 	/*motor set running configure*/
-	HAL_Slave_VOR_Init(task);
+	HAL_Slave_TC_Init(task);
 	/*notice control thread current state*/
 	e->UI_para.state = taskruning;
 	/*get vor machine flag*/
-	uint8_t VOR_machine_flag = 1, CamIsStop = 0;
+	uint8_t TC_machine_flag = 1, CamIsStop = 0;
 	int32_t LastCount = -1;
 	uint32_t count, parcent;
 	e->State_Bit.pause = 0;
 	/*waiting vor machine finish*/
-	while (VOR_machine_flag)
+	while (TC_machine_flag)
 	{
-		VOR_machine_flag = HAL_Slave_VOR_Get_State(&count, &parcent);
-		if (LastCount != count && VOR_machine_flag == Imp_running)
+		TC_machine_flag = HAL_Slave_TC_Get_State(&count, &parcent);
+		if (LastCount != count && TC_machine_flag == Imp_running)
 		{
-			Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount, ModeStr(task), parcent);
+			Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount,"TC", parcent);
 			LastCount = count;
 		}
 		if (e->State_Bit.Exit) // for exit
 		{
-			Ctrl_Msg_Printf("%d:%s #A52A2A Terminated#", e->currentCount, ModeStr(task));
-			HAL_Slave_VOR_Stop();
+			Ctrl_Msg_Printf("%d:%s #A52A2A Terminated#", e->currentCount,"TC");
+			HAL_Slave_TC_Stop();
 		}
 		if (e->State_Bit.pause == 1)
 		{
-			if (VOR_machine_flag == Imp_running)
+			if (TC_machine_flag == Imp_running)
 			{
-				HAL_Slave_VOR_Pause(1);
-				Ctrl_Msg_Printf("%d:%s Pause", e->currentCount, ModeStr(task));
-                Rk3588_Send_Pause;
+				HAL_Slave_TC_Pause(1);
+				Ctrl_Msg_Printf("%d:%s Pause", e->currentCount,"TC");
+				Rk3588_Send_Pause;
 				// if (CamIsStop == 0)
 				// 	HAL_CAM_REC_Set(1);
 				// CamIsStop = 1;
 				HAL_CAM_REC_Set(1);
 			}
-			else if (VOR_machine_flag == Imp_paused)
+			else if (TC_machine_flag == Imp_paused)
 			{
 				goto Pause_Resume;
-				//Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount, ModeStr(task), parcent);
-				//HAL_Slave_VOR_Pause(0);
+				//Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount,"TC", parcent);
+				//HAL_Slave_TC_Pause(0);
 				//HAL_CAM_REC_Set(1);
 			}
 			e->State_Bit.pause = 0;
@@ -169,7 +167,7 @@ uint8_t TcControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 		MYPRINTF("\r");
 	}
 	if (e->State_Bit.Exit == 0)
-		Ctrl_Msg_Printf("%d:%s Done:100%%", e->currentCount, ModeStr(task));
+		Ctrl_Msg_Printf("%d:%s Done:100%%", e->currentCount,"TC");
 	/*one sec for cam stop*/
 	SaftExitDelay(1000, 0);
 	if (CamIsStop == 0)

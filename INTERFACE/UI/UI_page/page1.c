@@ -121,7 +121,7 @@ void Set_table_Cell_Text(lv_obj_t* obj, Task_Parameter_Struct* e)
 		lv_table_set_cell_value_fmt(obj, 0, 2, "%s", (e->VHIT.IsCW) ? "CW" : "CCW");
 		break;
 	case Task_TC:
-		lv_table_set_cell_value_fmt(obj, 0, 1, "%d", (int)e->TC.Sec);
+		lv_table_set_cell_value_fmt(obj, 0, 1, "%d", (int)e->TC.Counter);
 		sprintf(strs, "%.0f°/s", e->TC.Vel);
 		lv_table_set_cell_value_fmt(obj, 0, 2, "%s", strs);
 		break;
@@ -167,7 +167,7 @@ void UI_Task_Btn_ADD_Callback(uint16_t fouces_index, Task_Parameter_Struct* pt)
 	lv_obj_t* table = UI_Table_Create(table_Contain_Property, ui1_, fouces_index);
 	Table_Property* table_Property = UI_Table_Get_Property(table);
 	parent_bo2[parent_bo2_index++] = table;
-	// 设置好数�?�?
+	// 设置好数�??�??
 	table_Property->Updata_Source = pt;
 	UI_Table_Set_Fouces(table_Contain_Property, fouces_index);
 }
@@ -175,7 +175,7 @@ void UI_Task_Btn_ADD_Callback(uint16_t fouces_index, Task_Parameter_Struct* pt)
 void UI_Task_Btn_ADD_Click_Event(lv_event_t* e)
 {
 	uint32_t handleID;
-	// volatile Control_flag *add_flag = &Control_Add_Task.flag;		//避免汇编�?访问reg导致错�??
+	// volatile Control_flag *add_flag = &Control_Add_Task.flag;		//避免汇编�??访问reg导致错�??
 	uint8_t res = UI_Parameter_Read(&Page_Add_Task.info);
 	if (res == 0)
 		return;

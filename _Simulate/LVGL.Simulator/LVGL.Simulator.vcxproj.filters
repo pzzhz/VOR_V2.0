@@ -29,9 +29,6 @@
     <ClCompile Include="..\..\INTERFACE\UI\control\control.c">
       <Filter>UI\control</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\INTERFACE\UI\control\control_base.c">
-      <Filter>UI\control</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\INTERFACE\UI\Task\task_stroage.c">
       <Filter>UI\Task</Filter>
     </ClCompile>
@@ -123,6 +120,9 @@
       <Filter>UI\control\mode</Filter>
     </ClCompile>
     <ClCompile Include="..\..\INTERFACE\UI\control\control_VHIT.c">
+      <Filter>UI\control\mode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INTERFACE\UI\control\control_base.c">
       <Filter>UI\control\mode</Filter>
     </ClCompile>
   </ItemGroup>

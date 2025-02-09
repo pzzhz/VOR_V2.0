@@ -144,7 +144,7 @@ static uint8_t UI_Get(Task_Parameter_Struct* e)
     e->mode = Task_TC;
 
     if (Obj.counter.value >= 0)
-        e->TC.Sec = Obj.counter.value;
+        e->TC.Counter = Obj.counter.value;
 
     char Velstr[10] = { 0 };
     lv_dropdown_get_selected_str(Obj.Vel.dropdown1, Velstr, 10);

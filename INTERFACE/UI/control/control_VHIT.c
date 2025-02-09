@@ -16,167 +16,166 @@
 #include "Windows.h"
 #include <stdio.h>
 #else
-//#include "../implement/Slave_Vor_Ctrl.h"
+#include "../implement/Slave_VHIT_Ctrl.h"
 #endif // use_windows
-	   // 无UI控制
+       // 无UI控制
 // 返回message
-const int singalTick=10*1000;
+const int singalTick = 10 * 1000;
 #define ModeName "VHIT"
 struct
 {
-	uint32_t time;
-	uint32_t RemainTime;
-	uint8_t flag_pause;
-	uint32_t SetCount;
+    uint32_t time;
+    uint32_t RemainTime;
+    uint8_t flag_pause;
+    uint32_t SetCount;
 } vhit_info;
 
 uint8_t HAL_Slave_VHIT_Init(Task_Parameter_Struct *e)
 {
 #ifndef STM32F40_41xxx
-	vhit_info.time = ControlGetTick();
-	vhit_info.SetCount = e->VHIT.Counter;
-	vhit_info.flag_pause = 0;
+    vhit_info.time = ControlGetTick();
+    vhit_info.SetCount = e->VHIT.Counter;
+    vhit_info.flag_pause = 0;
 #else
-	if (e->mode == Task_VHIT)
-		VHIT_Machine_Init(e->VHIT.Freq, e->VHIT.Vel, e->VHIT.Counter, e->VHIT.ExMode);
+    if (e->mode == Task_VHIT)
+        VHIT_Machine_Init(e->VHIT.Counter, e->VHIT.IsCW);
 #endif // !STM32F40_41xxx
 
-	return 1;
+    return 1;
 }
 
 uint8_t HAL_Slave_VHIT_Stop(void)
 {
 #ifndef STM32F40_41xxx
-	uint32_t currentCNT = (ControlGetTick() - vhit_info.time) / singalTick;
-	vhit_info.SetCount = currentCNT + 1;
+    uint32_t currentCNT = (ControlGetTick() - vhit_info.time) / singalTick;
+    vhit_info.SetCount = currentCNT + 1;
 #else
-	VHIT_Machine_Stop();
+    VHIT_Machine_Stop();
 #endif // !STM32F40_41xxx
-	return 1;
+    return 1;
 }
 
 uint8_t HAL_Slave_VHIT_Pause(uint8_t enable)
 {
 #ifndef STM32F40_41xxx
-	if (enable)
-	{
-		vhit_info.flag_pause = 1;
-		vhit_info.RemainTime = ControlGetTick() - vhit_info.time;
-	}
-	else
-	{
-		vhit_info.time = ControlGetTick() - vhit_info.RemainTime;
-		vhit_info.flag_pause = 0;
-	}
+    if (enable)
+    {
+        vhit_info.flag_pause = 1;
+        vhit_info.RemainTime = ControlGetTick() - vhit_info.time;
+    }
+    else
+    {
+        vhit_info.time = ControlGetTick() - vhit_info.RemainTime;
+        vhit_info.flag_pause = 0;
+    }
 #else
-	VHIT_Machine_Pause();
+    VHIT_Machine_Pause();
 #endif // !STM32F40_41xxx
-	return 1;
+    return 1;
 }
 
 uint8_t HAL_Slave_VHIT_Get_State(uint32_t *remainingCount, uint32_t *parcent)
 {
 #ifndef STM32F40_41xxx
-	if (vhit_info.flag_pause)
-		return Imp_paused;
-	uint32_t currentCount =  (ControlGetTick() - vhit_info.time) / singalTick;
-	if (parcent != 0)
-		*parcent = currentCount * 100 / vhit_info.SetCount;
-	if (currentCount < vhit_info.SetCount)
-	{
-		*remainingCount = vhit_info.SetCount - currentCount;
-		return Imp_running;
-	}
-	*remainingCount = 0;
-	return Imp_finsih;
+    if (vhit_info.flag_pause)
+        return Imp_paused;
+    uint32_t currentCount = (ControlGetTick() - vhit_info.time) / singalTick;
+    if (parcent != 0)
+        *parcent = currentCount * 100 / vhit_info.SetCount;
+    if (currentCount < vhit_info.SetCount)
+    {
+        *remainingCount = vhit_info.SetCount - currentCount;
+        return Imp_running;
+    }
+    *remainingCount = 0;
+    return Imp_finsih;
 #else
-	uint32_t counterReq = 0, CurrentCount = 0;
-	uint8_t res = VHIT_Machine_Get_Count(&counterReq, &CurrentCount);
-	if (parcent != 0 && counterReq != 0)
-		*parcent = CurrentCount * 100 / counterReq;
-	*remainingCount = counterReq - CurrentCount;
-	return res;
+    uint32_t counterReq = 0, CurrentCount = 0;
+    uint8_t res = VHIT_Machine_Get_Count(&counterReq, &CurrentCount);
+    if (parcent != 0 && counterReq != 0)
+        *parcent = CurrentCount * 100 / counterReq;
+    *remainingCount = counterReq - CurrentCount;
+    return res;
 #endif // !STM32F40_41xxx
 }
 
-
 uint8_t VHITControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 {
-	const int camWaitTime_s = 5;
-	e->UI_para.state = ready;
-	MYPRINTF("\r\n vor begin");
-	MYPRINTF("\r\n");
-	// 执�?�部�?
-	MYPRINTF("\r\n");
-	Pause_Resume:
-	uint8_t CAM_State = HAL_CAM_REC_Set(1);
-	for (int i = 0; i < camWaitTime_s; i++)
-	{
-		(CAM_State == 0 && i < 2) ? Ctrl_Msg_Printf("camera error") : Ctrl_Msg_Printf("Run after %ds", camWaitTime_s-i);
-		SaftExitDelay(1000, 0);
-	}
-	/*motor set running configure*/
-	HAL_Slave_VHIT_Init(task);
-	/*notice control thread current state*/
-	e->UI_para.state = taskruning;
-	/*get vor machine flag*/
-	uint8_t VHIT_machine_flag = 1, CamIsStop = 0;
-	int32_t LastCount = -1;
-	uint32_t count, parcent;
-	e->State_Bit.pause = 0;
-	/*waiting vor machine finish*/
-	while (VHIT_machine_flag)
-	{
-		VHIT_machine_flag = HAL_Slave_VHIT_Get_State(&count, &parcent);
-		if (LastCount != count && VHIT_machine_flag == Imp_running)
-		{
-			Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount, ModeName, parcent);
-			LastCount = count;
-		}
-		if (e->State_Bit.Exit) // for exit
-		{
-			Ctrl_Msg_Printf("%d:%s #A52A2A Terminated#", e->currentCount, ModeName);
-			HAL_Slave_VHIT_Stop();
-		}
-		if (e->State_Bit.pause == 1)
-		{
-			if (VHIT_machine_flag == Imp_running)
-			{
-				HAL_Slave_VHIT_Pause(1);
-				Ctrl_Msg_Printf("%d:%s Pause", e->currentCount, ModeName);
+    const int camWaitTime_s = 5;
+    e->UI_para.state = ready;
+    MYPRINTF("\r\n vor begin");
+    MYPRINTF("\r\n");
+    // 执�?�部�?
+    MYPRINTF("\r\n");
+Pause_Resume:
+    uint8_t CAM_State = HAL_CAM_REC_Set(1);
+    for (int i = 0; i < camWaitTime_s; i++)
+    {
+        (CAM_State == 0 && i < 2) ? Ctrl_Msg_Printf("camera error") : Ctrl_Msg_Printf("Run after %ds", camWaitTime_s - i);
+        SaftExitDelay(1000, 0);
+    }
+    /*motor set running configure*/
+    HAL_Slave_VHIT_Init(task);
+    /*notice control thread current state*/
+    e->UI_para.state = taskruning;
+    /*get vor machine flag*/
+    uint8_t VHIT_machine_flag = 1, CamIsStop = 0;
+    int32_t LastCount = -1;
+    uint32_t count, parcent;
+    e->State_Bit.pause = 0;
+    /*waiting vor machine finish*/
+    while (VHIT_machine_flag)
+    {
+        VHIT_machine_flag = HAL_Slave_VHIT_Get_State(&count, &parcent);
+        if (LastCount != count && VHIT_machine_flag == Imp_running)
+        {
+            Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount, ModeName, parcent);
+            LastCount = count;
+        }
+        if (e->State_Bit.Exit) // for exit
+        {
+            Ctrl_Msg_Printf("%d:%s #A52A2A Terminated#", e->currentCount, ModeName);
+            HAL_Slave_VHIT_Stop();
+        }
+        if (e->State_Bit.pause == 1)
+        {
+            if (VHIT_machine_flag == Imp_running)
+            {
+                HAL_Slave_VHIT_Pause(1);
+                Ctrl_Msg_Printf("%d:%s Pause", e->currentCount, ModeName);
                 Rk3588_Send_Pause;
-				// if (CamIsStop == 0)
-				// 	HAL_CAM_REC_Set(1);
-				// CamIsStop = 1;
-				HAL_CAM_REC_Set(1);
-			}
-			else if (VHIT_machine_flag == Imp_paused)
-			{
-				goto Pause_Resume;
-				//Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount, ModeStr(task), parcent);
-				//HAL_Slave_VHIT_Pause(0);
-				//HAL_CAM_REC_Set(1);
-			}
-			e->State_Bit.pause = 0;
-		}
-		MYPRINTF("%3d", count);
-		// wait motor infinsh
-		SaftExitDelay(50, 0);
+                // if (CamIsStop == 0)
+                // 	HAL_CAM_REC_Set(1);
+                // CamIsStop = 1;
+                HAL_CAM_REC_Set(1);
+            }
+            else if (VHIT_machine_flag == Imp_paused)
+            {
+                goto Pause_Resume;
+                // Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount, ModeStr(task), parcent);
+                // HAL_Slave_VHIT_Pause(0);
+                // HAL_CAM_REC_Set(1);
+            }
+            e->State_Bit.pause = 0;
+        }
+        MYPRINTF("%3d", count);
+        // wait motor infinsh
+        SaftExitDelay(50, 0);
 
-		MYPRINTF("\r");
-	}
-	if (e->State_Bit.Exit == 0)
-		Ctrl_Msg_Printf("%d:%s Done:100%%", e->currentCount, ModeName);
-	/*one sec for cam stop*/
-	SaftExitDelay(1000, 0);
-	if (CamIsStop == 0)
-		CAM_State = HAL_CAM_REC_Set(1);
-	if (CAM_State == 0)
-	{
-		Ctrl_Msg_Printf("CAM ERROR");
-	}
-	/*--one sec for cam stop*/
-	MYPRINTF("\r\n vor end");
-	e->UI_para.state = end;
-	return 0;
+        MYPRINTF("\r");
+    }
+    if (e->State_Bit.Exit == 0)
+        Ctrl_Msg_Printf("%d:%s Done:100%%", e->currentCount, ModeName);
+    /*one sec for cam stop*/
+    SaftExitDelay(1000, 0);
+    if (CamIsStop == 0)
+        CAM_State = HAL_CAM_REC_Set(1);
+    if (CAM_State == 0)
+    {
+        Ctrl_Msg_Printf("CAM ERROR");
+    }
+    /*--one sec for cam stop*/
+    MYPRINTF("\r\n vor end");
+    e->UI_para.state = end;
+    return 0;
 }

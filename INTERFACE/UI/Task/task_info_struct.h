@@ -55,7 +55,7 @@ extern "C"
     }Task_Parameter_VHIT;
     //TC
     typedef struct {
-        int Sec;
+        uint32_t Counter;
         float Vel;
     }Task_Parameter_TC;
 
