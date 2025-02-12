@@ -1,4 +1,4 @@
-﻿/*
+/*
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-22 16:00:07
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
@@ -48,6 +48,7 @@ extern "C"
 				uint8_t WaitRk : 1;
 				uint8_t IsRunning : 1;
 				uint8_t Exit : 1;
+				uint8_t VHIT_Next : 1;
 				uint8_t finish : 1;
 				uint8_t pause : 1;
 				uint8_t powerUp : 2;

@@ -143,6 +143,7 @@ uint8_t TC_Machine_Init(uint16_t ReqCNT, float vel)
     memset(tc_para, 0, sizeof(tc_para));
     tc_para.ReqCNT = ReqCNT;
     tc_para.vel = vel;
+    tc_para.MillSecReq = 30 * 1000;
     Slave1_Step_Generator_Init(50000, 10);
     Slave1_Set_Machine_Cb(TC_handler);
     tc_para.Tick = 0;
@@ -168,7 +169,7 @@ uint8_t TC_Machine_Get_Count(uint32_t *CNTreq, uint32_t *CurrentMillSec)
     if (tc_para.state == end)
         return Imp_finsih;
     if (CNTreq != 0)
-        *CNTreq = tc_para.ReqCNT;
+        *CNTreq = tc_para.MillSecReq;
     if (CurrentMillSec != 0)
         *CurrentMillSec = tc_para.Tick;
     if (tc_para.ReqPause == 1)

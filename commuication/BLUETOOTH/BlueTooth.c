@@ -187,7 +187,7 @@ void ReturnStart_Cmd(uint8_t isstart)
 {
 	const char* stratcmd = "ReqStrat";
 	const char* StopCmd = "ReqStop";
-	const char* cmdpt = 0;
+	// const char* cmdpt = 0;
 
 	const int mallocSize = 10;
 	char* str = message_malloc(mallocSize);
@@ -344,7 +344,7 @@ DecodeFuntionReturn Decode_Deleta_Cmd(uint8_t* bytes)
 	{
 		uint8_t Id;
 	} Delate_parameter;
-	Task_Parameter_Struct  task;
+	// Task_Parameter_Struct  task;
 	Delate_parameter e = {
 		.Id = bytes[1] - 1 };
 	uint8_t buf[] = {

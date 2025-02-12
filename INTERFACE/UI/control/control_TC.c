@@ -125,6 +125,7 @@ Pause_Resume:
 	int32_t LastCount = -1;
 	uint32_t count, parcent;
 	e->State_Bit.pause = 0;
+	e->State_Bit.VHIT_Next = 0;
 	/*waiting vor machine finish*/
 	while (TC_machine_flag)
 	{

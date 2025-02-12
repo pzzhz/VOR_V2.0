@@ -20,6 +20,7 @@ lv_obj_t* Msg_Label;
 lv_obj_t* MouseNameTextArea;
 char MouseNameTextArea_textSource[50];
 uint8_t isSaveUpdata;
+uint8_t isPauseAllow = 1;
 int16_t CurrentTask = -1, Interval_ID = -1;
 int16_t CurrentCount = -1, Interval_RemainingSec = -1;
 uint8_t parent_bo2_index = 0;
@@ -55,6 +56,18 @@ struct
 	Task_Parameter_Struct info;
 	Task_Parameter_Struct* info_pt;
 } Page_del_Task;
+typedef enum
+{
+	VHIT_BTN_CMD_None,
+	VHIT_BTN_CMD_INIT,
+	VHIT_BTN_CMD_DEINIT,
+	VHIT_BTN_CMD_Enable,
+	VHIT_BTN_CMD_Disable
+}VHIT_Next_Btn_Enable_CMD_Enum;
+
+volatile VHIT_Next_Btn_Enable_CMD_Enum VHIT_Next_Btn_Enable_CMD;
+
+void UI_VHIT_NEXT_BTN_INIT();
 
 // void UI_Page1_Refresh_handle(lv_time_t )
 
@@ -313,7 +326,8 @@ void UI_Start_Btn_Init(lv_obj_t* parent)
 	lv_obj_t* btn = lv_btn_create(parent);
 	start_btn = btn;
 	lv_obj_t* label = lv_label_create(btn); /*Add a label to the button*/
-	lv_label_set_text(label, "start");		/*Set the labels text*/
+	//lv_label_set_text(label, "start");		/*Set the labels text*/
+	lv_label_set_recolor(label, 1);
 	lv_obj_align(btn, LV_ALIGN_TOP_RIGHT, 0, 0);
 	lv_obj_add_event_cb(btn, UI_Start_Btn_Clicked_Handle, LV_EVENT_ALL, 0);
 }
@@ -428,6 +442,34 @@ MsgReadReturn UI_Page1_Send_MouseName(uint8_t* msg, uint16_t msg_size,
 	return msg_nomatch;
 }
 
+MsgReadReturn UI_Page1_Vhit_Next_Handle(uint8_t* msg, uint16_t msg_size,
+	uint8_t* src, uint16_t SrcSize)
+{
+	if (Msg_COMPARE("VHIT_NEXT_INIT", msg))
+	{
+		VHIT_Next_Btn_Enable_CMD = VHIT_BTN_CMD_INIT;
+		isPauseAllow = 0;
+		return msg_match;
+	}
+	if (Msg_COMPARE("VHIT_NEXT_DEINIT", msg))
+	{
+		VHIT_Next_Btn_Enable_CMD = VHIT_BTN_CMD_DEINIT;
+		isPauseAllow = 1;
+		return msg_match;
+	}
+	if (Msg_COMPARE("VHIT_NEXT_ENABLE", msg))
+	{
+		VHIT_Next_Btn_Enable_CMD = VHIT_BTN_CMD_Enable;
+		return msg_match;
+	}
+	if (Msg_COMPARE("VHIT_NEXT_DISABLE", msg))
+	{
+		VHIT_Next_Btn_Enable_CMD = VHIT_BTN_CMD_Disable;
+		return msg_match;
+	}
+	return msg_nomatch;
+}
+
 void UI_Page1_Get_Souce_Updata()
 {
 	if (task_msg.isvaild)
@@ -512,13 +554,17 @@ void UI_Page1_Btn_Refulsh()
 	{
 		lv_obj_t* label = lv_obj_get_child(start_btn, 0);
 		// start:ON
-		lv_label_set_text_fmt(label, "%s", "STOP");
+		lv_label_set_text_fmt(label, "%s", (isPauseAllow) ?
+			"#000000 PAUSE/STOP" :
+			"#000000 STOP");
+		lv_obj_set_style_bg_color(start_btn, lv_color_hex(0xFF4500), 0);
 	}
 	if (Msg_COMPARE("isStop", str))
 	{
 		lv_obj_t* label = lv_obj_get_child(start_btn, 0);
 		// start:ON
-		lv_label_set_text_fmt(label, "%s", "START");
+		lv_label_set_text_fmt(label, "%s", "#000000 START");
+		lv_obj_set_style_bg_color(start_btn, lv_color_hex(0x7CFC00), 0);
 	}
 	message_free(str);
 }
@@ -579,6 +625,7 @@ void UI_Page1_Timer_UIupdata_handle(lv_timer_t* t)
 void UI_Page1_Timer_handle(lv_timer_t* t)
 {
 	UI_Page1_Get_Souce_Updata();
+	UI_VHIT_NEXT_BTN_INIT();
 }
 
 static void ta_event_cb(lv_event_t* e)
@@ -610,6 +657,53 @@ static void keyboardHidden(lv_event_t* e)
 	if (code == LV_EVENT_CANCEL) {
 		lv_obj_add_flag(e->current_target, LV_OBJ_FLAG_HIDDEN);
 	}
+}
+
+void UI_VHIT_NEXT_BTN_HANDLE(lv_event_t* e)
+{
+	if (e->code == LV_EVENT_CLICKED)
+	{
+		Message_Center_Send_prinft("Ctrl", 0, 0,
+			"VHIT_Next_CMD");
+	}
+}
+
+void UI_VHIT_NEXT_BTN_INIT()
+{
+	static lv_obj_t* VHIT_Next_BTN;
+	if (VHIT_Next_Btn_Enable_CMD == VHIT_BTN_CMD_INIT && VHIT_Next_BTN == 0)
+	{
+		VHIT_Next_Btn_Enable_CMD = VHIT_BTN_CMD_None;
+		VHIT_Next_BTN = lv_btn_create(parent_box);
+		lv_obj_set_size(VHIT_Next_BTN, 150, 60);
+		lv_obj_align(VHIT_Next_BTN, LV_ALIGN_CENTER, 135, 160 + 20);
+		lv_obj_t* label = lv_label_create(VHIT_Next_BTN); /*Add a label to the button*/
+		lv_label_set_recolor(label, 1);
+		lv_label_set_text(label, "#000000 NEXT VHIT");	   /*Set the labels text*/
+		lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
+		lv_obj_set_style_bg_color(VHIT_Next_BTN, lv_color_hex(0xFFFF00), 0);
+		lv_obj_clear_flag(VHIT_Next_BTN, LV_OBJ_FLAG_CLICKABLE);
+		lv_obj_add_event_cb(VHIT_Next_BTN, UI_VHIT_NEXT_BTN_HANDLE, LV_EVENT_CLICKED, 0);
+	}
+	else if (VHIT_Next_Btn_Enable_CMD == VHIT_BTN_CMD_DEINIT && VHIT_Next_BTN != 0)
+	{
+		VHIT_Next_Btn_Enable_CMD = VHIT_BTN_CMD_None;
+		lv_obj_del(VHIT_Next_BTN);
+		VHIT_Next_BTN = 0;
+	}
+	else if (VHIT_Next_Btn_Enable_CMD == VHIT_BTN_CMD_Enable && VHIT_Next_BTN != 0)
+	{
+		lv_obj_set_style_bg_color(VHIT_Next_BTN, lv_color_hex(0x7CFC00), 0);
+		lv_obj_add_flag(VHIT_Next_BTN, LV_OBJ_FLAG_CLICKABLE);
+		VHIT_Next_Btn_Enable_CMD = VHIT_BTN_CMD_None;
+	}
+	else if (VHIT_Next_Btn_Enable_CMD == VHIT_BTN_CMD_Disable && VHIT_Next_BTN != 0)
+	{
+		lv_obj_set_style_bg_color(VHIT_Next_BTN, lv_color_hex(0xFFFF00), 0);
+		lv_obj_clear_flag(VHIT_Next_BTN, LV_OBJ_FLAG_CLICKABLE);
+		VHIT_Next_Btn_Enable_CMD = VHIT_BTN_CMD_None;
+	}
+
 }
 
 
@@ -649,6 +743,7 @@ void Page1_init(lv_obj_t* parent)
 	// meassage
 	Message_Center_Add_Send_CB("task", UI_Page1_Send_ADD_Cmd);
 	Message_Center_Add_Read_CB("page1", UI_Page1_Send_MouseName);
+	Message_Center_Add_Send_CB("page1", UI_Page1_Vhit_Next_Handle);
 	// mouse ID inter
 	UI_mouse_Name_textInput(parent);
 

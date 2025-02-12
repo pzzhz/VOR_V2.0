@@ -34,6 +34,7 @@ extern "C"
     void Slave1_Step_Generator_Init(uint32_t arr, uint32_t psc);
     void Slave1_Set_Machine_Cb(Slave_Function_CB cb);
     void tim_f_sin_set(int f);
+	void tim_f_sin_set_Dir(int f);
     void tim_f_set(int f);
     void Slave_server_Init(void);
     float Slave1_Get_Encode_Angle(void);

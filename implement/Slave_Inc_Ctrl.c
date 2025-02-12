@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-24 14:44:19
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
- * @LastEditTime: 2024-09-06 09:54:46
+ * @LastEditTime: 2025-02-11 09:24:25
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\implement\Slave_Vor_Ctrl.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -132,7 +132,7 @@ uint8_t INC_handler(void)
     if (res)
     {
         INC_IO_Set(0);
-				inc_para.state = end;
+        inc_para.state = end;
         return 1; // end turn off tim4
     }
     return 0;

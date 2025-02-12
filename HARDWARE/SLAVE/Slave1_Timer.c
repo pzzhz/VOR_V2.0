@@ -16,15 +16,20 @@ void TIM1_BRK_TIM9_IRQHandler(void)
                 function_cb = 0;
                 extern void Slave1_En_IO(uint8_t state);
                 Slave1_En_IO(0);
+							extern void Motor_Set_Speed(float speed);
+							 extern void Motor_Spd_Pid();
+							Motor_Set_Speed(0);
+							 Motor_Spd_Pid(); // avoid c601 unexpect movement
             }
+						 Motor_Spd_Pid(); // avoid c601 unexpect movement
         }
 				else
 						{
-							extern void Motor_Set_Speed(float speed);
-							Motor_Set_Speed(0);
+							
+//							Motor_Set_Speed(0);
 						}
-        extern void Motor_Spd_Pid();
-        Motor_Spd_Pid(); // avoid c601 unexpect movement
+//        extern void Motor_Spd_Pid();
+//        Motor_Spd_Pid(); // avoid c601 unexpect movement
         // ²¹Í£»ú´úÂë
     }
     TIM9->SR = (uint16_t)~TIM_IT_Update;
@@ -288,6 +293,54 @@ void tim_f_sin_set(int f)
     }
     TIMx->CR1 |= TIM_CR1_CEN;
 }
+
+void tim_f_sin_set_Dir(int f)
+{
+    TIM_TypeDef *TIMx = TIM1;
+    u8 Mins_flag;
+    int time_arr, time_psc;
+    int a, clk = 84000000, c, y, r = 0, t, i;
+    if (f == 0)
+    {
+        Step_Phase_Set(0, 0);
+        return;
+    }
+    if (f < 0)
+    {
+        f = -f;
+        Mins_flag = 0;
+    }
+    else
+        Mins_flag = 1;
+    // if (f < 10)
+    //     return;
+    a = clk / (f);
+    c = sqrt(a);
+    y = 10000000;
+    for (i = 2; i <= c; i++)
+    {
+        t = a % (i);
+
+        if (y > t && a / i < 65536)
+        {
+
+            y = t;
+
+            r = i;
+            if (y == 0 && a / i < 65536)
+                break;
+        }
+    }
+    c = 10;
+
+    time_arr = a / r - 1;
+    time_psc = r - 1;
+        Slave1_Dir_IO(Mins_flag);
+        if (time_arr != TIMx->ARR || time_psc != TIMx->PSC)
+            Step_Phase_Set(time_arr, time_psc);
+    TIMx->CR1 |= TIM_CR1_CEN;
+}
+
 uint8_t Slave_Back(int Tag_Pos)
 {
     return 1;

@@ -206,7 +206,9 @@ void lv_example_menu_55(lv_obj_t* parent, lv_obj_t* obj)
 	btn = lv_list_add_btn(list1, 0, "FAN ");
 	lv_obj_add_event_cb(create_slider(btn, 0, 0, 0, 100, 50),
 		FAN_vol_slider_handle, LV_EVENT_VALUE_CHANGED, NULL);
-	btn = lv_list_add_btn(list1, 0, "V2.1.0");
+	static char snstr[30];
+	HAL_GET_SYSINFO(snstr);
+	btn = lv_list_add_btn(list1, 0, snstr);
 	// lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
 	// lv_list_add_text(list1, "date");
 	// btn = lv_list_add_btn(list1, LV_SYMBOL_OK, "time");
