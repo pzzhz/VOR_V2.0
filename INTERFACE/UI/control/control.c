@@ -407,10 +407,11 @@ void controlfunction()
 		}
 #ifndef STM32F40_41xxx
 		control_info.State_Bit.powerUp = 0;
+		control_info.State_Bit.WaitRk = 0;
 		control_info.Rk3588_Flag.Rflag = 0;
 		control_info.Rk3588_Flag.Lflag = 0;
 #else
-		//control_info.Rk3588_Flag.Rflag = 0;
+		control_info.Rk3588_Flag.Lflag = 0;
 #endif
 		ControlDelay(10);
 		// e.ExitFlag = 1;

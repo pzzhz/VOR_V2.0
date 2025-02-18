@@ -51,18 +51,18 @@ const uint16_t PauseStopCount = 500;
 float C610Spd;
 extern uint8_t HAL_CAM_SET_sign_led(void);
 
-void MotorSpeedSet(float sin_data)
+void MotorSpeedSet(float sin_data,float factor)
 {
     if (vor_para.ExMode == Ex_BOTH ||
         vor_para.ExMode == Ex_OKR)
-        Motor_Set_Speed(-vor_para.vel * sin_data );
+        Motor_Set_Speed(-vor_para.vel * sin_data*factor );
     else if (vor_para.ExMode == Ex_BOTH_R)
-        Motor_Set_Speed(vor_para.vel * sin_data );
+        Motor_Set_Speed(vor_para.vel * sin_data*factor );
     else
         Motor_Set_Speed(0);
 
     if (vor_para.ExMode != Ex_OKR)
-        tim_f_sin_set(angle_step * sin_data * vor_para.vel);
+        tim_f_sin_set(angle_step * sin_data * vor_para.vel*factor);
     else
         tim_f_sin_set(0);
 }
@@ -79,10 +79,12 @@ uint8_t Slave_motor(void)
         {
             HAL_CAM_SET_sign_led();
         }
+        float factor =(vor_para.Tick >= 1000) ? 1.0f:vor_para.Tick / 1000.0f;
+        factor = (factor > 1) ? 1 : factor;
         sin_data = sin(((float)2.0f * Pi * vor_para.freq * vor_para.Tick / 1000.0f));
         vor_para.CurrentCounter = vor_para.freq * vor_para.Tick / 1000.0f;
         vor_para.Tick++;
-        MotorSpeedSet(sin_data); // motor speed set
+        MotorSpeedSet(sin_data,factor); // motor speed set
 
         if (vor_para.CurrentCounter >= vor_para.counterReq)
             return 1;                       // **finish

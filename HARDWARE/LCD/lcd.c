@@ -2888,14 +2888,29 @@ void LCD_Color_Fill(u16 sx, u16 sy, u16 ex, u16 ey, u16 *color)
 {
 	u16 height, width;
 	u16 i, j;
-	width = ex - sx + 1;  // 得到填充的宽度
+	width = ex - sx+1;  // 得到填充的宽度
 	height = ey - sy + 1; // 高度
+	LCD_WR_REG(lcddev.setxcmd);
+	LCD_WR_DATA(sx >> 8);
+	LCD_WR_DATA(sx & 0XFF);
+	LCD_WR_DATA((ex) >> 8);
+	LCD_WR_DATA((ex) & 0XFF);
+	LCD_WR_REG(lcddev.setycmd);
+	LCD_WR_DATA(sy >> 8);
+	LCD_WR_DATA(sy & 0XFF);
+	LCD_WR_DATA((ey) >> 8);
+	LCD_WR_DATA((ey) & 0XFF);
+	LCD_WriteRAM_Prepare(); // 开始写入GRAM
 	for (i = 0; i < height; i++)
 	{
-		LCD_SetCursor(sx, sy + i); // 设置光标位置
-		LCD_WriteRAM_Prepare();	   // 开始写入GRAM
 		for (j = 0; j < width; j++)
-			LCD->LCD_RAM = color[i * width + j]; // 写入数据
+		{
+		if(j==width-1)
+				LCD->LCD_RAM = 0xa00a; // 写入数据
+			else
+				LCD->LCD_RAM = color[i * width + j]; // 写入数据
+		}
+			
 	}
 }
 // 画线

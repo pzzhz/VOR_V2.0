@@ -167,6 +167,86 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
+          <LineNumber>271</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134242868</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>D:\workfile\椤圭洰3 vor\software\VOR_V2.0\HARDWARE\SYSTEM\delay\delay.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\template\../HARDWARE/SYSTEM/delay/delay.c\271</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>144</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134447344</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>D:\workfile\椤圭洰3 vor\software\VOR_V2.0\commuication\rk3588_uart.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\template\../commuication/rk3588_uart.c\144</Expression>
+        </Bp>
+        <Bp>
+          <Number>2</Number>
+          <Type>0</Type>
+          <LineNumber>2893</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134235934</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>D:\workfile\椤圭洰3 vor\software\VOR_V2.0\HARDWARE\LCD\lcd.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\template\../HARDWARE/LCD/lcd.c\2893</Expression>
+        </Bp>
+        <Bp>
+          <Number>3</Number>
+          <Type>0</Type>
+          <LineNumber>2888</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134235914</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>D:\workfile\椤圭洰3 vor\software\VOR_V2.0\HARDWARE\LCD\lcd.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\template\../HARDWARE/LCD/lcd.c\2888</Expression>
+        </Bp>
+        <Bp>
+          <Number>4</Number>
+          <Type>0</Type>
+          <LineNumber>2915</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134236082</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>D:\workfile\椤圭洰3 vor\software\VOR_V2.0\HARDWARE\LCD\lcd.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\template\../HARDWARE/LCD/lcd.c\2915</Expression>
+        </Bp>
+        <Bp>
+          <Number>5</Number>
+          <Type>0</Type>
           <LineNumber>100</LineNumber>
           <EnabledFlag>1</EnabledFlag>
           <Address>0</Address>
@@ -181,36 +261,20 @@
           <Expression></Expression>
         </Bp>
         <Bp>
-          <Number>1</Number>
+          <Number>6</Number>
           <Type>0</Type>
-          <LineNumber>271</LineNumber>
+          <LineNumber>100</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134242780</Address>
+          <Address>0</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>D:\workfile\椤圭洰3 vor\software\VOR_V2.0\HARDWARE\SYSTEM\delay\delay.c</Filename>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>.\stm32f4xx_it.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\template\../HARDWARE/SYSTEM/delay/delay.c\271</Expression>
-        </Bp>
-        <Bp>
-          <Number>2</Number>
-          <Type>0</Type>
-          <LineNumber>144</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134447140</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>D:\workfile\椤圭洰3 vor\software\VOR_V2.0\commuication\rk3588_uart.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\template\../commuication/rk3588_uart.c\144</Expression>
+          <Expression></Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -373,6 +437,11 @@
           <count>31</count>
           <WinNumber>1</WinNumber>
           <ItemText>tc_para</ItemText>
+        </Ww>
+        <Ww>
+          <count>32</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>lcddev</ItemText>
         </Ww>
       </WatchWindow1>
       <WatchWindow2>
