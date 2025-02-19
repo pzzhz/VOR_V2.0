@@ -148,6 +148,69 @@ u16 LCD_BGR2RGB(u16 c)
 	rgb = (b << 11) + (g << 5) + (r << 0);
 	return (rgb);
 }
+
+DMA_InitTypeDef DMA_InitStruct;
+void LCD_DMA_Init()
+{
+
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);
+
+	DMA_StructInit(&DMA_InitStruct);
+
+	DMA_InitStruct.DMA_Channel = DMA_Channel_0; 
+	DMA_InitStruct.DMA_DIR = DMA_DIR_MemoryToMemory;
+	DMA_InitStruct.DMA_PeripheralInc = DMA_PeripheralInc_Enable;		
+	DMA_InitStruct.DMA_MemoryInc = DMA_MemoryInc_Disable;				
+	DMA_InitStruct.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord; 
+	DMA_InitStruct.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;	 
+	DMA_InitStruct.DMA_Mode = DMA_Mode_Normal;							 
+	DMA_InitStruct.DMA_Priority = DMA_Priority_High;					
+	DMA_InitStruct.DMA_FIFOMode = DMA_FIFOMode_Disable;					
+	DMA_InitStruct.DMA_FIFOThreshold = DMA_FIFOThreshold_HalfFull;		 
+	DMA_InitStruct.DMA_MemoryBurst = DMA_MemoryBurst_Single;			
+	DMA_InitStruct.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;	 
+
+	DMA_Init(DMA2_Stream0, &DMA_InitStruct);
+	DMA2->LIFCR= 0xffffffff;
+	DMA2_Stream0->CR|=DMA_IT_TC;
+	NVIC_InitTypeDef NVIC_InitStructure;
+	NVIC_InitStructure.NVIC_IRQChannel = DMA2_Stream0_IRQn;		 
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0; 
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 4;		  
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			  
+	NVIC_Init(&NVIC_InitStructure);							 
+															 
+}
+static int flag=0;
+void DMA2_Stream0_IRQHandler()
+{
+	if((DMA2->LISR & DMA_IT_TCIF0) != 0)
+	{
+		extern void LCD_fill_complete_Recall();
+		 LCD_fill_complete_Recall();
+		flag=0;
+	}
+	DMA2->LIFCR= 0xffffffff;
+}
+
+void LCD_DMA_Write(uint32_t srcBuffer, uint32_t dstBuffer, uint32_t BUFFER_SIZE)
+{
+	DMA2_Stream0->PAR=srcBuffer;
+	DMA2_Stream0->M0AR=dstBuffer;
+
+	DMA2_Stream0->NDTR=BUFFER_SIZE;
+		if(BUFFER_SIZE>50000)
+				DMA2_Stream0->NDTR=50000;
+	// DMA_InitStruct.DMA_PeripheralBaseAddr = (uint32_t)srcBuffer; // ????
+	// DMA_InitStruct.DMA_Memory0BaseAddr = (uint32_t)dstBuffer;	 // ?????
+	// DMA_InitStruct.DMA_BufferSize = BUFFER_SIZE;				 // ?????????С
+	// DMA_Init(DMA2_Stream0, &DMA_InitStruct);
+	DMA2->LIFCR= 0xffffffff;
+			flag=1;
+	DMA_Cmd(DMA2_Stream0, ENABLE);
+
+}
+
 // 当mdk -O1时间优化时需要设置
 // 延时i
 void opt_delay(u8 i)
@@ -718,6 +781,8 @@ void LCD_Init(void)
 	FSMC_NORSRAMInitTypeDef FSMC_NORSRAMInitStructure;
 	FSMC_NORSRAMTimingInitTypeDef readWriteTiming;
 	FSMC_NORSRAMTimingInitTypeDef writeTiming;
+
+	LCD_DMA_Init();
 
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOD | RCC_AHB1Periph_GPIOE | RCC_AHB1Periph_GPIOF | RCC_AHB1Periph_GPIOG, ENABLE); // 使能PD,PE,PF,PG时钟
 	RCC_AHB3PeriphClockCmd(RCC_AHB3Periph_FSMC, ENABLE);																							  // 使能FSMC时钟
@@ -2887,6 +2952,7 @@ void LCD_Fill(u16 sx, u16 sy, u16 ex, u16 ey, u16 color)
 void LCD_Color_Fill(u16 sx, u16 sy, u16 ex, u16 ey, u16 *color)
 {
 	u16 height, width;
+	int transfer=0;
 	u16 i, j;
 	width = ex - sx+1;  // 得到填充的宽度
 	height = ey - sy + 1; // 高度
@@ -2901,17 +2967,8 @@ void LCD_Color_Fill(u16 sx, u16 sy, u16 ex, u16 ey, u16 *color)
 	LCD_WR_DATA((ey) >> 8);
 	LCD_WR_DATA((ey) & 0XFF);
 	LCD_WriteRAM_Prepare(); // 开始写入GRAM
-	for (i = 0; i < height; i++)
-	{
-		for (j = 0; j < width; j++)
-		{
-		if(j==width-1)
-				LCD->LCD_RAM = 0xa00a; // 写入数据
-			else
-				LCD->LCD_RAM = color[i * width + j]; // 写入数据
-		}
-			
-	}
+
+		LCD_DMA_Write((u32)&color[0],(uint32_t)LCD_BASE+2,width*height);
 }
 // 画线
 // x1,y1:起点坐标

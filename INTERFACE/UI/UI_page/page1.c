@@ -86,17 +86,17 @@ static uint16_t  Get_Str_Len(const char* str, uint16_t maxlen)
 
 void Set_table_Cell_Text(lv_obj_t* obj, Task_Parameter_Struct* e)
 {
-	static int8_t updata_count = -1;
-	if (isSaveUpdata == 0)
-		return;
+	//static int8_t updata_count = -1;
+	//if (isSaveUpdata == 0)
+	//	return;
 	char strs[25];
 	Table_Property* item_property = UI_Table_Get_Property(obj);
-	if (updata_count > table_Contain_Property->list->size * 2)
-	{
-		isSaveUpdata = 0;
-		updata_count = -1;
-	}
-	updata_count = *item_property->ID;
+	//if (updata_count > table_Contain_Property->list->size*2 )
+	//{
+	//	isSaveUpdata = 0;
+	//	updata_count = -1;
+	//}
+	//updata_count++;
 	switch (e->mode)
 	{
 	case Task_VOR:
@@ -163,9 +163,20 @@ const char* TaskNameTransLate(Task_Parameter_Struct t)
 #define SPRINTF sprintf_s
 void ui1_(Table_Property* p)
 {
+	static int8_t updata_count = -1;
+	if (isSaveUpdata == 0)
+		return;
+	Table_Property* item_property = UI_Table_Get_Property(p->obj);
+	if (updata_count > table_Contain_Property->list->size*2 )
+	{
+		isSaveUpdata = 0;
+		updata_count = -1;
+	}
+	updata_count++;
 	short index = *p->ID;
 	if (p->Updata_Source)
 	{
+
 		Task_Parameter_Struct* task_info = p->Updata_Source;
 		lv_table_set_cell_value_fmt(p->obj, 0, 0, "%s,%d",
 			TaskNameTransLate(*task_info), index);
