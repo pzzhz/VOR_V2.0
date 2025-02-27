@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-25 14:38:08
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
- * @LastEditTime: 2025-02-12 11:00:57
+ * @LastEditTime: 2025-02-19 09:51:40
  * @FilePath: \USER  d:\workfile\项目3 vor\software\VOR_V2.0\INTERFACE\UI\control\control_Hardware_API.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -34,6 +34,18 @@ struct
 	float Currentangle;
 } inc_info;
 
+struct
+{
+	struct
+	{
+		uint8_t online;
+	} CAM;
+	struct
+	{
+		uint8_t online;
+	} C610;
+} CAN_Device;
+
 uint8_t HAL_Incline_Init(float angle, uint32_t time)
 {
 	inc_info.Setangle = angle;
@@ -44,7 +56,7 @@ uint8_t HAL_Incline_Init(float angle, uint32_t time)
 	return 1;
 }
 // 1 running
-uint8_t HAL_Incline_Get_State(float* angle)
+uint8_t HAL_Incline_Get_State(float *angle)
 {
 #if use_simluate
 	uint32_t tick = ControlGetTick() - inc_info.time;
@@ -75,6 +87,8 @@ uint8_t HAL_CAM_Init()
 	can_init(1, 10, 3, 7, 0);
 	extern void C610_Ctrl_Init();
 	C610_Ctrl_Init();
+	extern void CAM_GPIO_INIT();
+	CAM_GPIO_INIT();
 	// buf[0] 00  rec
 	// buf[0] 01  set
 	// buf[0] 02  U16_L U16_H  led voltage Set
@@ -92,10 +106,12 @@ uint8_t HAL_CAM_REC_Set(uint8_t flag)
 	//	if (Cam_Flag == flag)
 	{
 		const uint8_t CAN_CAM_MSG[8] = {
-			0, 0, 0, 0, 0, 0, 0, 0 };
-		res = can_send_msg(0x00, (uint8_t*)CAN_CAM_MSG, 8); // can_send reture 1->fail 0->success
+			0, 0, 0, 0, 0, 0, 0, 0};
+		res = can_send_msg(0x00, (uint8_t *)CAN_CAM_MSG, 8); // can_send reture 1->fail 0->success
 		res = (res == 1) ? 0 : 1;							 // exchange reture 1->success 0->fail
 		Cam_Flag = flag;
+		extern void GPIO_CAM_REC_IO_Ctrl();
+		GPIO_CAM_REC_IO_Ctrl();
 	}
 #endif
 	return res;
@@ -107,9 +123,11 @@ uint8_t HAL_CAM_SET_Set(void)
 	uint8_t res = 1; // reture success
 #ifdef STM32F40_41xxx
 	const uint8_t CAN_CAM_MSG[8] = {
-		01, 0, 0, 0, 0, 0, 0, 0 };
-	res = can_send_msg(0x00, (uint8_t*)CAN_CAM_MSG, 8); // can_send reture 1->fail 0->success
+		01, 0, 0, 0, 0, 0, 0, 0};
+	res = can_send_msg(0x00, (uint8_t *)CAN_CAM_MSG, 8); // can_send reture 1->fail 0->success
 	res = (res == 1) ? 0 : 1;							 // exchange reture 1->success 0->fail
+	extern void GPIO_CAM_Wifi_IO_Ctrl();
+	GPIO_CAM_Wifi_IO_Ctrl();
 #endif
 	return res;
 }
@@ -120,9 +138,11 @@ uint8_t HAL_CAM_SET_sign_led(void)
 	uint8_t res = 1; // reture success
 #ifdef STM32F40_41xxx
 	const uint8_t CAN_CAM_MSG[8] = {
-		04, 0, 0, 0, 0, 0, 0, 0 };
-	res = can_send_msg(0x00, (uint8_t*)CAN_CAM_MSG, 8); // can_send reture 1->fail 0->success
+		04, 0, 0, 0, 0, 0, 0, 0};
+	res = can_send_msg(0x00, (uint8_t *)CAN_CAM_MSG, 8); // can_send reture 1->fail 0->success
 	res = (res == 1) ? 0 : 1;							 // exchange reture 1->success 0->fail
+	extern void GPIO_CAM_SyncLED_IO_Ctrl();
+	GPIO_CAM_SyncLED_IO_Ctrl();
 #endif
 	return res;
 }
@@ -131,17 +151,17 @@ uint8_t HAL_CAM_SET_sign_led(void)
 uint8_t HAL_CAM_SET_Led_Voltage(uint16_t Millivol)
 {
 	uint8_t res = 1; // reture success
-	uint8_t* vol = (uint8_t*)&Millivol;
+	uint8_t *vol = (uint8_t *)&Millivol;
 #ifdef STM32F40_41xxx
 	const uint8_t CAN_CAM_MSG[8] = {
-		02, vol[0], vol[1], 0, 0, 0, 0, 0 };
-	res = can_send_msg(0x00, (uint8_t*)CAN_CAM_MSG, 8); // can_send reture 1->fail 0->success
+		02, vol[0], vol[1], 0, 0, 0, 0, 0};
+	res = can_send_msg(0x00, (uint8_t *)CAN_CAM_MSG, 8); // can_send reture 1->fail 0->success
 	res = (res == 1) ? 0 : 1;							 // exchange reture 1->success 0->fail
 #endif
 	return res;
 }
 
-uint8_t HAL_IMU_GET_Angle(float* angle)
+uint8_t HAL_IMU_GET_Angle(float *angle)
 {
 #ifdef STM32F40_41xxx
 	extern float JY60_Get_IncAsync();
@@ -159,28 +179,40 @@ uint8_t HAL_IMU_GET_Angle(float* angle)
 	return 1;
 }
 
-void HAL_GET_SYSINFO(char * str)
+void HAL_GET_SYSINFO(char *str)
 {
 #ifdef STM32F40_41xxx
 	uint32_t sn[3];
 	// Unique ID is stored in 0x1FFF7A10, 0x1FFF7A14, and 0x1FFF7A18
-	sn[0] = *(uint32_t*)0x1FFF7A10;
-	sn[1] = *(uint32_t*)0x1FFF7A14;
-	sn[2] = *(uint32_t*)0x1FFF7A18;
+	sn[0] = *(uint32_t *)0x1FFF7A10;
+	sn[1] = *(uint32_t *)0x1FFF7A14;
+	sn[2] = *(uint32_t *)0x1FFF7A18;
 	sprintf(str, "V2.1.0 \tSN:%.8x", sn[1]);
-	return ;
+	return;
 #endif
-	sprintf(str, "V2.1.0 \tSN:%.8x",0x550);
-	return ;
+	sprintf(str, "V2.1.0 \tSN:%.8x", 0x550);
+	return;
 }
 
-uint8_t HAL_Set_UI_Page1_Msg(const char* format, ...)
+// void HAL_RTC_SET()
+// {
+
+// }
+
+// void HAL_RTC_
+
+// void Hal_RTC_INIT()
+// {
+
+// }
+
+uint8_t HAL_Set_UI_Page1_Msg(const char *format, ...)
 {
 	va_list args;
 	va_start(args, format);
-	extern char* UI_Page1_Get_Msg_Array(uint16_t * len);
+	extern char *UI_Page1_Get_Msg_Array(uint16_t *len);
 	extern void UI_Page1_Set_Msg_Finish(void);
-	char* msg_pt = UI_Page1_Get_Msg_Array(0);
+	char *msg_pt = UI_Page1_Get_Msg_Array(0);
 	while (msg_pt == 0)
 	{
 		msg_pt = UI_Page1_Get_Msg_Array(0);
@@ -191,12 +223,12 @@ uint8_t HAL_Set_UI_Page1_Msg(const char* format, ...)
 	return 1;
 }
 
-uint8_t HAL_Get_UI_MouseName(char* str, uint16_t size)
+uint8_t HAL_Get_UI_MouseName(char *str, uint16_t size)
 {
 	return Message_Center_Read_prinft("page1", str, size, "MouseName?");
 }
 
-uint16_t HAL_Task_GetArray(Task_Parameter_Struct* taskarray, uint16_t arraySize)
+uint16_t HAL_Task_GetArray(Task_Parameter_Struct *taskarray, uint16_t arraySize)
 {
 	uint16_t res = Task_Stroage_GetArray(taskarray, arraySize);
 	return res;

@@ -74,6 +74,14 @@ extern "C"
 				uint8_t paraError : 1;
 			};
 		} Error_Bit;
+		union
+		{
+			uint8_t flag;
+			struct
+			{
+				uint8_t LoopTest : 1;
+			};
+		} Dev_Mode_Bit;
 #ifndef STM32F40_41xxx
 		HANDLE hThread;
 #endif // use_windows

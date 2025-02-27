@@ -17,6 +17,8 @@
 "..\obj\fan.o"
 "..\obj\usart6.o"
 "..\obj\c610.o"
+"..\obj\gpio.o"
+"..\obj\rtc.o"
 "..\obj\delay.o"
 "..\obj\sys.o"
 "..\obj\usart.o"

@@ -128,6 +128,38 @@ void UI_page_maintain_incline_down_handle(lv_event_t* e)
 	}
 }
 
+void UI_page_maintain_SYSINFO_hander(lv_event_t* e)
+{
+	extern void UI_page_maintain_DEV_Menu_Init();
+	if (e->code == LV_EVENT_LONG_PRESSED)
+	{
+		//UI_page_maintain_DEV_Menu_Init();
+	}
+}
+
+void UI_page_maintain_Sw_init(lv_obj_t* parent, const char* text, lv_event_cb_t event_cb)
+{
+	lv_obj_t* obj = lv_obj_create(parent);
+	lv_obj_set_size(obj, 100, 100);
+	lv_obj_t* sw = lv_switch_create(obj);
+	lv_obj_align(sw, LV_ALIGN_RIGHT_MID, 0, 0);
+	lv_obj_t* label = lv_label_create(sw);
+	lv_label_set_text(label, "ssssssssssssssssssssssss");
+	lv_obj_set_style_bg_color(sw, lv_color_hex(0x696969), LV_PART_INDICATOR | LV_STATE_CHECKED);
+
+}
+
+void UI_page_maintain_DEV_Menu_Init()
+{
+	lv_obj_t* obj = lv_msgbox_create(NULL, "DEV MODE", " ", NULL, true);
+	lv_obj_center(obj);
+	UI_page_maintain_Sw_init(obj, "sss", NULL);
+
+
+
+
+}
+
 void UI_page_maintain_incline_init(lv_obj_t* parent)
 {
 	lv_obj_t* btn = lv_btn_create(parent);
@@ -209,7 +241,7 @@ void lv_example_menu_55(lv_obj_t* parent, lv_obj_t* obj)
 	static char snstr[30];
 	HAL_GET_SYSINFO(snstr);
 	btn = lv_list_add_btn(list1, 0, snstr);
-	// lv_obj_add_event_cb(btn, event_handler, LV_EVENT_CLICKED, NULL);
+	lv_obj_add_event_cb(btn, UI_page_maintain_SYSINFO_hander, LV_EVENT_LONG_PRESSED, NULL);
 	// lv_list_add_text(list1, "date");
 	// btn = lv_list_add_btn(list1, LV_SYMBOL_OK, "time");
 }

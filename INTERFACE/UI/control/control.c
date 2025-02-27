@@ -200,6 +200,10 @@ uint8_t Maintain_Service_Read_ack(uint8_t* msg, uint16_t msg_size,
 		}
 		return 0;
 	}
+	if (Msg_COMPARE("Test Mode Shift",msg))
+	{
+		control_info.Dev_Mode_Bit.LoopTest = !control_info.Dev_Mode_Bit.LoopTest;
+	}
 	return 1;
 }
 
@@ -231,7 +235,7 @@ uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info* e, uint8_t LR)
 		}
 		if (Msg_COMPARE("ok", message))
 		{
-			if (*flag == SendTaskArray || *flag == Pause) // when send task array
+		//	if (*flag == SendTaskArray || *flag == Pause) // when send task array
 				*flag = Rk3588_Uart_Idle;
 		}
 		if (Msg_COMPARE("clear finish", message))
@@ -240,6 +244,7 @@ uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info* e, uint8_t LR)
 			if (e->Rk3588_Flag.Lflag == 0 && e->Rk3588_Flag.Rflag == 0) // if both rk3588 finish clear ,restart user interface
 			{
 				e->State_Bit.WaitRk = 0;
+				*flag = Rk3588_Uart_Idle;
 			}
 		}
 		if (Msg_COMPARE("ready", message))
@@ -411,7 +416,7 @@ void controlfunction()
 		control_info.Rk3588_Flag.Rflag = 0;
 		control_info.Rk3588_Flag.Lflag = 0;
 #else
-		control_info.Rk3588_Flag.Lflag = 0;
+		control_info.Rk3588_Flag.Rflag = 0;
 #endif
 		ControlDelay(10);
 		// e.ExitFlag = 1;

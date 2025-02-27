@@ -479,6 +479,16 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\c610\C610.c</FilePath>
             </File>
+            <File>
+              <FileName>GPIO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IO\GPIO.c</FilePath>
+            </File>
+            <File>
+              <FileName>rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\RTC\rtc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2215,6 +2225,16 @@
               <FileName>C610.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\c610\C610.c</FilePath>
+            </File>
+            <File>
+              <FileName>GPIO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IO\GPIO.c</FilePath>
+            </File>
+            <File>
+              <FileName>rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\RTC\rtc.c</FilePath>
             </File>
           </Files>
         </Group>

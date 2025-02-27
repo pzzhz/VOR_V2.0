@@ -65,8 +65,11 @@ void Continue_init(lv_obj_t* parent)
 	SpinBox_Init(&e);
 }
 #endif
-
+#if 0
 const char* Set_item = "VOR\n""OKR\n""VOR+OKR\n""VOR+OKR*\n""CONT\n""OVAR\n""VHIT\n""TC";
+#else
+const char* Set_item = "VOR\n""CONT\n""OVAR\n""VHIT\n""TC";
+#endif
 typedef struct
 {
 	struct {

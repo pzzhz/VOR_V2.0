@@ -19,7 +19,9 @@ extern "C"
 	void HAL_communication_Init(void);
 	int Hal_Rk3588_ReadLine(const char* format, ...);
 	int Hal_Rk3588_L_ReadLine(const char* format, ...);
+	//UART1 right
 	int Hal_Rk3588_Readarray(char* bytes);
+	//UART6 left
 	int Hal_Rk3588_L_Readarray(char* bytes);
 	int HAL_USB_Isconnect();
 
