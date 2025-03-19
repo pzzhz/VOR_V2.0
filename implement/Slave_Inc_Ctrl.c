@@ -58,7 +58,8 @@ uint8_t Inc_ctrl(void)
     {
         int16_t bias = ((inc_para.angleReq - angle) * 10.0f);
         //   Rk3588_Printf("\r\n bias %d",bias);
-        if (last_angle == bias)
+				int error=last_angle-bias;
+        if (error==0)
         {
             angle_nomovecounter++;
         }

@@ -21,7 +21,7 @@
  *
  ****************************************************************************************************
  */
-#if 0
+
 
 #include "rtc.h"
 // #include "./BSP/LED/led.h"
@@ -407,7 +407,7 @@ void RTC_Alarm_IRQHandler(void)
     if (RTC->ISR & (1 << 8))    /* ALARM A中断? */
     {
         RTC->ISR &= ~(1 << 8);  /* 清除中断标志 */
-        printf("ALARM A!\r\n");
+       // printf("ALARM A!\r\n");
     }
 
     EXTI->PR |= 1 << 17;        /* 清除中断线17的中断标志 */
@@ -423,7 +423,7 @@ void RTC_WKUP_IRQHandler(void)
     if (RTC->ISR & (1 << 10))   /* WK_UP中断? */
     {
         RTC->ISR &= ~(1 << 10); /* 清除中断标志 */
-        LED1_TOGGLE();
+        // LED1_TOGGLE();
     }
 
     EXTI->PR |= 1 << 19;        /* 清除中断线19的中断标志 */
@@ -466,8 +466,6 @@ uint8_t rtc_get_week(uint16_t year, uint8_t month, uint8_t day)
 
 
 
-
-#endif
 
 
 

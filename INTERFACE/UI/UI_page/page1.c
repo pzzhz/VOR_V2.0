@@ -132,11 +132,13 @@ void Set_table_Cell_Text(lv_obj_t* obj, Task_Parameter_Struct* e)
 	case Task_VHIT:
 		lv_table_set_cell_value_fmt(obj, 0, 1, "%d", (int)e->VHIT.Counter);
 		lv_table_set_cell_value_fmt(obj, 0, 2, "%s", (e->VHIT.IsCW) ? "CW" : "CCW");
+		lv_table_set_cell_value_fmt(obj, 0, 3, " ");
 		break;
 	case Task_TC:
 		lv_table_set_cell_value_fmt(obj, 0, 1, "%d", (int)e->TC.Counter);
 		sprintf(strs, "%.0f°/s", e->TC.Vel);
 		lv_table_set_cell_value_fmt(obj, 0, 2, "%s", strs);
+		lv_table_set_cell_value_fmt(obj, 0, 3, " ");
 		break;
 	}
 }

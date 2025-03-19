@@ -130,32 +130,181 @@ void UI_page_maintain_incline_down_handle(lv_event_t* e)
 
 void UI_page_maintain_SYSINFO_hander(lv_event_t* e)
 {
+	static int Password = 122112;
+	static int Input = 0;
+	static uint8_t isLongPress = 0;
 	extern void UI_page_maintain_DEV_Menu_Init();
+	if (e->code != LV_EVENT_CLICKED && e->code != LV_EVENT_LONG_PRESSED)
+		return;
+#if 1
+	UI_page_maintain_DEV_Menu_Init();
+#else
+	lv_obj_t* btn = e->user_data;
+	lv_obj_t* label = lv_obj_get_child(btn, 0);
+	if (e->code == LV_EVENT_CLICKED)
+	{
+		if (isLongPress == 0)
+		{
+			if (Input == 0)
+				Input = 1;
+			else
+				Input = Input * 10 + 1;
+		}
+		isLongPress = 0;
+	}
 	if (e->code == LV_EVENT_LONG_PRESSED)
 	{
-		//UI_page_maintain_DEV_Menu_Init();
+		if (Input == 0)
+		{
+			Input = 2;
+		}
+		else
+		{
+			Input = Input * 10 + 2;
+		}
+		isLongPress = 1;
+	}
+	if (Input >= Password)
+	{
+		if (Input == Password)
+			UI_page_maintain_DEV_Menu_Init();
+		char str[30] = { 0 };
+		HAL_GET_SYSINFO(str);
+		lv_label_set_text(label, str);
+		Input = 0;
+	}
+	else
+	{
+		if (Input != 0)
+			lv_label_set_text_fmt(label, "PWD:%d", Input);
+	}
+#endif
+}
+
+void UI_page_maintain_DEV_hander(lv_event_t* e)
+{
+	if (e->code == LV_EVENT_VALUE_CHANGED)
+	{
+		lv_obj_t* obj = lv_event_get_target(e);
+		int value = lv_obj_has_state(obj, LV_STATE_CHECKED);
+		const char* cmd = e->user_data;
+		if (value)
+		{
+			Message_Center_Read_prinft("Ctrl", 0, 0,
+				"DEV %s 1", cmd);
+		}
+		else
+		{
+			Message_Center_Read_prinft("Ctrl", 0, 0,
+				"DEV %s 0", cmd);
+		}
 	}
 }
 
-void UI_page_maintain_Sw_init(lv_obj_t* parent, const char* text, lv_event_cb_t event_cb)
+void UI_page_maintain_RKMask_hander(lv_event_t* e)
+{
+	if (e->code == LV_EVENT_VALUE_CHANGED)
+	{
+		lv_obj_t* obj = lv_event_get_target(e);
+		int value = lv_obj_has_state(obj, LV_STATE_CHECKED);
+		const char* cmd = e->user_data;
+		if (value)
+		{
+			Message_Center_Read_prinft("Ctrl", 0, 0,
+				"DEV %s ON", cmd);
+		}
+		else
+		{
+			Message_Center_Read_prinft("Ctrl", 0, 0,
+				"DEV %s OFF", cmd);
+		}
+	}
+}
+
+void UI_page_maintain_Sw_init(lv_obj_t* parent, const char* text, lv_event_cb_t event_cb, const char* cmd)
 {
 	lv_obj_t* obj = lv_obj_create(parent);
-	lv_obj_set_size(obj, 100, 100);
+	lv_obj_set_size(obj, 300, 50);
+	lv_obj_clear_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
 	lv_obj_t* sw = lv_switch_create(obj);
 	lv_obj_align(sw, LV_ALIGN_RIGHT_MID, 0, 0);
-	lv_obj_t* label = lv_label_create(sw);
-	lv_label_set_text(label, "ssssssssssssssssssssssss");
+	lv_obj_t* label = lv_label_create(obj);
+	lv_label_set_text(label, text);
+	lv_obj_align(label, LV_ALIGN_LEFT_MID, 0, 0);
 	lv_obj_set_style_bg_color(sw, lv_color_hex(0x696969), LV_PART_INDICATOR | LV_STATE_CHECKED);
+	int value = 0;
+	Message_Center_Read_prinft("Ctrl", &value, sizeof(value),
+		"DEV %s", cmd);
+	if (value)
+		lv_obj_add_state(sw, LV_STATE_CHECKED);
+	if (event_cb != 0)
+	{
+		lv_obj_add_event_cb(sw, event_cb, LV_EVENT_VALUE_CHANGED, (void*)cmd);
+	}
 
+}
+
+void UI_page_maintain_COMBOX_init(lv_obj_t* parent, const char* text, const char* Items, lv_event_cb_t event_cb, const char* cmd)
+{
+	lv_obj_t* obj = lv_obj_create(parent);
+	lv_obj_set_size(obj, 300, 50);
+	lv_obj_clear_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
+	lv_obj_t* combox = lv_dropdown_create(obj);
+	lv_obj_align(combox, LV_ALIGN_RIGHT_MID, 0, 0);
+	lv_obj_t* label = lv_label_create(obj);
+	lv_label_set_text(label, text);
+	lv_obj_align(label, LV_ALIGN_LEFT_MID, 0, 0);
+	lv_dropdown_set_options(combox, Items);
+	lv_obj_set_style_bg_color(combox, lv_color_hex(0x696969), LV_PART_INDICATOR | LV_STATE_CHECKED);
+	int value = 0;
+	Message_Center_Read_prinft("Ctrl", &value, sizeof(value),
+		"DEV %s", cmd);
+	lv_dropdown_set_selected(combox, value);
+	if (event_cb != 0)
+	{
+		lv_obj_add_event_cb(combox, event_cb, LV_EVENT_VALUE_CHANGED, (void*)cmd);
+	}
+
+}
+
+void UI_page_maintain_time_btn_handle(lv_event_t* e)
+{
+	if (e->code == LV_EVENT_CLICKED)
+	{
+		extern void UI_Maintain_Time_Set();
+		UI_Maintain_Time_Set();
+	}
+}
+
+void UI_page_maintain_DFU_btn_handle(lv_event_t* e)
+{
+	if (e->code == LV_EVENT_CLICKED)
+	{
+		Message_Center_Read_prinft("Ctrl", 0, 0,
+			"DFU");
+	}
+}
+
+void UI_page_maintain_MsgBox_close(lv_event_t* e)
+{
+	if (e->code == LV_EVENT_DELETE)
+	{
+		Message_Center_Read_prinft("Ctrl", 0, 0,
+			"CONFIG SAVE");
+	}
 }
 
 void UI_page_maintain_DEV_Menu_Init()
 {
 	lv_obj_t* obj = lv_msgbox_create(NULL, "DEV MODE", " ", NULL, true);
 	lv_obj_center(obj);
-	UI_page_maintain_Sw_init(obj, "sss", NULL);
-
-
+	lv_obj_set_size(obj, 400, 400);
+	UI_page_maintain_Sw_init(obj, "LOOP", UI_page_maintain_DEV_hander, "LOOP");
+	UI_page_maintain_Sw_init(obj, "RK_Disable", UI_page_maintain_RKMask_hander, "RK_Disable");
+	UI_page_maintain_COMBOX_init(obj, "UART", "DISABLE\nUART1\nBoth", 0, "UART CONFIG");
+	lv_obj_t* btn = lv_list_add_btn(obj, 0, "DFU");
+	lv_obj_add_event_cb(btn, UI_page_maintain_DFU_btn_handle, LV_EVENT_CLICKED, btn);
+	lv_obj_add_event_cb(obj, UI_page_maintain_MsgBox_close, LV_EVENT_DELETE, 0);
 
 
 }
@@ -188,8 +337,83 @@ static void anim_y_cb(void* var, int32_t v)
 	// lv_obj_set_y((lv_obj_t*)var, v);
 }
 
+static void ta_event_cb(lv_event_t* e)
+{
+	lv_event_code_t code = lv_event_get_code(e);
+	lv_obj_t* ta = lv_event_get_target(e);
+	lv_obj_t* kb = lv_event_get_user_data(e);
+	if (code == LV_EVENT_FOCUSED || code == LV_EVENT_CLICKED) {
+		lv_keyboard_set_textarea(kb, ta);
+		lv_obj_clear_flag(kb, LV_OBJ_FLAG_HIDDEN);
+	}
+	if (code == LV_EVENT_VALUE_CHANGED)
+	{
+
+		/*	strncpy(MouseNameTextArea_textSource,
+				lv_textarea_get_text(e->current_target),
+				50);*/
+		int value[6];
+		int res = 0;
+		const char* str = lv_textarea_get_text(e->current_target);
+		int len = strlen(str);
+		printf("\r\n len %d", len);
+		if (strlen(str) == 19)
+		{
+			res = sscanf(str, "%d/%d/%d/%d/%d/%d",
+				&value[0], &value[1], &value[2],
+				&value[3], &value[4], &value[5]);
+			Message_Center_Read_prinft("Ctrl", 0, 0,
+				"DEV TIME %s", str);
+		}
+
+		if (res == 6)
+		{
+			res = 0;
+		}
+
+	}
+
+	if (code == LV_EVENT_DEFOCUSED) {
+		lv_keyboard_set_textarea(kb, NULL);
+		lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
+
+	}
+}
+
+void UI_Maintain_Time_Set(lv_obj_t* parent)
+{
+	lv_obj_t* obj = lv_msgbox_create(NULL, "Time Set", " ", NULL, true);
+	lv_obj_set_size(obj, 700, 500);
+	lv_obj_center(obj);
+	/*Create a keyboard to use it with an of the text areas*/
+
+	//lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
+
+	lv_obj_t* label = lv_label_create(obj);
+	lv_label_set_text(label, "2000/01/01/10/12/50\nYYYY/MM/DD/hh/mm/ss");
+
+	/*Create a text area. The keyboard will write here*/
+	lv_obj_t* ta;
+	ta = lv_textarea_create(obj);
+	lv_obj_align(ta, LV_ALIGN_TOP_LEFT, -0, 120);
+
+	//lv_textarea_set_placeholder_text(ta, "2000/01/01/10/12/50 YYYY/MM/DD/hh/mm/ss");
+	lv_textarea_set_accepted_chars(ta, "1234567890/");
+	lv_textarea_set_max_length(ta, 19);
+	//lv_obj_add_event_cb(kb, keyboardHidden, LV_EVENT_CANCEL, 0);
+	lv_obj_set_size(ta, 240, 45);
+	lv_obj_t* kb = lv_keyboard_create(obj);
+	lv_obj_add_event_cb(ta, ta_event_cb, LV_EVENT_ALL, kb);
+	lv_keyboard_set_textarea(kb, ta);
+}
+
+
 void lv_example_menu_55(lv_obj_t* parent, lv_obj_t* obj)
 {
+	//extern void UI_page_maintain_DEV_Menu_Init();
+	//UI_page_maintain_DEV_Menu_Init();
+	//UI_page_maintain_DEV_Menu_Init();
+	//create_time_setting_screen();
 	/*Create a list*/
 	lv_obj_t* list1 = lv_list_create(parent);
 	lv_obj_clear_flag(list1, LV_OBJ_FLAG_SCROLLABLE);
@@ -241,7 +465,7 @@ void lv_example_menu_55(lv_obj_t* parent, lv_obj_t* obj)
 	static char snstr[30];
 	HAL_GET_SYSINFO(snstr);
 	btn = lv_list_add_btn(list1, 0, snstr);
-	lv_obj_add_event_cb(btn, UI_page_maintain_SYSINFO_hander, LV_EVENT_LONG_PRESSED, NULL);
+	lv_obj_add_event_cb(btn, UI_page_maintain_SYSINFO_hander, LV_EVENT_ALL, btn);
 	// lv_list_add_text(list1, "date");
 	// btn = lv_list_add_btn(list1, LV_SYMBOL_OK, "time");
 }

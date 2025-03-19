@@ -26,6 +26,8 @@ void thread_create(void* function, Task_control_info* e, TaskHandle_t* control_t
 TaskHandle_t task_ctrl_thread, contrl_thread;
 Task_control_info control_info = { 0 };
 
+
+
 #if 0
 UI_Function_struct control_cb_array[control_cb_array_size];
 uint8_t Control_Set_cb(UI_Function_struct* function_array,
@@ -101,6 +103,26 @@ uint8_t Ctrl_Msg_Printf(const char* format,
 	uint16_t stringLen = vsprintf(control_info.message, format, args);
 	control_info.ismessageUpdata = 1;
 	va_end(args);
+}
+
+uint8_t Ctrl_Save_Config()
+{
+	HAL_CONFIG_WRITE(0,
+		&control_info.Dev_Mode_Bit.flag,
+		sizeof(control_info.Dev_Mode_Bit.flag));
+}
+
+uint8_t Ctrl_Resume_Config()
+{
+	uint8_t buff[10];
+	int res = HAL_CONFIG_READ(0, buff, 8);
+	if (res != 0)
+	{
+		memcpy(&control_info.Dev_Mode_Bit.flag,
+			buff,
+			sizeof(control_info.Dev_Mode_Bit.flag));
+	}
+
 }
 
 // return 0 ->ok
@@ -200,12 +222,52 @@ uint8_t Maintain_Service_Read_ack(uint8_t* msg, uint16_t msg_size,
 		}
 		return 0;
 	}
-	if (Msg_COMPARE("Test Mode Shift",msg))
+	if (Msg_COMPARE("DEV LOOP", msg))
 	{
-		control_info.Dev_Mode_Bit.LoopTest = !control_info.Dev_Mode_Bit.LoopTest;
+		int value;
+		if (sscanf(msg, "DEV LOOP %d", &value) == 1)
+		{
+			if (value >= 0 && value <= 1)
+				control_info.Dev_Mode_Bit.LoopTest = value;
+		}
+		int* Returnvalue = (int*)src;
+		*Returnvalue = control_info.Dev_Mode_Bit.LoopTest;
+		return 0;
+	}
+	if (Msg_COMPARE("DEV UART CONFIG", msg))
+	{
+		int value;
+		if (sscanf(msg, "DEV UART CONFIG SET %d", &value) == 1)
+		{
+			if (value >= 0 && value <= 2)
+				control_info.Dev_Mode_Bit.UARTMODE = value;
+		}
+		int* Returnvalue = (int*)src;
+		*Returnvalue = control_info.Dev_Mode_Bit.UARTMODE;
+		return 0;
+	}
+	if (Msg_COMPARE("DEV TIME ", msg))
+	{
+		int value[6] = { 0 };
+		int res = sscanf(msg, "DEV TIME %d/%d/%d/%d/%d/%d", &value[0], &value[1], &value[2],
+			&value[3], &value[4], &value[5]);
+		if (res == 6)
+		{
+		}
+	}
+	if (Msg_COMPARE("DFU", msg))
+	{
+#ifdef STM32F40_41xxx
+		extern void RequestEnterDFU(void);
+		RequestEnterDFU();
+#endif
+	}
+	if (Msg_COMPARE("CONFIG SAVE", msg))
+	{
+		Ctrl_Save_Config();
 	}
 	return 1;
-}
+	}
 
 uint8_t ctrlWaitRk3588()
 {
@@ -235,8 +297,8 @@ uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info* e, uint8_t LR)
 		}
 		if (Msg_COMPARE("ok", message))
 		{
-		//	if (*flag == SendTaskArray || *flag == Pause) // when send task array
-				*flag = Rk3588_Uart_Idle;
+			//	if (*flag == SendTaskArray || *flag == Pause) // when send task array
+			*flag = Rk3588_Uart_Idle;
 		}
 		if (Msg_COMPARE("clear finish", message))
 		{
@@ -253,10 +315,8 @@ uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info* e, uint8_t LR)
 		}
 		if (Msg_COMPARE("DFU", message))
 		{
-#ifdef STM32F40_41xxx
-			extern void RequestEnterDFU(void);
-			RequestEnterDFU();
-#endif
+			Message_Center_Read_prinft("Ctrl", 0, 0,
+				"DFU");
 		}
 	}
 	if (*last_Rk3588_Flag != *flag)
@@ -368,7 +428,7 @@ void controlfunction()
 	HAL_API_INIT();
 	Task_mangager_Init();
 	Communication_Init();
-
+	Ctrl_Resume_Config();
 	control_info.State_Bit.powerUp = 3;
 	while (1)
 	{
@@ -400,6 +460,7 @@ void controlfunction()
 				if (Startflag == StartCmdStop)
 				{
 					control_info.State_Bit.powerUp = 0;
+					//control_info.Dev_Mode_Bit.Rkmask = 1;
 				}
 			}
 		}
@@ -416,12 +477,20 @@ void controlfunction()
 		control_info.Rk3588_Flag.Rflag = 0;
 		control_info.Rk3588_Flag.Lflag = 0;
 #else
-		control_info.Rk3588_Flag.Rflag = 0;
+		if (control_info.Dev_Mode_Bit.Rkmask)
+		{
+			control_info.State_Bit.powerUp = 0;
+			control_info.State_Bit.WaitRk = 0;
+			control_info.Rk3588_Flag.Rflag = 0;
+			control_info.Rk3588_Flag.Lflag = 0;
+		}
+		else
+			control_info.Rk3588_Flag.Rflag = 0;
 #endif
 		ControlDelay(10);
 		// e.ExitFlag = 1;
+		}
 	}
-}
 
 void thread_create(void* function, Task_control_info* e, TaskHandle_t* control_thread, uint16_t sizeofstack)
 {

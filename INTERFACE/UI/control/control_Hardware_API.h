@@ -50,6 +50,13 @@ extern "C"
 	uint8_t HAL_Set_UI_Page1_Msg(const char* format, ...);
 	uint16_t HAL_Task_GetArray(Task_Parameter_Struct* taskarray, uint16_t arraySize);
 
+
+	uint8_t HAL_TIME_Set(int* value, int size);
+	uint8_t HAL_TIME_Get(int* value, int size);
+
+	int HAL_CONFIG_READ(uint8_t ID, uint8_t* buffer, uint32_t size);
+	uint8_t HAL_CONFIG_WRITE(uint8_t ID, uint8_t* buffer, uint32_t size);
+
 	uint8_t HAL_Get_UI_MouseName(char* str, uint16_t size);
 	uint8_t HAL_FAN_Set(uint8_t pwm_precent);
 	void HAL_GET_SYSINFO(char* str);

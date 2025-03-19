@@ -56,12 +56,12 @@ extern "C"
 		} State_Bit;
 		struct
 		{
-			 enum
+			enum
 			{
 				Rk3588_Uart_Idle,
 				SendTaskArray,
 				Cancel,
-                Pause,
+				Pause,
 			} Rk3588_Flag_Typed;
 			uint8_t Lflag;
 			uint8_t Rflag;
@@ -76,10 +76,15 @@ extern "C"
 		} Error_Bit;
 		union
 		{
-			uint8_t flag;
+			uint32_t flag;
 			struct
 			{
 				uint8_t LoopTest : 1;
+				uint8_t UARTMODE : 4;//0: disable serial 1:rk 2:h618 uart1
+				uint8_t Use_Cam : 1;	//
+				uint8_t C610 : 1;
+				uint8_t Inc_DIR : 1;
+				uint8_t Zero : 1;
 			};
 		} Dev_Mode_Bit;
 #ifndef STM32F40_41xxx

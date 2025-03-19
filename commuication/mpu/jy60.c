@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-30 11:37:02
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
- * @LastEditTime: 2024-09-05 18:22:21
+ * @LastEditTime: 2025-03-05 16:32:13
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\commuication\mpu\jy60.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -48,8 +48,8 @@ void jy60_Calculate()
     jy60.data.pitch = jy60_orginal.pitch / 32768.0f * 180 - Calibrate.pitch;
     jy60.data.yaw = jy60_orginal.yaw / 32768.0f * 180 - Calibrate.yaw;
     jy60.inc = sqrt((jy60.data.roll) * (jy60.data.roll) + (jy60.data.pitch) * (jy60.data.pitch));
-    char str[50];
-    uint16_t len = sprintf(str, "\r\n %d.%02d", (int)jy60.inc, (int)(jy60.inc * 100.0f) % 100);
+    // char str[50];
+    // uint16_t len = sprintf(str, "\r\n %d.%02d", (int)jy60.inc, (int)(jy60.inc * 100.0f) % 100);
     //USART3_PRINTF(str, len);
     if (index == 10)
         return;

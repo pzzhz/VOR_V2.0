@@ -40,11 +40,11 @@ typedef struct
 	{                                                                     \
 		(LR) ? Rk3588_Printf(__VA_ARGS__) : Rk3588_L_Printf(__VA_ARGS__); \
 	}
-static Task_control_info *control;
-extern uint8_t Ctrl_Msg_Printf(const char *format,
-							   ...);
-extern void Rk3588_Printf(const char *strOutputString, ...);
-extern void Rk3588_L_Printf(const char *strOutputString, ...);
+static Task_control_info* control;
+extern uint8_t Ctrl_Msg_Printf(const char* format,
+	...);
+extern void Rk3588_Printf(const char* strOutputString, ...);
+extern void Rk3588_L_Printf(const char* strOutputString, ...);
 
 #define Rk3588_Send_Task_Array                      \
 	{                                               \
@@ -57,10 +57,10 @@ extern void Rk3588_L_Printf(const char *strOutputString, ...);
 		control->Rk3588_Flag.Rflag = Cancel; \
 	}
 
-void PrintfInfo(Task_Parameter_Struct *e, char *mousename, uint8_t LR)
+void PrintfInfo(Task_Parameter_Struct* e, char* mousename, uint8_t LR)
 {
-	static const char vorstrList[][10] = {"VOR", "OKR", "VOR_OKR", "VOR_OKRR"};
-	const char *vorStr = vorstrList[e->VOR.ExMode];
+	static const char vorstrList[][10] = { "VOR", "OKR", "VOR_OKR", "VOR_OKRR" };
+	const char* vorStr = vorstrList[e->VOR.ExMode];
 	switch (e->mode)
 	{
 	case Task_VOR:
@@ -86,8 +86,8 @@ void PrintfInfo(Task_Parameter_Struct *e, char *mousename, uint8_t LR)
 
 void RK3588_SendTaskInfo(uint16_t tasksize, uint8_t LR)
 {
-	Task_Parameter_Struct *e;
-	char *mousename = (char *)malloc(50);
+	Task_Parameter_Struct* e;
+	char* mousename = (char*)malloc(50);
 	mousename[0] = 0;
 	HAL_Get_UI_MouseName(mousename, 50);
 	if (mousename[0] == 0)
@@ -139,7 +139,7 @@ void task_interval_handle(int index)
 	/*  Message_Center_Send_prinft(
 		  "PAGE1", 0, 0,
 		  "Interval: ID:%d", index);*/
-	/*HAL_Set_UI_Page1_Msg("Interval: ID:%d", index);*/
+		  /*HAL_Set_UI_Page1_Msg("Interval: ID:%d", index);*/
 	while (count)
 	{
 		Ctrl_Msg_Printf("interval %ds", count / 10 + 1);
@@ -152,7 +152,7 @@ void task_interval_handle(int index)
 	}
 }
 
-uint8_t Task_control_Begin(Task_control_info *e)
+uint8_t Task_control_Begin(Task_control_info* e)
 {
 	if (e->State_Bit.IsRunning == 1)
 	{
@@ -167,7 +167,7 @@ uint8_t Task_control_Begin(Task_control_info *e)
 	return 1;
 }
 
-uint8_t Task_control_ReqStop(Task_control_info *e)
+uint8_t Task_control_ReqStop(Task_control_info* e)
 {
 	if (e->State_Bit.IsRunning == 0)
 	{
@@ -178,7 +178,7 @@ uint8_t Task_control_ReqStop(Task_control_info *e)
 	return 1;
 }
 
-uint8_t Task_control_ReqPause(Task_control_info *e)
+uint8_t Task_control_ReqPause(Task_control_info* e)
 {
 	if (e->State_Bit.IsRunning == 0)
 	{
@@ -188,7 +188,7 @@ uint8_t Task_control_ReqPause(Task_control_info *e)
 	return 1;
 }
 
-void Task_control_handler(Task_control_info *e)
+void Task_control_handler(Task_control_info* e)
 {
 	uint8_t Rk3588_ReadyFlag_1 = 0, Rk3588_ReadyFlag_2 = 0;
 	if (e == 0)
@@ -224,7 +224,7 @@ BEGIN_POS:
 
 	for (int i = 0; i < task_size; i++)
 	{
-		Task_Parameter_Struct *task = &e->taskArray[i];
+		Task_Parameter_Struct* task = &e->taskArray[i];
 		e->currentCount = i;
 		task_interval_handle(i);
 		uint8_t isretract = 1;
@@ -262,16 +262,17 @@ BEGIN_POS:
 	// len = sprintf(msg_buffer, "End");
 	// Message_Center_Send("PAGE1", 0, msg_buffer, len);
 	/*HAL_Set_UI_Page1_Msg("End");*/
-	uint8_t exitflag=e->State_Bit.Exit;
+	uint8_t exitflag = e->State_Bit.Exit;
 	e->State_Bit.IsRunning = 0;
 	e->State_Bit.flag = 0;
 	e->Error_Bit.flag = 0;
-	// if (exitflag == 0)
-	// {
-	// 	SaftExitDelay(5000, 0);
-	// 	Message_Center_Send_prinft("Ctrl", 0,
-	// 							   0,
-	// 							   "ReqStrat");
-	// }
+	if (exitflag == 0 &&
+		e->Dev_Mode_Bit.LoopTest == 1)
+	{
+		SaftExitDelay(5000, 0);
+		Message_Center_Send_prinft("Ctrl", 0,
+			0,
+			"ReqStrat");
+	}
 	goto BEGIN_POS;
 }
