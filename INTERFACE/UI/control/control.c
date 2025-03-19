@@ -107,21 +107,21 @@ uint8_t Ctrl_Msg_Printf(const char* format,
 
 uint8_t Ctrl_Save_Config()
 {
-	HAL_CONFIG_WRITE(0,
-		&control_info.Dev_Mode_Bit.flag,
-		sizeof(control_info.Dev_Mode_Bit.flag));
+//	HAL_CONFIG_WRITE(0,
+//		&control_info.Dev_Mode_Bit.flag,
+//		sizeof(control_info.Dev_Mode_Bit.flag));
 }
 
 uint8_t Ctrl_Resume_Config()
 {
-	uint8_t buff[10];
-	int res = HAL_CONFIG_READ(0, buff, 8);
-	if (res != 0)
-	{
-		memcpy(&control_info.Dev_Mode_Bit.flag,
-			buff,
-			sizeof(control_info.Dev_Mode_Bit.flag));
-	}
+//	uint8_t buff[10];
+//	int res = HAL_CONFIG_READ(0, buff, 8);
+//	if (res != 0)
+//	{
+//		memcpy(&control_info.Dev_Mode_Bit.flag,
+//			buff,
+//			sizeof(control_info.Dev_Mode_Bit.flag));
+//	}
 
 }
 
@@ -477,15 +477,15 @@ void controlfunction()
 		control_info.Rk3588_Flag.Rflag = 0;
 		control_info.Rk3588_Flag.Lflag = 0;
 #else
-		if (control_info.Dev_Mode_Bit.Rkmask)
-		{
-			control_info.State_Bit.powerUp = 0;
-			control_info.State_Bit.WaitRk = 0;
-			control_info.Rk3588_Flag.Rflag = 0;
-			control_info.Rk3588_Flag.Lflag = 0;
-		}
-		else
-			control_info.Rk3588_Flag.Rflag = 0;
+//		if (control_info.Dev_Mode_Bit.Rkmask)
+//		{
+//			control_info.State_Bit.powerUp = 0;
+//			control_info.State_Bit.WaitRk = 0;
+//			control_info.Rk3588_Flag.Rflag = 0;
+//			control_info.Rk3588_Flag.Lflag = 0;
+//		}
+//		else
+//			control_info.Rk3588_Flag.Rflag = 0;
 #endif
 		ControlDelay(10);
 		// e.ExitFlag = 1;
