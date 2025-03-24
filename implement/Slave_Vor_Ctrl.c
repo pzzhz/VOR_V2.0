@@ -48,16 +48,16 @@ Vor_Machine_parameter vor_para;
 #define Pi 3.1415926
 const uint16_t PauseStopCount = 500;
 
-float C610Spd;
+int C610SpdCompensetion=500;
 extern uint8_t HAL_CAM_SET_sign_led(void);
 
 void MotorSpeedSet(float sin_data,float factor)
 {
     if (vor_para.ExMode == Ex_BOTH ||
         vor_para.ExMode == Ex_OKR)
-        Motor_Set_Speed(-vor_para.vel * sin_data*factor );
+        Motor_Set_Speed(-vor_para.vel * sin_data*factor*(C610SpdCompensetion/500) );
     else if (vor_para.ExMode == Ex_BOTH_R)
-        Motor_Set_Speed(vor_para.vel * sin_data*factor );
+        Motor_Set_Speed(vor_para.vel * sin_data*factor*(C610SpdCompensetion/500) );
     else
         Motor_Set_Speed(0);
 

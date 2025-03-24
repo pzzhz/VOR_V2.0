@@ -266,6 +266,47 @@ void UI_page_maintain_COMBOX_init(lv_obj_t* parent, const char* text, const char
 	}
 
 }
+#include "../../UI/UI_Component/UI_SpinBox.h"
+void UI_page_maintain_Num_init(lv_obj_t* parent, const char* text, const char* Items, lv_event_cb_t event_cb, const char* cmd)
+{
+	static int num;
+	uint64_t pt = 0;
+	Message_Center_Read_prinft("Ctrl", &pt, sizeof(pt),
+		"GET C610 Factor");
+	if (pt == 0)
+	{
+		pt = (uint64_t)&num;
+	}
+	lv_obj_t* obj = lv_obj_create(parent);
+	lv_obj_set_size(obj, 300, 50);
+	lv_obj_clear_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
+	lv_obj_t* label = 0, * spinbox = 0;
+	UI_SpinBox_Struct e = {
+		.parent = obj,
+		.label = label,
+		.spinbox = spinbox,
+		.SpinBox_Value = (int32_t *)pt,
+		.x = 45,
+		.y = -0,
+		.Label_Str = "Sec" };
+	SpinBox_Init(&e);
+	/*lv_obj_t* combox = lv_dropdown_create(obj);
+	lv_obj_align(combox, LV_ALIGN_RIGHT_MID, 0, 0);
+	lv_obj_t* label = lv_label_create(obj);
+	lv_label_set_text(label, text);
+	lv_obj_align(label, LV_ALIGN_LEFT_MID, 0, 0);
+	lv_dropdown_set_options(combox, Items);
+	lv_obj_set_style_bg_color(combox, lv_color_hex(0x696969), LV_PART_INDICATOR | LV_STATE_CHECKED);
+	int value = 0;
+	Message_Center_Read_prinft("Ctrl", &value, sizeof(value),
+		"DEV %s", cmd);
+	lv_dropdown_set_selected(combox, value);
+	if (event_cb != 0)
+	{
+		lv_obj_add_event_cb(combox, event_cb, LV_EVENT_VALUE_CHANGED, (void*)cmd);
+	}*/
+
+}
 
 void UI_page_maintain_time_btn_handle(lv_event_t* e)
 {
@@ -303,6 +344,7 @@ void UI_page_maintain_DEV_Menu_Init()
 	UI_page_maintain_Sw_init(obj, "RK_Disable", UI_page_maintain_RKMask_hander, "RK_Disable");
 	UI_page_maintain_COMBOX_init(obj, "UART", "DISABLE\nUART1\nBoth", 0, "UART CONFIG");
 	lv_obj_t* btn = lv_list_add_btn(obj, 0, "DFU");
+	UI_page_maintain_Num_init(obj, "sec", "sss", NULL, "c");
 	lv_obj_add_event_cb(btn, UI_page_maintain_DFU_btn_handle, LV_EVENT_CLICKED, btn);
 	lv_obj_add_event_cb(obj, UI_page_maintain_MsgBox_close, LV_EVENT_DELETE, 0);
 

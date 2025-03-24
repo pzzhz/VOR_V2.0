@@ -484,6 +484,11 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\c610\pid.c</FilePath>
             </File>
+            <File>
+              <FileName>GPIO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IO\GPIO.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1432,6 +1437,16 @@
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\control\control_CONT.c</FilePath>
             </File>
+            <File>
+              <FileName>control_TC.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\control\control_TC.c</FilePath>
+            </File>
+            <File>
+              <FileName>control_VHIT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\control\control_VHIT.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1542,6 +1557,16 @@
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\UI_Parameter\UI_Parameter_Ovar.c</FilePath>
             </File>
+            <File>
+              <FileName>UI_Parameter_TC.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\UI_Parameter\UI_Parameter_TC.c</FilePath>
+            </File>
+            <File>
+              <FileName>UI_Parameter_VHIT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\UI_Parameter\UI_Parameter_VHIT.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1571,6 +1596,16 @@
               <FileName>Slave_Cont_Ctrl.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\implement\Slave_Cont_Ctrl.c</FilePath>
+            </File>
+            <File>
+              <FileName>Slave_TC_Ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\Slave_TC_Ctrl.c</FilePath>
+            </File>
+            <File>
+              <FileName>Slave_VHIT_Ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\Slave_VHIT_Ctrl.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2190,6 +2225,11 @@
               <FileName>pid.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\c610\pid.c</FilePath>
+            </File>
+            <File>
+              <FileName>GPIO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IO\GPIO.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3208,6 +3248,16 @@
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\control\control_CONT.c</FilePath>
             </File>
+            <File>
+              <FileName>control_TC.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\control\control_TC.c</FilePath>
+            </File>
+            <File>
+              <FileName>control_VHIT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\control\control_VHIT.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3318,6 +3368,16 @@
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\UI_Parameter\UI_Parameter_Ovar.c</FilePath>
             </File>
+            <File>
+              <FileName>UI_Parameter_TC.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\UI_Parameter\UI_Parameter_TC.c</FilePath>
+            </File>
+            <File>
+              <FileName>UI_Parameter_VHIT.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\UI_Parameter\UI_Parameter_VHIT.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3347,6 +3407,16 @@
               <FileName>Slave_Cont_Ctrl.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\implement\Slave_Cont_Ctrl.c</FilePath>
+            </File>
+            <File>
+              <FileName>Slave_TC_Ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\Slave_TC_Ctrl.c</FilePath>
+            </File>
+            <File>
+              <FileName>Slave_VHIT_Ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\Slave_VHIT_Ctrl.c</FilePath>
             </File>
           </Files>
         </Group>

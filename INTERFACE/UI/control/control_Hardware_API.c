@@ -299,7 +299,8 @@ uint16_t crc16_modbus(const uint8_t* data, uint16_t length) {
 
 int HAL_CONFIG_READ(uint8_t ID, uint8_t* buffer, uint32_t size)
 {
-	int res = 0;
+	#ifndef STM32F40_41xxx
+int res = 0;
 	char Path[1000];
 	_getcwd(Path, 1000);
 	int pos = strlen(Path);
@@ -326,10 +327,13 @@ int HAL_CONFIG_READ(uint8_t ID, uint8_t* buffer, uint32_t size)
 	fclose(f);
 	//crc check
 	return res;
+#endif
+	
 }
 
 uint8_t HAL_CONFIG_WRITE(uint8_t ID, uint8_t* buffer, uint32_t size)
 {
+		#ifndef STM32F40_41xxx
 	char Path[1000];
 	_getcwd(Path, 1000);
 	int pos = strlen(Path);
@@ -343,6 +347,7 @@ uint8_t HAL_CONFIG_WRITE(uint8_t ID, uint8_t* buffer, uint32_t size)
 	fwrite(crcHL, 2, 1, f);
 	fclose(f);
 	return 1;
+#endif
 }
 
 uint8_t HAL_API_INIT(void)

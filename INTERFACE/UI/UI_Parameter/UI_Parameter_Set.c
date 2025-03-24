@@ -1,4 +1,4 @@
-﻿#include "UI_Parameter_Set.h"
+#include "UI_Parameter_Set.h"
 #include "../Task/task_info_struct.h"
 #include "../UI_Include.h"
 #include "../UI_Component/UI_SpinBox.h"
