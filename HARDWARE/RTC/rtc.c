@@ -240,7 +240,7 @@ uint8_t rtc_init(void)
 
     RCC->APB1ENR|=1<<28;        /* 使能电源接口时钟 */
     PWR->CR|=1<<8;              /* 后备区域访问使能(RTC+SRAM) */
-    
+    PWR->CSR|=PWR_CSR_BRE;
     bkpflag = rtc_read_bkr(0);  /* 读取BKP0的值 */
 
     if (bkpflag != 0X5050)      /* 之前使用的不是LSE */
@@ -327,7 +327,9 @@ uint8_t rtc_init(void)
             RCC->BDCR = 0;              /* 结束复位 */
         }
     }
-
+		 RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+    PWR->CR = PWR_CR_DBP;
+    RCC->AHB1ENR |= RCC_AHB1ENR_BKPSRAMEN;
     //rtc_set_wakeup(4,0);  /* 配置WAKE UP中断,1秒钟中断一次 */
     return 0;
 }

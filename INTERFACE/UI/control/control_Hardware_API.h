@@ -35,10 +35,26 @@ extern "C"
 		Imp_running
 	} Imp_State;
 
+	typedef struct {
+		union {
+			uint16_t num[6];
+			struct
+			{
+				uint16_t year;
+				uint16_t month;
+				uint16_t date;
+				uint16_t hour;
+				uint16_t min;
+				uint16_t sec;
+			}date;
+		};
+	}timetyped;
+
 	uint8_t HAL_Incline_Init(float angle, uint32_t time);
 	uint8_t HAL_Incline_Get_State(float* angle);
 	uint8_t HAL_Incline_Fouces_Move(int8_t direction);
 
+	uint8_t HAL_Get_C610_Status(void);
 	uint8_t HAL_CAM_Init(void);
 	uint8_t HAL_CAM_REC_Set(uint8_t flag);
 	uint8_t HAL_CAM_SET_Set(void);
@@ -51,15 +67,18 @@ extern "C"
 	uint16_t HAL_Task_GetArray(Task_Parameter_Struct* taskarray, uint16_t arraySize);
 
 
-	uint8_t HAL_TIME_Set(int* value, int size);
-	uint8_t HAL_TIME_Get(int* value, int size);
+	uint8_t HAL_TIME_Set(timetyped* t);
+	uint8_t HAL_TIME_Get(timetyped* time);
 
 	int HAL_CONFIG_READ(uint8_t ID, uint8_t* buffer, uint32_t size);
 	uint8_t HAL_CONFIG_WRITE(uint8_t ID, uint8_t* buffer, uint32_t size);
 
 	uint8_t HAL_Get_UI_MouseName(char* str, uint16_t size);
 	uint8_t HAL_FAN_Set(uint8_t pwm_precent);
+	uint8_t HAL_isBypassVarfiy_key_press();
+
 	void HAL_GET_SYSINFO(char* str);
+	uint64_t HAL_GET_SYS_UUID(void);
 
 	uint8_t HAL_API_INIT(void);
 

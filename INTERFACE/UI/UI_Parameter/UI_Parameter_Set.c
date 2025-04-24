@@ -66,9 +66,9 @@ void Continue_init(lv_obj_t* parent)
 }
 #endif
 #if 0
-const char* Set_item = "VOR\n""OKR\n""VOR+OKR\n""VOR+OKR*\n""CONT\n""OVAR\n""VHIT\n""TC";
 #else
-const char* Set_item = "VOR\n""CONT\n""OVAR\n""VHIT\n""TC";
+const char* Set_item_OKR = "VOR\n""OKR\n""VOR+OKR\n""VOR+OKR*\n""CONT\n""OVAR\n""VHIT\n""TC";
+const char* Set_item_No_OKR = "VOR\n""CONT\n""OVAR\n""VHIT\n""TC";
 #endif
 typedef struct
 {
@@ -186,7 +186,7 @@ uint8_t UI_Parameter_Set(Task_Parameter_Struct* e)
 	return 0;
 }
 
-void Mode_init(lv_obj_t* parent)
+void Mode_init(lv_obj_t* parent,uint8_t isEnOkR)
 {
 
 	static  UI_Dropdown_Struct Mode_dropdown;
@@ -198,7 +198,7 @@ void Mode_init(lv_obj_t* parent)
 	lv_obj_set_style_bg_opa(context_box, 0, LV_OPA_TRANSP);
 	lv_obj_set_style_border_opa(context_box, 0, LV_OPA_TRANSP);
 	lv_obj_align(context_box, LV_ALIGN_DEFAULT, -15, 55);
-
+	
 	UI_Dropdown_Struct dropdown = {
 	   .dropdown = mode_set.Mode.dropdown1,
 	   .label = mode_set.Mode.label1,
@@ -206,11 +206,15 @@ void Mode_init(lv_obj_t* parent)
 	   .label_ofs_y = 0,
 	   .x = 50,
 	   .y = 0,
-	   .Item = Set_item,
+	   .Item = 0,
 	   .parent = context_box,
 	   .handle = (myhander)handler,
 	   .Label_Str = "mode"
 	};
+	if (isEnOkR)
+		dropdown.Item = Set_item_OKR;
+	else
+		dropdown.Item = Set_item_No_OKR;
 	Mode_dropdown = dropdown;
 	UI_DropDown_Init(&Mode_dropdown);
 

@@ -125,6 +125,18 @@
     <ClCompile Include="..\..\INTERFACE\UI\control\control_base.c">
       <Filter>UI\control\mode</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\INTERFACE\UI\control\control_ZERO.c">
+      <Filter>UI\control\mode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INTERFACE\UI\varify\verfiy.c">
+      <Filter>UI\verfiy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INTERFACE\UI\UI_page\Page_Varify.c">
+      <Filter>UI\UI_page</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\INTERFACE\UI\UI_Component\UI_KeyBorad.c">
+      <Filter>UI\UI_Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LVGL.Simulator.rc" />
@@ -165,6 +177,9 @@
     </Filter>
     <Filter Include="UI\commuication\BL">
       <UniqueIdentifier>{cbcd70ef-7d14-45b3-9208-73eb121c44bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\verfiy">
+      <UniqueIdentifier>{2c30e069-05c5-41a5-9a9c-a60632848adc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

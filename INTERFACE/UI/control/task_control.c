@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-24 10:26:50
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
- * @LastEditTime: 2025-02-27 10:03:46
+ * @LastEditTime: 2025-03-28 20:02:31
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\INTERFACE\UI\control\task_control.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -26,6 +26,7 @@
 #include "control_OVAR.h"
 #include "control_VHIT.h"
 #include "control_TC.h"
+#include "control_ZERO.h"
 
 #include <stdarg.h>
 
@@ -198,9 +199,11 @@ void Task_control_handler(Task_control_info* e)
 	e->State_Bit.Init = 0;
 	e->State_Bit.WaitRk = 0;
 	Ctrl_Msg_Printf(" ");
+	ZEROControlFunction(1);
 	// uint16_t len = 0;
 BEGIN_POS:
 	// get all task need to implement
+	e->State_Bit.Init=0;
 	while (1)
 	{
 		if (e->State_Bit.Init == 1)
@@ -251,7 +254,7 @@ BEGIN_POS:
 		default:
 			break;
 		}
-
+		ZEROControlFunction(0);
 		if (e->State_Bit.Exit)
 		{
 			Rk3588_Task_Cancel;

@@ -11,6 +11,7 @@
  *********************/
 #include "lv_port_indev.h"
 #include "ft5206.h"
+#include "gt9147.h"
 /*********************
  *      DEFINES
  *********************/
@@ -65,9 +66,13 @@ void touch_sever(unsigned char mode,unsigned short Pos_XY[3])
     static unsigned short Pos_data[3];
     static unsigned char touch_iic_data[4];
     if (mode == 1)
-    {
-
-        FT5206_RD_Reg(0X02, touch_iic_data, 1);
+    {if(GT9147_Online())
+			{
+				GT9147_GET_Touch( Pos_data);
+			}else
+			{
+				
+				 FT5206_RD_Reg(0X02, touch_iic_data, 1);
         // Usart1_printf("\r\n %x",touch_iic_data[0]);
         if (touch_iic_data[0] < 0X05 && touch_iic_data[0] != 0X0 && Touch_active_flag)
         {
@@ -85,10 +90,13 @@ void touch_sever(unsigned char mode,unsigned short Pos_XY[3])
             Pos_data[2] = false;
             // printf("\r\n                      ,NO");
         }
+			}
+				
+       
     }
     else
     {
-        Pos_XY[0] = Pos_data[0];
+        Pos_XY[0] = Pos_data[0];//y
         Pos_XY[1] = Pos_data[1];
         Pos_XY[2] = Pos_data[2];
     }

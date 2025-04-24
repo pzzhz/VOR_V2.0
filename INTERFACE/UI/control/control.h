@@ -4,7 +4,7 @@
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @LastEditTime: 2024-08-12 17:41:30
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\INTERFACE\UI\control\control.h
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ * @Description: 这是默�?��?�置,请�?�置`customMade`, 打开koroFileHeader查看配置 进�?��?�置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 #ifndef __control_h_
 #define __control_h_
@@ -44,6 +44,7 @@ extern "C"
 			uint16_t flag;
 			struct
 			{
+				uint8_t H_init:1;//hardware init
 				uint8_t Init : 1;
 				uint8_t WaitRk : 1;
 				uint8_t IsRunning : 1;
@@ -101,9 +102,10 @@ extern "C"
 		uint16_t taskCount;
 		uint16_t currentCount;
 		uint16_t taskRemainSec;
+		uint8_t isExpired;
 	} Task_control_info;
 	void controlInit(void);
-	// 0 代表无返回信息
+	// 0 代表无返回信�?
 	typedef uint8_t(*UI_function)(uint8_t* cmd, uint8_t* meassage, Task_control_info* e);
 	typedef struct
 	{

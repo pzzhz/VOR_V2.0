@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-24 14:44:19
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
- * @LastEditTime: 2025-02-11 09:24:25
+ * @LastEditTime: 2025-04-24 18:09:27
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\implement\Slave_Vor_Ctrl.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -58,8 +58,8 @@ uint8_t Inc_ctrl(void)
     {
         int16_t bias = ((inc_para.angleReq - angle) * 10.0f);
         //   Rk3588_Printf("\r\n bias %d",bias);
-				int error=last_angle-bias;
-        if (error==0)
+        int error = last_angle - bias;
+        if (error == 0)
         {
             angle_nomovecounter++;
         }
@@ -156,6 +156,8 @@ uint8_t INC_Machine_Manual_Ctrl(int8_t direction)
 #ifndef HARDWARE_TEST
 #else
 #endif
+    if (Slave1_Get_Machine_state())
+        return 0;
     if (inc_para.state == end)
     {
         inc_para.state = manual;

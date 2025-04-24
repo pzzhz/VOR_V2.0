@@ -1,6 +1,7 @@
 #include "Page_Maintain.h"
 #include "../UI_Include.h"
 #include "../other/meassage_center.h"
+#include "Page_Varify.h"
 
 enum
 {
@@ -8,6 +9,8 @@ enum
 	LV_MENU_ITEM_BUILDER_VARIANT_2
 };
 typedef uint8_t lv_menu_builder_variant_t;
+
+extern lv_obj_t* UI_Page_Management_Get_Top_layer();
 
 static void back_event_handler(lv_event_t* e);
 // static void switch_handler(lv_event_t* e);
@@ -201,7 +204,7 @@ void UI_page_maintain_DEV_hander(lv_event_t* e)
 	}
 }
 
-void UI_page_maintain_RKMask_hander(lv_event_t* e)
+void UI_page_maintain_C610_hander(lv_event_t* e)
 {
 	if (e->code == LV_EVENT_VALUE_CHANGED)
 	{
@@ -211,13 +214,24 @@ void UI_page_maintain_RKMask_hander(lv_event_t* e)
 		if (value)
 		{
 			Message_Center_Read_prinft("Ctrl", 0, 0,
-				"DEV %s ON", cmd);
+				"DEV %s 1", cmd);
 		}
 		else
 		{
 			Message_Center_Read_prinft("Ctrl", 0, 0,
-				"DEV %s OFF", cmd);
+				"DEV %s 0", cmd);
 		}
+	}
+}
+
+void UI_page_maintain_UART_hander(lv_event_t* e)
+{
+	if (e->code == LV_EVENT_VALUE_CHANGED)
+	{
+		const char* cmd = e->user_data;
+		int options = lv_dropdown_get_selected(e->current_target);
+		Message_Center_Read_prinft("Ctrl", 0, 0,
+			"DEV %s %d", cmd, options);
 	}
 }
 
@@ -285,10 +299,10 @@ void UI_page_maintain_Num_init(lv_obj_t* parent, const char* text, const char* I
 		.parent = obj,
 		.label = label,
 		.spinbox = spinbox,
-		.SpinBox_Value = (int32_t *)pt,
+		.SpinBox_Value = (int32_t*)pt,
 		.x = 45,
 		.y = -0,
-		.Label_Str = "Sec" };
+		.Label_Str = "c610" };
 	SpinBox_Init(&e);
 	/*lv_obj_t* combox = lv_dropdown_create(obj);
 	lv_obj_align(combox, LV_ALIGN_RIGHT_MID, 0, 0);
@@ -326,6 +340,32 @@ void UI_page_maintain_DFU_btn_handle(lv_event_t* e)
 	}
 }
 
+void UI_page_maintain_license_btn_handle(lv_event_t* e)
+{
+	if (e->code == LV_EVENT_CLICKED)
+	{
+		timetyped_UI time = { 0 };
+		Message_Center_Read_prinft("Ctrl", &time, sizeof(time),
+			"GetLicense");
+		char label[50];
+		sprintf(label, "%04d/%d/%d\n\t",
+			time.date.year, time.date.month, time.date.date);
+
+		lv_obj_center(lv_msgbox_create(NULL, "License", label, NULL, true));
+	}
+}
+
+void UI_page_maintain_Settime_btn_handle(lv_event_t* e)
+{
+	lv_obj_t* parent = (lv_obj_t*)e->user_data;
+	if (e->code == LV_EVENT_CLICKED)
+	{
+		lv_msgbox_close(parent);
+		if (parent != 0)
+			UI_Page_Management_Expored(UI_Page_Management_Get_Top_layer(), 2);
+	}
+}
+
 void UI_page_maintain_MsgBox_close(lv_event_t* e)
 {
 	if (e->code == LV_EVENT_DELETE)
@@ -337,15 +377,18 @@ void UI_page_maintain_MsgBox_close(lv_event_t* e)
 
 void UI_page_maintain_DEV_Menu_Init()
 {
+
 	lv_obj_t* obj = lv_msgbox_create(NULL, "DEV MODE", " ", NULL, true);
 	lv_obj_center(obj);
 	lv_obj_set_size(obj, 400, 400);
 	UI_page_maintain_Sw_init(obj, "LOOP", UI_page_maintain_DEV_hander, "LOOP");
-	UI_page_maintain_Sw_init(obj, "RK_Disable", UI_page_maintain_RKMask_hander, "RK_Disable");
-	UI_page_maintain_COMBOX_init(obj, "UART", "DISABLE\nUART1\nBoth", 0, "UART CONFIG");
+	UI_page_maintain_Sw_init(obj, "C610", UI_page_maintain_C610_hander, "C610 CONFIG");
+	UI_page_maintain_COMBOX_init(obj, "UART", "DISABLE\nUART1\nBoth", UI_page_maintain_UART_hander, "UART CONFIG");
 	lv_obj_t* btn = lv_list_add_btn(obj, 0, "DFU");
+	lv_obj_t* btn_display_license = lv_list_add_btn(obj, 0, "license");
 	UI_page_maintain_Num_init(obj, "sec", "sss", NULL, "c");
 	lv_obj_add_event_cb(btn, UI_page_maintain_DFU_btn_handle, LV_EVENT_CLICKED, btn);
+	lv_obj_add_event_cb(btn_display_license, UI_page_maintain_license_btn_handle, LV_EVENT_CLICKED, btn);
 	lv_obj_add_event_cb(obj, UI_page_maintain_MsgBox_close, LV_EVENT_DELETE, 0);
 
 
@@ -458,7 +501,7 @@ void lv_example_menu_55(lv_obj_t* parent, lv_obj_t* obj)
 	//create_time_setting_screen();
 	/*Create a list*/
 	lv_obj_t* list1 = lv_list_create(parent);
-	lv_obj_clear_flag(list1, LV_OBJ_FLAG_SCROLLABLE);
+	//lv_obj_clear_flag(list1, LV_OBJ_FLAG_SCROLLABLE);
 	lv_obj_set_size(list1, 400, 400);
 	lv_obj_center(list1);
 

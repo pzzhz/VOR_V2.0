@@ -29,6 +29,7 @@ float SetSpeed = 0, SetCurrent;
 pid_t Vpid, Ipid;
 motor_measure_t *mymotor;
 C610_Ctrl rotate;
+static uint8_t isC610Online = 0;
 
 void C610_Current_Cmd(C610_Current_Ctrl buf)
 {
@@ -70,15 +71,17 @@ int16_t C610_PID_CAL(C610_Pid *PID, motor_measure_t *m, float Speed)
     MotorPower = pid_calc(&PID->I, m->given_current, TargetCurrent);
     return (int16_t)MotorPower;
 }
-//float factor = -65;
+// float factor = -65;
 float C610_Set_Speed = 0;
 void Motor_Set_Speed(float speed)
 {
-    C610_Set_Speed=speed;
+    C610_Set_Speed = speed;
 }
 
 void Motor_Spd_Pid(void)
 {
+    if (isC610Online)
+        return;
     if (C610_Set_Speed == 0)
     {
         C610_Current_Cmd2(0, 0, 0, 0);
@@ -101,6 +104,11 @@ float Avarage(float *val, int len)
     return res;
 }
 
+int C610_is_Online()
+{
+    return isC610Online;
+}
+
 void C610_RX_handler(uint32_t id, uint8_t *msg)
 {
     static float Vfilter[4][10];
@@ -117,6 +125,7 @@ void C610_RX_handler(uint32_t id, uint8_t *msg)
     case CAN_TRIGGER_MOTOR_ID:
     {
         static uint8_t i = 0;
+        isC610Online = 1;
         // get motor id
         i = id - CAN_3508_M1_ID;
         if (index >= 10)

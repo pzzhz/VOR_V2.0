@@ -489,6 +489,11 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\RTC\rtc.c</FilePath>
             </File>
+            <File>
+              <FileName>gt9147.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\TOUCH\gt9147.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1457,6 +1462,11 @@
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\control\control_TC.c</FilePath>
             </File>
+            <File>
+              <FileName>control_ZERO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\control\control_ZERO.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1517,6 +1527,11 @@
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\UI_Component\UI_SpinBox.c</FilePath>
             </File>
+            <File>
+              <FileName>UI_KeyBorad.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\UI_Component\UI_KeyBorad.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1536,6 +1551,11 @@
               <FileName>Page_Maintain.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\UI_page\Page_Maintain.c</FilePath>
+            </File>
+            <File>
+              <FileName>Page_Varify.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\UI_page\Page_Varify.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1611,6 +1631,21 @@
               <FileName>Slave_TC_Ctrl.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\implement\Slave_TC_Ctrl.c</FilePath>
+            </File>
+            <File>
+              <FileName>Slave_Zero_ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\Slave_Zero_ctrl.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>varify</GroupName>
+          <Files>
+            <File>
+              <FileName>verfiy.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\varify\verfiy.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2235,6 +2270,11 @@
               <FileName>rtc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\RTC\rtc.c</FilePath>
+            </File>
+            <File>
+              <FileName>gt9147.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\TOUCH\gt9147.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3273,6 +3313,11 @@
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\control\control_TC.c</FilePath>
             </File>
+            <File>
+              <FileName>control_ZERO.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\control\control_ZERO.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3333,6 +3378,11 @@
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\UI_Component\UI_SpinBox.c</FilePath>
             </File>
+            <File>
+              <FileName>UI_KeyBorad.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\UI_Component\UI_KeyBorad.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3352,6 +3402,11 @@
               <FileName>Page_Maintain.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\INTERFACE\UI\UI_page\Page_Maintain.c</FilePath>
+            </File>
+            <File>
+              <FileName>Page_Varify.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\UI_page\Page_Varify.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3427,6 +3482,21 @@
               <FileName>Slave_TC_Ctrl.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\implement\Slave_TC_Ctrl.c</FilePath>
+            </File>
+            <File>
+              <FileName>Slave_Zero_ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\Slave_Zero_ctrl.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>varify</GroupName>
+          <Files>
+            <File>
+              <FileName>verfiy.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\INTERFACE\UI\varify\verfiy.c</FilePath>
             </File>
           </Files>
         </Group>

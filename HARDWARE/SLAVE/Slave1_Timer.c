@@ -3,6 +3,7 @@
 #include "stm32f4xx.h"
 #include "math.h"
 
+float acc_angle = 0;
 Slave_Function_CB function_cb;
 void TIM1_BRK_TIM9_IRQHandler(void)
 {
@@ -16,20 +17,20 @@ void TIM1_BRK_TIM9_IRQHandler(void)
                 function_cb = 0;
                 extern void Slave1_En_IO(uint8_t state);
                 Slave1_En_IO(0);
-							extern void Motor_Set_Speed(float speed);
-							 extern void Motor_Spd_Pid();
-							Motor_Set_Speed(0);
-							 Motor_Spd_Pid(); // avoid c601 unexpect movement
+                extern void Motor_Set_Speed(float speed);
+                extern void Motor_Spd_Pid();
+                Motor_Set_Speed(0);
+                Motor_Spd_Pid(); // avoid c601 unexpect movement
             }
-						 Motor_Spd_Pid(); // avoid c601 unexpect movement
+            Motor_Spd_Pid(); // avoid c601 unexpect movement
         }
-				else
-						{
-							
-//							Motor_Set_Speed(0);
-						}
-//        extern void Motor_Spd_Pid();
-//        Motor_Spd_Pid(); // avoid c601 unexpect movement
+        else
+        {
+            //							Motor_Set_Speed(0);
+        }
+        acc_angle = Slave1_Get_Encode_Angle();
+        //        extern void Motor_Spd_Pid();
+        //        Motor_Spd_Pid(); // avoid c601 unexpect movement
         // ²¹Í£»ú´úÂë
     }
     TIM9->SR = (uint16_t)~TIM_IT_Update;
@@ -44,6 +45,14 @@ void Slave1_Set_Machine_Cb(Slave_Function_CB cb)
     TIM9->CR1 &= ~TIM_CR1_CEN;
     function_cb = cb;
     TIM9->CR1 |= TIM_CR1_CEN;
+}
+
+uint8_t Slave1_Get_Machine_state()
+{
+    if (function_cb != 0)
+        return 1;
+    else
+        return 0;
 }
 
 void Step_Phase_Set(u32 arr, u32 psc)
@@ -87,6 +96,10 @@ void Step_Phase_Set(u32 arr, u32 psc)
 
 void SRV1_Encoder_Init()
 {
+    static uint8_t isinit = 0;
+    if (isinit != 0)
+        return;
+    isinit = 1;
     // const uint32_t ARR_VALUE = 2097156;
     const uint16_t ch1_pin = 5;
     const uint16_t ch2_pin = 3;
@@ -120,8 +133,9 @@ void SRV1_Encoder_Init()
     GPIOA->AFR[0] |= 0x01 << 20; // set tmr 2 alternate channel
     GPIOB->AFR[0] |= 0x01 << 12;
 
-    TIM2->ARR = 0xffffffff;
+    TIM2->ARR = 1073741;
     TIM2->PSC = 0;
+    TIM2->CR1 |= TIM_CR1_ARPE;
     TIM2->CR1 |= TIM_CR1_CEN;
 }
 
@@ -150,6 +164,7 @@ void Slave_server_Init(void)
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x00;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
+    SRV1_Encoder_Init();
 }
 
 void Slave1_Step_Generator_Init(uint32_t arr, uint32_t psc)
@@ -335,9 +350,9 @@ void tim_f_sin_set_Dir(int f)
 
     time_arr = a / r - 1;
     time_psc = r - 1;
-        Slave1_Dir_IO(Mins_flag);
-        if (time_arr != TIMx->ARR || time_psc != TIMx->PSC)
-            Step_Phase_Set(time_arr, time_psc);
+    Slave1_Dir_IO(Mins_flag);
+    if (time_arr != TIMx->ARR || time_psc != TIMx->PSC)
+        Step_Phase_Set(time_arr, time_psc);
     TIMx->CR1 |= TIM_CR1_CEN;
 }
 
@@ -373,9 +388,18 @@ void Slave1_Set_Encode(uint32_t cnt)
 
 float Slave1_Get_Encode_Angle()
 {
-    int32_t count = TIM2->CNT;
-    float angle = count / 67108800.0f * 360 * 8;
+    int32_t count = *(int32_t *)&(TIM2->CNT);
+    count = count - 1073741 / 2;
+    float angle = count / 1073741.0f * 360.0f;
     return angle;
+}
+
+void Slave1_Set_Encode_Angle(float angle)
+{
+    angle = angle + 180;
+
+    int32_t *count = (int32_t *)&(TIM2->CNT);
+    *count = (angle / 360) * 1073741.0f;
 }
 // void Slave1_CMD(Slave1_CMD_Typed cmd,int freq)
 // {

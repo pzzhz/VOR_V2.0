@@ -16,6 +16,7 @@ lv_timer_t Page1_timer;
 lv_obj_t* parent_box;
 lv_obj_t* parent_bo2[10];
 lv_obj_t* start_btn;
+lv_obj_t* stop_btn;
 lv_obj_t* Msg_Label;
 lv_obj_t* MouseNameTextArea;
 char MouseNameTextArea_textSource[50];
@@ -169,7 +170,7 @@ void ui1_(Table_Property* p)
 	if (isSaveUpdata == 0)
 		return;
 	Table_Property* item_property = UI_Table_Get_Property(p->obj);
-	if (updata_count > table_Contain_Property->list->size*2 )
+	if (updata_count > table_Contain_Property->list->size * 2)
 	{
 		isSaveUpdata = 0;
 		updata_count = -1;
@@ -316,7 +317,12 @@ void UI_Start_Btn_Clicked_Handle(lv_event_t* e)
 		}
 		flag = e->code;
 	}
-	if (e->code == LV_EVENT_LONG_PRESSED)
+}
+
+void UI_Stop_Btn_Clicked_Handle(lv_event_t* e)
+{
+	static lv_event_code_t flag = 0;
+	if (e->code == LV_EVENT_CLICKED)
 	{
 		Message_Center_Send_prinft("Ctrl", 0,
 			0,
@@ -343,6 +349,14 @@ void UI_Start_Btn_Init(lv_obj_t* parent)
 	lv_label_set_recolor(label, 1);
 	lv_obj_align(btn, LV_ALIGN_TOP_RIGHT, 0, 0);
 	lv_obj_add_event_cb(btn, UI_Start_Btn_Clicked_Handle, LV_EVENT_ALL, 0);
+
+	lv_obj_t* btn_stop = lv_btn_create(parent);
+	stop_btn = btn_stop;
+	lv_obj_t* stop_label = lv_label_create(btn_stop); /*Add a label to the button*/
+	//lv_label_set_text(label, "start");		/*Set the labels text*/
+	lv_label_set_recolor(stop_label, 1);
+	lv_obj_align_to(btn_stop, btn, LV_ALIGN_LEFT_MID, -100, 0);
+	lv_obj_add_event_cb(btn_stop, UI_Stop_Btn_Clicked_Handle, LV_EVENT_ALL, 0);
 }
 
 uint8_t UI_Start_Btn_Get_CMD(void)
@@ -645,7 +659,8 @@ static void ta_event_cb(lv_event_t* e)
 {
 	lv_event_code_t code = lv_event_get_code(e);
 	lv_obj_t* ta = lv_event_get_target(e);
-	lv_obj_t* kb = lv_event_get_user_data(e);
+	extern lv_obj_t* UI_get_KeyBorad(lv_obj_t * parent);
+	lv_obj_t* kb = UI_get_KeyBorad(lv_scr_act());
 	if (code == LV_EVENT_FOCUSED || code == LV_EVENT_CLICKED) {
 		lv_keyboard_set_textarea(kb, ta);
 		lv_obj_clear_flag(kb, LV_OBJ_FLAG_HIDDEN);
@@ -664,13 +679,7 @@ static void ta_event_cb(lv_event_t* e)
 	}
 }
 
-static void keyboardHidden(lv_event_t* e)
-{
-	lv_event_code_t code = lv_event_get_code(e);
-	if (code == LV_EVENT_CANCEL) {
-		lv_obj_add_flag(e->current_target, LV_OBJ_FLAG_HIDDEN);
-	}
-}
+
 
 void UI_VHIT_NEXT_BTN_HANDLE(lv_event_t* e)
 {
@@ -723,19 +732,19 @@ void UI_VHIT_NEXT_BTN_INIT()
 void UI_mouse_Name_textInput(lv_obj_t* parent)
 {
 	/*Create a keyboard to use it with an of the text areas*/
-	lv_obj_t* kb = lv_keyboard_create(lv_scr_act());
-	lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
+	//lv_obj_t* kb = lv_keyboard_create(lv_scr_act());
+	//lv_obj_add_flag(kb, LV_OBJ_FLAG_HIDDEN);
 
 	/*Create a text area. The keyboard will write here*/
 	lv_obj_t* ta;
 	ta = lv_textarea_create(parent);
 	MouseNameTextArea = ta;
 	lv_obj_align(ta, LV_ALIGN_TOP_LEFT, -0, 120);
-	lv_obj_add_event_cb(ta, ta_event_cb, LV_EVENT_ALL, kb);
+	lv_obj_add_event_cb(ta, ta_event_cb, LV_EVENT_ALL, 0);
 	lv_textarea_set_placeholder_text(ta, "enter mouse name");
 	lv_textarea_set_accepted_chars(ta, "_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-=+");
 	lv_textarea_set_max_length(ta, 10);
-	lv_obj_add_event_cb(kb, keyboardHidden, LV_EVENT_CANCEL, 0);
+
 	lv_obj_set_size(ta, 240, 45);
 }
 
@@ -743,8 +752,10 @@ void Page1_init(lv_obj_t* parent)
 {
 	parent_box = parent;
 	table_Contain_Property = UI_ListBox_Create(parent);
+	uint32_t isEnOkr = 0;
+	Message_Center_Read_prinft("Ctrl", &isEnOkr, sizeof(isEnOkr), "DEV C610 CONFIG");
 	//user expirement para set
-	Mode_init(parent);
+	Mode_init(parent, isEnOkr);
 	// UI_Table_Create(list5, 0);
 	/*btn*/
 	UI_Task_Btn_Init(parent);   //task btn include -add-save-move-del

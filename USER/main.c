@@ -1,8 +1,8 @@
 /*
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-22 15:01:34
- * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
- * @LastEditTime: 2024-07-24 14:41:48
+ * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
+ * @LastEditTime: 2025-03-31 15:12:35
  * @FilePath: \USER\main.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -15,10 +15,12 @@
 #include "lv_port_indev.h"
 // #include "lv_conf.h"
 #include "ft5206.h"
+#include "gt9147.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "lv_conf.h"
 #include "../INTERFACE/UI/other/system_function.h"
+#include "../other/meassage_center.h"
 
 volatile int idex = 0;
 int *pt = (int *)0x20001000;
@@ -57,9 +59,10 @@ void LVGL_HANDLER()
 {
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
     /*hardware*/
-	  ControlDelay(4000);
+    ControlDelay(4000);
     LCD_Init();
     FT5206_Init();
+    GT9147_Init();
     LCD_Display_Dir(1);
     lv_init();               // lvgl绯荤粺鍒濆?嬶拷?
     lv_port_disp_init();     // lvgl鏄剧ず鎺ュ彛鍒濆?嬶拷?,鏀惧湪lv_init()鐨勫悗锟??
@@ -67,10 +70,26 @@ void LVGL_HANDLER()
     TIM3_Int_Init(1999, 83); // 瀹氭椂鍣ㄥ垵濮嬪寲(1ms涓?鏂?),鐢ㄤ簬缁檒vgl鎻愪緵1ms鐨勫績璺宠妭锟??
     /*system init */
     controlInit();
+    uint8_t buf[20] = {0};
+    int isReady = 0;
+    while (1)
+    {
+        Message_Center_Read_prinft("Ctrl", buf, 20, "ISCtrlInit");
+        if (sscanf(buf, "ISCtrlInit %d", &isReady) == 1)
+        {
+            if (isReady)
+            {
+                break;
+            }
+        }
+        ControlDelay(500);
+    }
+
     Task_Stroage_Init();
     UI_Page_Management_Init();
     while (1)
     {
+        // GT9147_Scan(0);
         touch_sever(1, NULL);
         lv_task_handler();
         ControlDelay(2);
@@ -86,7 +105,7 @@ void get_pt()
 int main(void)
 {
     delay_init(168); // 初始化延时函??
-	DFU_PowerUp_Detection();
+    DFU_PowerUp_Detection();
     TaskHandle_t handle;
     xTaskCreate((TaskFunction_t)LVGL_HANDLER,
                 (const char *)"Outside_motor",
@@ -94,7 +113,7 @@ int main(void)
                 (void *)NULL,
                 (UBaseType_t)3,
                 (TaskHandle_t *)&handle);
-                
+
     vTaskStartScheduler();
 }
 

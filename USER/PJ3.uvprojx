@@ -62,7 +62,7 @@
           <BeforeCompile>
             <RunUserProg1>0</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name></UserProg1Name>
+            <UserProg1Name>"D:\workfile\项目3 vor\software\VOR_V2.0\USER\version.bat"</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -72,7 +72,7 @@
           <BeforeMake>
             <RunUserProg1>0</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name></UserProg1Name>
+            <UserProg1Name>"D:\workfile\项目3 vor\software\VOR_V2.0\USER\version.bat"</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -80,9 +80,9 @@
             <nStopB2X>0</nStopB2X>
           </BeforeMake>
           <AfterMake>
-            <RunUserProg1>0</RunUserProg1>
+            <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name>"F:\A0 陈老师\南科大电机 项目3 vor伺服\伺服电机项目3\vor-pjt\template\hex.bat"</UserProg1Name>
+            <UserProg1Name>"D:\workfile\项目3 vor\software\VOR_V2.0\USER\version.bat"</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -488,6 +488,16 @@
               <FileName>GPIO.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IO\GPIO.c</FilePath>
+            </File>
+            <File>
+              <FileName>gt9147.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\TOUCH\gt9147.c</FilePath>
+            </File>
+            <File>
+              <FileName>rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\RTC\rtc.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1570,7 +1580,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>implement</GroupName>
+          <GroupName>slave_implement</GroupName>
           <Files>
             <File>
               <FileName>Slave_Vor_Ctrl.c</FileName>
@@ -1606,6 +1616,11 @@
               <FileName>Slave_VHIT_Ctrl.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\implement\Slave_VHIT_Ctrl.c</FilePath>
+            </File>
+            <File>
+              <FileName>Slave_Zero_ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\Slave_Zero_ctrl.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2230,6 +2245,16 @@
               <FileName>GPIO.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IO\GPIO.c</FilePath>
+            </File>
+            <File>
+              <FileName>gt9147.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\TOUCH\gt9147.c</FilePath>
+            </File>
+            <File>
+              <FileName>rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\RTC\rtc.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3381,7 +3406,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>implement</GroupName>
+          <GroupName>slave_implement</GroupName>
           <Files>
             <File>
               <FileName>Slave_Vor_Ctrl.c</FileName>
@@ -3417,6 +3442,11 @@
               <FileName>Slave_VHIT_Ctrl.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\implement\Slave_VHIT_Ctrl.c</FilePath>
+            </File>
+            <File>
+              <FileName>Slave_Zero_ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\implement\Slave_Zero_ctrl.c</FilePath>
             </File>
           </Files>
         </Group>
