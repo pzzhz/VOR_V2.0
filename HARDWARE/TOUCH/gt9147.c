@@ -170,7 +170,6 @@ const u16 GT9147_TPX_TBL[5]={GT_TP1_REG,GT_TP2_REG,GT_TP3_REG,GT_TP4_REG,GT_TP5_
 //0,触屏无触摸;1,触屏有触摸
 u8 GT9147_Scan(u8 mode)
 {
-	
 	u8 i=0;
 	u8 res=0;
 	u8 temp;
@@ -179,7 +178,14 @@ u8 GT9147_Scan(u8 mode)
 		GT9147_RD_Reg(GT_GSTID_REG,&tempsta,1);	//读取触摸点的状态  
 		temp=0;
 		GT9147_WR_Reg(GT_GSTID_REG,&temp,1);    //清标志 
-		tempsta2=tempsta&0x0f;		
+		tempsta2=tempsta&0x0f;	
+		if(tempsta&0xf0==0)
+		{
+//			GT9147_Original[0]=0;
+//			GT9147_Original[1]=0;
+			return 0;
+		}
+			
 		if(tempsta2==1)
 		{
 				GT9147_RD_Reg(GT9147_TPX_TBL[0],(u8 *)GT9147_Original,4);	//读取XY坐标值

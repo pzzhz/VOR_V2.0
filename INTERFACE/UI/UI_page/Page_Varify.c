@@ -22,10 +22,11 @@ typedef struct
 	lv_obj_t* Msg_Box;
 	lv_obj_t* text_Box;
 	lv_obj_t* time_set_text_Box;
+	lv_obj_t* qrcode;
 }UI_Page_Verfiy;
 static UI_Page_Verfiy Verfiy_Msg;
-static const char mouth_to_expend[] = "1\n""3\n""12\n""24\n""255";
-const int mouth_to_expend_int[] = { 1,3,12,24,255 };
+static const char mouth_to_expend[] = "1\n""3\n""6\n""12\n""24\n""36\n""48\n""60\n""255";
+const int mouth_to_expend_int[] = { 1,3,6,12,24,36,48,60,255 };
 static lv_obj_t* checkbox_toplayer_Parent = 0;
 
 static timetyped timeReady2Write;
@@ -46,7 +47,7 @@ void UI_Gen_Unlock_Code(char str[50], uint8_t mouth)
 	uint8_t UnlockCode[9];
 	for (int i = 0;i < 1;i++)
 	{
-		UnlockCode[i] = lv_rand(0, 0xff);
+		UnlockCode[i] = HAL_Random_Create();
 	}
 	for (int i = 1;i < (1 + 2);i++)
 	{
@@ -54,7 +55,7 @@ void UI_Gen_Unlock_Code(char str[50], uint8_t mouth)
 		uuid = (uuid >> 8);
 	}
 	UnlockCode[4] = mouth;
-	UnlockCode[5] = lv_rand(0, 0xff);
+	UnlockCode[5] = HAL_Random_Create();
 	memcpy(Verfiy_Msg.UnlockCode, UnlockCode, 6);
 	int pos = 0, len = 0;
 	for (int i = 0;i < 6;i++)
@@ -229,6 +230,7 @@ static void dropdown_event_cb(UI_Dropdown_Struct* e)
 	char str[50];
 	UI_Gen_Unlock_Code(str, mouth);
 	lv_label_set_text_fmt(Verfiy_Msg.label_UnlockCode, "Unlock code:\n%s\nSelect mouths to expend service", str);
+	lv_qrcode_update(Verfiy_Msg.qrcode, str, strlen(str));
 }
 
 void UI_Page_Verfiy_Comp(lv_obj_t* parent)
@@ -248,7 +250,8 @@ void UI_Page_Verfiy_Comp(lv_obj_t* parent)
 	lv_obj_t* label_UnlockCode = lv_label_create(verfiyBox);
 	Verfiy_Msg.label_UnlockCode = label_UnlockCode;
 	lv_label_set_text_fmt(label_UnlockCode, "Unlock code:\n%s\nSelect mouths to expend service", str);
-	lv_obj_set_width(label_UnlockCode, LV_HOR_RES);
+	lv_obj_set_width(label_UnlockCode, LV_HOR_RES-300);
+	Verfiy_Msg.qrcode = lv_qrcode_create(verfiyBox, 80, lv_color_hex(0), lv_color_hex(0xfffff));
 	UI_Dropdown_Struct dropdown_vel = {
 	.dropdown = Verfiy_Msg.Mouth.dropdown1,
 	.label = Verfiy_Msg.Mouth.label1,
@@ -262,6 +265,8 @@ void UI_Page_Verfiy_Comp(lv_obj_t* parent)
 	.Label_Str = "" };
 	Verfiy_Msg.Mouth.obj = dropdown_vel;
 	UI_DropDown_Init(&Verfiy_Msg.Mouth.obj);
+
+	lv_qrcode_update(Verfiy_Msg.qrcode, str, strlen(str));
 	//create_custom_keyboard(lv_scr_act(),1);
 
 	/*Create a text area. The keyboard will write here*/
@@ -289,7 +294,7 @@ void UI_Page_Verfiy_Comp(lv_obj_t* parent)
 void UI_Page_SetTime(lv_obj_t* parent)
 {
 	lv_obj_t* verfiyBox;
-	verfiyBox = lv_msgbox_create(parent, "Expired", " ", NULL, true);
+	verfiyBox = lv_msgbox_create(parent, "TIME SETUP", " ", NULL, true);
 
 	lv_obj_center(verfiyBox);
 	lv_obj_set_size(verfiyBox, LV_HOR_RES, LV_VER_RES);  // ÈÃËü¸²¸ÇÕû¸öÆÁÄ»

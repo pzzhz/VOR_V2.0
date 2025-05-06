@@ -20,6 +20,7 @@
 "..\obj\gpio.o"
 "..\obj\rtc.o"
 "..\obj\gt9147.o"
+"..\obj\rng.o"
 "..\obj\delay.o"
 "..\obj\sys.o"
 "..\obj\usart.o"

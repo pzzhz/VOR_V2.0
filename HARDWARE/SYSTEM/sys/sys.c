@@ -67,6 +67,11 @@ void RequestEnterDFU(void)
 	SCB->AIRCR = (0X5FA << 16) + 4; //软件复位
 }
 
+void RequestReset(void)
+{
+	SCB->AIRCR = (0X5FA << 16) + 4; //软件复位
+}
+
 void DFU_PowerUp_Detection()
 {
 	if (*dfuFlag ==0xAA)    //判断上次复位是否为软件复位

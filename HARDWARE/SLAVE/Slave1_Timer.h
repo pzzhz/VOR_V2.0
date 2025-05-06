@@ -15,7 +15,7 @@ extern "C"
 {
 #endif
 #define motor_step 10000 * 10
-#define angle_step (277.8 * 5)
+#define angle_step (277.8f * 5)
     typedef uint8_t (*Slave_Function_CB)(void);
     typedef enum
     {
@@ -36,6 +36,8 @@ extern "C"
     uint8_t Slave1_Get_Machine_state();
     void tim_f_sin_set(int f);
     void tim_f_sin_set_Dir(int f);
+		uint8_t Slave1_get_Encode_error();
+		uint8_t Slave1_Check_Encode_Angle();
     void tim_f_set(int f);
     void Slave_server_Init(void);
     float Slave1_Get_Encode_Angle(void);

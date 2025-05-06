@@ -265,6 +265,7 @@ lv_obj_t* UI_Table_Create(Table_Contain_Property* table_Contain_Property, void* 
 	lv_style_set_outline_width(&table_proprity->style, 3);
 	lv_style_set_outline_pad(&table_proprity->style, 3);
 	lv_style_set_outline_color(&table_proprity->style, lv_palette_main(LV_PALETTE_BLUE));
+	lv_style_set_text_font(&table_proprity->style, &lv_font_montserrat_14);
 	lv_obj_add_style(table, &table_proprity->style, 0);
 	table->user_data = table_proprity;
 
@@ -281,7 +282,7 @@ lv_obj_t* UI_Table_Create(Table_Contain_Property* table_Contain_Property, void* 
 
 	table_proprity->ID = &newnode->data;
 	table_proprity->obj = table;
-	table_proprity->set_clearence = 65;
+	table_proprity->set_clearence = 75;
 	table_proprity->updata_cd = updata_cd;
 	table_proprity->isremove = 0;
 	/* if (*table_proprity->ID > 2)

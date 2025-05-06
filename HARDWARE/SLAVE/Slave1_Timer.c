@@ -4,6 +4,7 @@
 #include "math.h"
 
 float acc_angle = 0;
+float soft_angle_CNT;
 Slave_Function_CB function_cb;
 void TIM1_BRK_TIM9_IRQHandler(void)
 {
@@ -39,7 +40,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
 void Slave1_Set_Machine_Cb(Slave_Function_CB cb)
 {
     Slave1_IO_Init();
-    Slave1_En_IO(1);
+    //    Slave1_En_IO(1);
     // Slave1_Step_Generator_Init(50000, 10);
     Slave_server_Init();
     TIM9->CR1 &= ~TIM_CR1_CEN;
@@ -212,6 +213,7 @@ void Slave1_Step_Generator_Init(uint32_t arr, uint32_t psc)
 
 void tim_f_set(int f)
 {
+
     TIM_TypeDef *TIMx = TIM1;
     u8 Mins_flag;
     int time_arr, time_psc;
@@ -262,6 +264,16 @@ void tim_f_set(int f)
 void tim_f_sin_set(int f)
 {
     TIM_TypeDef *TIMx = TIM1;
+    float angle = -f;
+    soft_angle_CNT += (angle / angle_step) / 1000;
+    if (soft_angle_CNT > 180)
+    {
+        soft_angle_CNT -= 360;
+    }
+    else if (soft_angle_CNT < -180)
+    {
+        soft_angle_CNT += 360;
+    }
     u8 Mins_flag;
     int time_arr, time_psc;
     int a, clk = 84000000, c, y, r = 0, t, i;
@@ -386,16 +398,51 @@ void Slave1_Set_Encode(uint32_t cnt)
     TIM2->CNT = cnt;
 }
 
+int32_t count_record;
+int8_t isEncode_error = 0;
+uint8_t Slave1_Check_Encode_Angle()
+{
+    static uint8_t flag = 0;
+    int32_t count = *(int32_t *)&(TIM2->CNT);
+    if (flag == 0)
+    {
+        count_record = count;
+        flag = 1;
+        return 0;
+    }
+    if (flag == 1)
+    {
+        int absvalue = abs(count_record - count);
+        if (absvalue < 10)
+        {
+            isEncode_error = 1;
+            return 1;
+        }
+        return 0;
+    }
+    return 0;
+}
+
 float Slave1_Get_Encode_Angle()
 {
+//    if (isEncode_error)
+    {
+        return soft_angle_CNT;
+    }
     int32_t count = *(int32_t *)&(TIM2->CNT);
     count = count - 1073741 / 2;
     float angle = count / 1073741.0f * 360.0f;
     return angle;
 }
 
+uint8_t Slave1_get_Encode_error()
+{
+    return isEncode_error;
+}
+
 void Slave1_Set_Encode_Angle(float angle)
 {
+    soft_angle_CNT = angle;
     angle = angle + 180;
 
     int32_t *count = (int32_t *)&(TIM2->CNT);

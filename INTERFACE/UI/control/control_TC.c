@@ -124,7 +124,7 @@ Pause_Resume:
 	uint8_t TC_machine_flag = 1, CamIsStop = 0;
 	int32_t LastCount = -1;
 	uint32_t count, parcent;
-	e->State_Bit.pause = 0;
+	e->State_Bit.reqPause = 0;
 	e->State_Bit.VHIT_Next = 0;
 	/*waiting vor machine finish*/
 	while (TC_machine_flag)
@@ -132,21 +132,22 @@ Pause_Resume:
 		TC_machine_flag = HAL_Slave_TC_Get_State(&count, &parcent);
 		if (LastCount != count && TC_machine_flag == Imp_running)
 		{
-			Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount,"TC", parcent);
+			Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount+1,"TC", parcent);
 			LastCount = count;
 		}
 		if (e->State_Bit.Exit) // for exit
 		{
-			Ctrl_Msg_Printf("%d:%s #A52A2A Terminated#", e->currentCount,"TC");
+			Ctrl_Msg_Printf("%d:%s #A52A2A Terminated#", e->currentCount+1,"TC");
 			HAL_Slave_TC_Stop();
 		}
-		if (e->State_Bit.pause == 1)
+		if (e->State_Bit.reqPause == 1)
 		{
 			if (TC_machine_flag == Imp_running)
 			{
 				HAL_Slave_TC_Pause(1);
-				Ctrl_Msg_Printf("%d:%s Pause", e->currentCount,"TC");
+				Ctrl_Msg_Printf("%d:%s Pause", e->currentCount+1,"TC");
 				Rk3588_Send_Pause;
+				e->State_Bit.isPause = 1;
 				// if (CamIsStop == 0)
 				// 	HAL_CAM_REC_Set(1);
 				// CamIsStop = 1;
@@ -154,12 +155,13 @@ Pause_Resume:
 			}
 			else if (TC_machine_flag == Imp_paused)
 			{
+				e->State_Bit.isPause = 0;
 				goto Pause_Resume;
 				//Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount,"TC", parcent);
 				//HAL_Slave_TC_Pause(0);
 				//HAL_CAM_REC_Set(1);
 			}
-			e->State_Bit.pause = 0;
+			e->State_Bit.reqPause = 0;
 		}
 		MYPRINTF("%3d", count);
 		// wait motor infinsh
@@ -168,7 +170,7 @@ Pause_Resume:
 		MYPRINTF("\r");
 	}
 	if (e->State_Bit.Exit == 0)
-		Ctrl_Msg_Printf("%d:%s Done:100%%", e->currentCount,"TC");
+		Ctrl_Msg_Printf("%d:%s Done:100%%", e->currentCount+1,"TC");
 	/*one sec for cam stop*/
 	SaftExitDelay(1000, 0);
 	if (CamIsStop == 0)

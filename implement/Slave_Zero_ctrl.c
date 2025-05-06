@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-24 14:44:19
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
- * @LastEditTime: 2025-03-28 19:42:42
+ * @LastEditTime: 2025-04-29 14:23:13
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\implement\Slave_Vor_Ctrl.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -100,6 +100,7 @@ static uint8_t motor_set(void)
         // if(zero_para.ioflag<=2)
         if (IR_IO_Get() == 1 && zero_para.ioflag == 0)
         {
+            Slave1_Check_Encode_Angle();
             Slave1_Set_Encode_Angle(-90.0f);
             slave_Reqstop();
             zero_para.ioflag = 1;
@@ -134,6 +135,7 @@ static uint8_t Zero_handler(void)
     if (res)
     {
         zero_para.state = end;
+        
         tim_f_set(0);
         return 1; // end turn off tim4
     }
@@ -161,6 +163,7 @@ uint8_t Zero_Machine_Init(uint8_t isinit)
     memset(zero_para, 0, sizeof(zero_para));
     if (isinit)
     {
+        Slave1_Check_Encode_Angle();
         IR_IO_Init();
         Zero_Back_init(360, 30, 1);
     }

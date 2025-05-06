@@ -144,14 +144,14 @@ Pause_Resume:
 	uint8_t VHIT_machine_flag = 1, CamIsStop = 0;
 	int32_t LastCount = -1;
 	uint32_t count, parcent;
-	e->State_Bit.pause = 0;
+	e->State_Bit.reqPause = 0;
 	/*waiting vor machine finish*/
 	while (VHIT_machine_flag)
 	{
 		VHIT_machine_flag = HAL_Slave_VHIT_Get_State(&count, &parcent);
 		if (LastCount != count && VHIT_machine_flag == Imp_running)
 		{
-			Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount, ModeName, parcent);
+			Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount+1, ModeName, parcent);
 			if (LastCount != -1)
 				Message_Center_Send_prinft("page1", 0, 0, "VHIT_NEXT_ENABLE");
 			LastCount = count;
@@ -164,10 +164,10 @@ Pause_Resume:
 		}
 		if (e->State_Bit.Exit) // for exit
 		{
-			Ctrl_Msg_Printf("%d:%s #A52A2A Terminated#", e->currentCount, ModeName);
+			Ctrl_Msg_Printf("%d:%s #A52A2A Terminated#", e->currentCount+1, ModeName);
 			HAL_Slave_VHIT_Stop();
 		}
-		// if (e->State_Bit.pause == 1)
+		// if (e->State_Bit.reqPause == 1)
 		// {
 		// 	if (VHIT_machine_flag == Imp_running)
 		// 	{
@@ -186,7 +186,7 @@ Pause_Resume:
 		// 		// HAL_Slave_VHIT_Pause(0);
 		// 		// HAL_CAM_REC_Set(1);
 		// 	}
-		// 	e->State_Bit.pause = 0;
+		// 	e->State_Bit.reqPause = 0;
 		// }
 		MYPRINTF("%3d", count);
 		// wait motor infinsh
@@ -195,7 +195,7 @@ Pause_Resume:
 		MYPRINTF("\r");
 	}
 	if (e->State_Bit.Exit == 0)
-		Ctrl_Msg_Printf("%d:%s Done:100%%", e->currentCount, ModeName);
+		Ctrl_Msg_Printf("%d:%s Done:100%%", e->currentCount+1, ModeName);
 	/*one sec for cam stop*/
 	SaftExitDelay(1000, 0);
 	CAM_State = HAL_CAM_REC_Set(1);

@@ -123,35 +123,37 @@ uint8_t ContControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 	int32_t LastCount = -1;
 	// motor initial
 	uint32_t count, parcent;
-	e->State_Bit.pause = 0;
+	e->State_Bit.reqPause = 0;
 	while (CONT_flag)
 	{
 		CONT_flag = HAL_Slave_CONT_Get_State(&count, &parcent);
 		if (LastCount != count && CONT_flag == Imp_running)
 		{
-			Ctrl_Msg_Printf("%d:CONT Done:%d%%", e->currentCount, parcent);
+			Ctrl_Msg_Printf("%d:CONT Done:%d%%", e->currentCount+1, parcent);
 			// HAL_Set_UI_Page1_Msg("Count:%d", count);
 			LastCount = count;
 		}
 		if (e->State_Bit.Exit) // for exit
 		{
-			Ctrl_Msg_Printf("%d:CONT #A52A2A Terminated#", e->currentCount);
+			Ctrl_Msg_Printf("%d:CONT #A52A2A Terminated#", e->currentCount+1);
 			HAL_Slave_CONT_Stop();
 		}
-		if (e->State_Bit.pause)
+		if (e->State_Bit.reqPause)
 		{
 			if (CONT_flag == Imp_running)
 			{
+				e->State_Bit.isPause = 1;
 				HAL_Slave_CONT_Pause(1);
 				HAL_CAM_REC_Set(1);
                 Rk3588_Send_Pause;
-				Ctrl_Msg_Printf("%d:CONT Pause", e->currentCount);
+				Ctrl_Msg_Printf("%d:CONT Pause", e->currentCount+1);
 			}
 			else if (CONT_flag == Imp_paused)
 			{
+				e->State_Bit.isPause = 0;
 				goto Pause_Resume;
 			}
-			e->State_Bit.pause = 0;
+			e->State_Bit.reqPause = 0;
 		}
 
 		MYPRINTF("%3d", count);
@@ -160,7 +162,7 @@ uint8_t ContControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 
 		MYPRINTF("\r");
 	}
-	Ctrl_Msg_Printf("%d:CONT Done:100%%", e->currentCount);
+	Ctrl_Msg_Printf("%d:CONT Done:100%%", e->currentCount+1);
 	/*one sec for cam stop*/
 	SaftExitDelay(1000, 0);
 	if (CamIsStop == 0)

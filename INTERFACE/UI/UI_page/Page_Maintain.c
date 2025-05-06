@@ -139,7 +139,7 @@ void UI_page_maintain_SYSINFO_hander(lv_event_t* e)
 	extern void UI_page_maintain_DEV_Menu_Init();
 	if (e->code != LV_EVENT_CLICKED && e->code != LV_EVENT_LONG_PRESSED)
 		return;
-#if 1
+#if 0
 	UI_page_maintain_DEV_Menu_Init();
 #else
 	lv_obj_t* btn = e->user_data;
@@ -355,6 +355,16 @@ void UI_page_maintain_license_btn_handle(lv_event_t* e)
 	}
 }
 
+void UI_page_maintain_Factory_Reset_btn_handle(lv_event_t* e)
+{
+	if (e->code == LV_EVENT_CLICKED)
+	{
+		timetyped_UI time = { 0 };
+		Message_Center_Read_prinft("Ctrl", &time, sizeof(time),
+			"FACTORY Reset");
+	}
+}
+
 void UI_page_maintain_Settime_btn_handle(lv_event_t* e)
 {
 	lv_obj_t* parent = (lv_obj_t*)e->user_data;
@@ -386,9 +396,11 @@ void UI_page_maintain_DEV_Menu_Init()
 	UI_page_maintain_COMBOX_init(obj, "UART", "DISABLE\nUART1\nBoth", UI_page_maintain_UART_hander, "UART CONFIG");
 	lv_obj_t* btn = lv_list_add_btn(obj, 0, "DFU");
 	lv_obj_t* btn_display_license = lv_list_add_btn(obj, 0, "license");
+	lv_obj_t* btn_Factory_Reset = lv_list_add_btn(obj, 0, "Factory Reset");
 	UI_page_maintain_Num_init(obj, "sec", "sss", NULL, "c");
 	lv_obj_add_event_cb(btn, UI_page_maintain_DFU_btn_handle, LV_EVENT_CLICKED, btn);
 	lv_obj_add_event_cb(btn_display_license, UI_page_maintain_license_btn_handle, LV_EVENT_CLICKED, btn);
+	lv_obj_add_event_cb(btn_Factory_Reset, UI_page_maintain_Factory_Reset_btn_handle, LV_EVENT_CLICKED, 0);
 	lv_obj_add_event_cb(obj, UI_page_maintain_MsgBox_close, LV_EVENT_DELETE, 0);
 
 

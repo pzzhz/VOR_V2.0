@@ -79,7 +79,7 @@ extern "C"
 
 	void HAL_GET_SYSINFO(char* str);
 	uint64_t HAL_GET_SYS_UUID(void);
-
+	uint8_t HAL_Random_Create(void);
 	uint8_t HAL_API_INIT(void);
 
 #ifdef __cplusplus

@@ -124,6 +124,8 @@ uint8_t Verify_get_license_Date(timetyped* t)
 }
 
 
+
+
 timetyped Verify_Month_2_Expired_Date(uint8_t month)
 {
 	timetyped localtime = { 0 };
@@ -141,6 +143,13 @@ uint8_t Verify_Set_Time(void* time)
 	uint8_t buf[2] = { 0xAA,0xAA }, status = 0;
 	HAL_TIME_Set(time);
 	HAL_CONFIG_WRITE(3, buf, 2);
+}
+
+
+uint8_t Verify_Factory_Reset(void)
+{
+		uint8_t buf[2];
+	HAL_CONFIG_WRITE(3, buf, 0);
 }
 
 uint8_t Verify_Set_Subscribe(uint8_t month)

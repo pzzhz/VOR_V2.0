@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-22 16:00:07
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
- * @LastEditTime: 2025-02-06 16:47:30
+ * @LastEditTime: 2025-04-25 10:00:23
  * @FilePath: \USERd:\workfile\é¡¹ç›®3 vor\software\VOR_V2.0\INTERFACE\UI\control\control_VOR.c
  * @Description: è¿™æ˜¯é»˜è?¤è?¾ç½®,è¯·è?¾ç½®`customMade`, æ‰“å¼€koroFileHeaderæŸ¥çœ‹é…ç½® è¿›è?Œè?¾ç½®: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -51,6 +51,7 @@ uint8_t HAL_Slave_VOR_Stop(void)
 #ifndef STM32F40_41xxx
 	uint32_t currentCount = vor_info.Freq * (ControlGetTick() - vor_info.time) / 1000.0f;
 	vor_info.SetCount = currentCount + 1;
+	vor_info.flag_pause = 0;
 #else
 	VOR_Machine_Stop();
 #endif // !STM32F40_41xxx
@@ -130,27 +131,30 @@ uint8_t VorControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 	uint8_t VOR_machine_flag = 1, CamIsStop = 0;
 	int32_t LastCount = -1;
 	uint32_t count, parcent;
-	e->State_Bit.pause = 0;
+	e->State_Bit.reqPause = 0;
 	/*waiting vor machine finish*/
 	while (VOR_machine_flag)
 	{
 		VOR_machine_flag = HAL_Slave_VOR_Get_State(&count, &parcent);
 		if (LastCount != count && VOR_machine_flag == Imp_running)
 		{
-			Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount, ModeStr(task), parcent);
+			Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount+1, ModeStr(task), parcent);
 			LastCount = count;
 		}
 		if (e->State_Bit.Exit) // for exit
 		{
-			Ctrl_Msg_Printf("%d:%s #A52A2A Terminated#", e->currentCount, ModeStr(task));
+			Ctrl_Msg_Printf("%d:%s #A52A2A Terminated#", e->currentCount + 1, ModeStr(task));
+			e->State_Bit.isPause = 0;
 			HAL_Slave_VOR_Stop();
 		}
-		if (e->State_Bit.pause == 1)
+		if (e->State_Bit.reqPause == 1)
 		{
+			e->State_Bit.reqPause = 0;
 			if (VOR_machine_flag == Imp_running)
 			{
 				HAL_Slave_VOR_Pause(1);
-				Ctrl_Msg_Printf("%d:%s Pause", e->currentCount, ModeStr(task));
+				Ctrl_Msg_Printf("%d:%s Pause", e->currentCount + 1, ModeStr(task));
+				e->State_Bit.isPause = 1;
                 Rk3588_Send_Pause;
 				// if (CamIsStop == 0)
 				// 	HAL_CAM_REC_Set(1);
@@ -159,12 +163,12 @@ uint8_t VorControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 			}
 			else if (VOR_machine_flag == Imp_paused)
 			{
+				e->State_Bit.isPause = 0;
 				goto Pause_Resume;
 				//Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount, ModeStr(task), parcent);
 				//HAL_Slave_VOR_Pause(0);
 				//HAL_CAM_REC_Set(1);
 			}
-			e->State_Bit.pause = 0;
 		}
 		MYPRINTF("%3d", count);
 		// wait motor infinsh
@@ -173,7 +177,7 @@ uint8_t VorControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 		MYPRINTF("\r");
 	}
 	if (e->State_Bit.Exit == 0)
-		Ctrl_Msg_Printf("%d:%s Done:100%%", e->currentCount, ModeStr(task));
+		Ctrl_Msg_Printf("%d:%s Done:100%%", e->currentCount + 1, ModeStr(task));
 	/*one sec for cam stop*/
 	SaftExitDelay(1000, 0);
 	if (CamIsStop == 0)

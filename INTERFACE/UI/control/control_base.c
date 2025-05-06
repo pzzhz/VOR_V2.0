@@ -51,7 +51,7 @@ Pause_Resume:
 	uint8_t machine_flag = 1, CamIsStop = 0;
 	int32_t LastCount = -1;
 	uint32_t count, parcent;
-	e->State_Bit.pause = 0;
+	e->State_Bit.reqPause = 0;
 	while (machine_flag)
 	{
 		machine_flag = cb->getstatus(&count, &parcent);
@@ -65,7 +65,7 @@ Pause_Resume:
 			Ctrl_Msg_Printf("%d:%s #A52A2A Terminated#", e->currentCount,cb->Name());
 			cb->stop();
 		}
-		if (e->State_Bit.pause == 1)
+		if (e->State_Bit.reqPause == 1)
 		{
 			if (machine_flag == Imp_running)
 			{
@@ -78,7 +78,7 @@ Pause_Resume:
 			{
 				goto Pause_Resume;
 			}
-			e->State_Bit.pause = 0;
+			e->State_Bit.reqPause = 0;
 		}
 		MYPRINTF("%3d", count);
 		// wait motor infinsh

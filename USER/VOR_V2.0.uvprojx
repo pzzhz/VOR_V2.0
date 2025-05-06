@@ -494,6 +494,11 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\TOUCH\gt9147.c</FilePath>
             </File>
+            <File>
+              <FileName>RNG.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\RNG\RNG.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2275,6 +2280,11 @@
               <FileName>gt9147.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\TOUCH\gt9147.c</FilePath>
+            </File>
+            <File>
+              <FileName>RNG.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\RNG\RNG.c</FilePath>
             </File>
           </Files>
         </Group>

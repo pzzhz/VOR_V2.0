@@ -113,6 +113,8 @@ void RK3588_terminal_Printf(uint8_t LR)
 	(LR) ? Rk3588_Printf("cancel") : Rk3588_L_Printf("cancel");
 }
 
+
+
 void RK3588_Initial_Printf(void)
 {
 	Rk3588_Printf("clear");
@@ -174,7 +176,7 @@ uint8_t Task_control_ReqStop(Task_control_info* e)
 	{
 		return 0;
 	}
-	e->State_Bit.pause = 0;
+	e->State_Bit.reqPause = 0;
 	e->State_Bit.Exit = 1;
 	return 1;
 }
@@ -185,7 +187,7 @@ uint8_t Task_control_ReqPause(Task_control_info* e)
 	{
 		return 0;
 	}
-	e->State_Bit.pause = !e->State_Bit.pause;
+	e->State_Bit.reqPause = !e->State_Bit.reqPause;
 	return 1;
 }
 
@@ -221,6 +223,7 @@ BEGIN_POS:
 	}
 
 	e->State_Bit.IsRunning = 1;
+	e->State_Bit.isPause = 0;
 
 	uint16_t task_size = e->taskCount;
 	Rk3588_Send_Task_Array;
@@ -254,6 +257,7 @@ BEGIN_POS:
 		default:
 			break;
 		}
+		e->State_Bit.isPause = 0;
 		ZEROControlFunction(0);
 		if (e->State_Bit.Exit)
 		{

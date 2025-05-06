@@ -19,6 +19,7 @@ lv_obj_t* start_btn;
 lv_obj_t* stop_btn;
 lv_obj_t* Msg_Label;
 lv_obj_t* MouseNameTextArea;
+lv_obj_t* Task_Btn_Array[4];
 char MouseNameTextArea_textSource[50];
 uint8_t isSaveUpdata;
 uint8_t isPauseAllow = 1;
@@ -166,7 +167,24 @@ const char* TaskNameTransLate(Task_Parameter_Struct t)
 #define SPRINTF sprintf_s
 void ui1_(Table_Property* p)
 {
-	static int8_t updata_count = -1;
+	static int8_t updata_count = -1, currentTask = -1;
+	static int16_t current_flag = -1;
+	static const char* okstr = LV_SYMBOL_OK;
+	static const char* nomral_str = "";
+	static const char* running_str = LV_SYMBOL_REFRESH;
+	char str[20];
+	int flag[2];
+	uint8_t readIndex;
+	const char* tag = nomral_str;
+	Message_Center_Read_prinft("Ctrl", str, sizeof(str), "ReqReadState");
+	readIndex = sscanf(str, "ReadState %d %d", flag, flag + 1);
+	if (readIndex == 2 && (currentTask != flag[1] || current_flag != flag[0]))
+	{
+		isSaveUpdata = 1;
+		updata_count = -1;
+		current_flag = flag[0];
+		currentTask = flag[1];
+	}
 	if (isSaveUpdata == 0)
 		return;
 	Table_Property* item_property = UI_Table_Get_Property(p->obj);
@@ -181,8 +199,17 @@ void ui1_(Table_Property* p)
 	{
 
 		Task_Parameter_Struct* task_info = p->Updata_Source;
-		lv_table_set_cell_value_fmt(p->obj, 0, 0, "%s,%d",
-			TaskNameTransLate(*task_info), index);
+		if (flag[0] != 0)
+		{
+			if (index == flag[1])
+				tag = running_str;
+			else if (index < flag[1])
+				tag = okstr;
+		}
+		lv_table_set_cell_value_fmt(p->obj, 0, 0, "%s%s",
+			TaskNameTransLate(*task_info),
+			tag
+		);
 		Set_table_Cell_Text(p->obj, task_info);
 	}
 }
@@ -264,6 +291,8 @@ void UI_Task_Btn_Del_Click_Event(lv_event_t* e)
 	if (fouces_index < 0)
 		return;
 	Table_Property* item_property = UI_Table_Find_Obj_User_Data(table_Contain_Property, fouces_index);
+	if (item_property == 0)
+		return;
 	item_property->Updata_Source = (void*)&del_templete;
 	LV_LOG_USER("DEL %d", fouces_index);
 	uint32_t handleID;
@@ -279,11 +308,12 @@ void UI_Task_Btn_Init(lv_obj_t* parent)
 	for (int i = 0; i < 4; i++)
 	{
 		btn[i] = lv_btn_create(parent);
+		Task_Btn_Array[i] = btn[i];
 		lv_obj_set_size(btn[i], 70, 40);
 		lv_obj_t* label = lv_label_create(btn[i]); /*Add a label to the button*/
 		lv_label_set_text(label, string[i]);	   /*Set the labels text*/
 		lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
-		lv_obj_align(btn[i], LV_ALIGN_DEFAULT, i * 80, 0);
+		lv_obj_align(btn[i], LV_ALIGN_DEFAULT, i * 80 - 20, 0);
 	}
 	lv_obj_add_event_cb(btn[0], UI_Task_Btn_ADD_Click_Event, LV_EVENT_CLICKED, 0);
 	lv_obj_add_event_cb(btn[1], UI_Task_Btn_Move_Click_Event, LV_EVENT_CLICKED, 0);
@@ -295,8 +325,16 @@ char string[50];
 void UI_Task_Msg_Init(lv_obj_t* parent)
 {
 	Msg_Label = lv_label_create(parent);
-	lv_obj_align_to(Msg_Label, start_btn, LV_ALIGN_OUT_BOTTOM_LEFT, -200, -20);
+	lv_obj_align_to(Msg_Label, start_btn, LV_ALIGN_OUT_BOTTOM_LEFT, -350, -30);
+	static lv_style_t style;
+	lv_style_init(&style);
 
+	// 设置字体（例如使用内置的 Montserrat 字体，大小 24）
+	lv_style_set_text_font(&style, &lv_font_montserrat_28);
+	lv_obj_set_width(Msg_Label, 250);
+	lv_label_set_long_mode(Msg_Label, LV_LABEL_LONG_WRAP);
+	// 将样式应用到标签
+	lv_obj_add_style(Msg_Label, &style, 0);
 	lv_label_set_text(Msg_Label, string);
 	lv_label_set_recolor(Msg_Label, 1);
 }
@@ -345,16 +383,21 @@ void UI_Start_Btn_Init(lv_obj_t* parent)
 	lv_obj_t* btn = lv_btn_create(parent);
 	start_btn = btn;
 	lv_obj_t* label = lv_label_create(btn); /*Add a label to the button*/
+	lv_obj_set_size(btn, 70, 50);
+	lv_obj_center(label);
 	//lv_label_set_text(label, "start");		/*Set the labels text*/
 	lv_label_set_recolor(label, 1);
-	lv_obj_align(btn, LV_ALIGN_TOP_RIGHT, 0, 0);
+	lv_obj_align(btn, LV_ALIGN_TOP_RIGHT, 0, -15);
 	lv_obj_add_event_cb(btn, UI_Start_Btn_Clicked_Handle, LV_EVENT_ALL, 0);
 
 	lv_obj_t* btn_stop = lv_btn_create(parent);
 	stop_btn = btn_stop;
+	lv_obj_set_size(btn_stop, 100, 50);
 	lv_obj_t* stop_label = lv_label_create(btn_stop); /*Add a label to the button*/
 	//lv_label_set_text(label, "start");		/*Set the labels text*/
 	lv_label_set_recolor(stop_label, 1);
+	lv_obj_set_size(btn_stop, 70, 50);
+	lv_obj_center(stop_label);
 	lv_obj_align_to(btn_stop, btn, LV_ALIGN_LEFT_MID, -100, 0);
 	lv_obj_add_event_cb(btn_stop, UI_Stop_Btn_Clicked_Handle, LV_EVENT_ALL, 0);
 }
@@ -568,32 +611,107 @@ void UI_Page1_Get_Souce_Updata()
 	//	}
 }
 
+
+
 void UI_Page1_Btn_Refulsh()
 {
+	enum
+	{
+		_ready,
+		_taskruning,
+		_runing,//没用
+		_end,
+	} xtask_runing;
+	static uint8_t count = 0;
+	static State_Bit Last_flag;
 	const int mallocSize = 40;
-	char* str = message_malloc(mallocSize);
-	if (str == 0)
-		return;
-
-	memset(str, 0, mallocSize);
-	Message_Center_Read_prinft("Ctrl", str, mallocSize, "run_State?");
-	if (Msg_COMPARE("isStart", str))
+	State_Bit flag;
+	Message_Center_Read_prinft("Ctrl", &flag, sizeof(State_Bit), "run_State?");
+	//isruning display stop
+	//isruning ispause display hold
+	//stoping 
+	//run
+	count++;
+	if (flag.IsRunning)
 	{
-		lv_obj_t* label = lv_obj_get_child(start_btn, 0);
-		// start:ON
-		lv_label_set_text_fmt(label, "%s", (isPauseAllow) ?
-			"#000000 PAUSE/STOP" :
-			"#000000 STOP");
-		lv_obj_set_style_bg_color(start_btn, lv_color_hex(0xFF4500), 0);
+		if (flag.isPause && flag.reqPause == 0)
+		{
+			//char* color = (count % 16 > 8) ? "#7CFC00" : "#EA0000";
+			uint32_t color = (count % 24 > 12) ? 0x7CFC00 : 0xF9F900;
+			lv_obj_t* label = lv_obj_get_child(start_btn, 0);
+			lv_label_set_text(label, "#000000 "LV_SYMBOL_PLAY);
+			lv_obj_set_style_bg_color(start_btn, lv_color_hex(color), 0);//green
+			lv_obj_set_style_bg_color(stop_btn, lv_color_hex(0xEA0000), 0); //gray
+		}
+		else if (flag.reqPause || flag.ui_para != _taskruning)
+		{
+			lv_obj_set_style_bg_color(stop_btn, lv_color_hex(0xADADAD), 0); //gray
+			lv_obj_set_style_bg_color(start_btn, lv_color_hex(0xADADAD), 0);//gray
+		}
+		else if (flag.Exit)
+		{
+			lv_obj_set_style_bg_color(stop_btn, lv_color_hex(0xADADAD), 0); //gray
+			lv_obj_set_style_bg_color(start_btn, lv_color_hex(0xADADAD), 0);//gray
+		}
+		else
+		{
+			lv_obj_clear_flag(stop_btn, LV_OBJ_FLAG_HIDDEN);
+			lv_obj_t* label = lv_obj_get_child(stop_btn, 0);
+			lv_label_set_text(label, "#000000 "LV_SYMBOL_STOP);
+			lv_obj_set_style_bg_color(stop_btn, lv_color_hex(0xEA0000), 0);
+			label = lv_obj_get_child(start_btn, 0);
+			lv_label_set_text(label, "#000000 "LV_SYMBOL_PAUSE);
+			lv_obj_set_style_bg_color(start_btn, lv_color_hex(0xF9F900), 0); //yellow
+		}
 	}
-	if (Msg_COMPARE("isStop", str))
+	else
 	{
+		lv_obj_add_flag(stop_btn, LV_OBJ_FLAG_HIDDEN);
 		lv_obj_t* label = lv_obj_get_child(start_btn, 0);
-		// start:ON
-		lv_label_set_text_fmt(label, "%s", "#000000 START");
+		lv_label_set_text(label, "#000000 "LV_SYMBOL_PLAY);
 		lv_obj_set_style_bg_color(start_btn, lv_color_hex(0x7CFC00), 0);
 	}
-	message_free(str);
+	if (flag.IsRunning)
+	{
+		uint8_t i = 0;
+		for (i = 0;i < 4;i++)
+		{
+			lv_obj_clear_flag(Task_Btn_Array[i], LV_OBJ_FLAG_CLICKABLE);
+			lv_obj_set_style_bg_color(Task_Btn_Array[i], lv_color_hex(0xADADAD), 0);
+		}
+	}
+	else
+	{
+		uint8_t i = 0;
+		for (i = 0;i < 4;i++)
+		{
+			lv_obj_add_flag(Task_Btn_Array[i], LV_OBJ_FLAG_CLICKABLE);
+			lv_obj_set_style_bg_color(Task_Btn_Array[i], lv_color_hex(0x2094f0), 0);
+		}
+	}
+
+	//if (flag.isPause && flag.IsRunning)
+	//{
+	//	lv_obj_t* label = lv_obj_get_child(start_btn, 0);
+	//	lv_label_set_text(label, LV_SYMBOL_PAUSE);
+	//	lv_obj_set_style_bg_color(start_btn, lv_color_hex(0xFF4500), 0);
+	//}
+	//if (flag.isPause == 0 && flag.IsRunning)
+	//{
+	//	lv_obj_t* label = lv_obj_get_child(start_btn, 0);
+	//	// start:ON
+	//	//lv_label_set_text_fmt(label, "%s", "#000000 START");
+	//	lv_label_set_text(label, "#000000 "LV_SYMBOL_PLAY);
+	//	lv_obj_set_style_bg_color(start_btn, lv_color_hex(0x7CFC00), 0);
+	//}
+	//if (Msg_COMPARE("isPause", str))
+	//{
+	//	lv_obj_t* label = lv_obj_get_child(stop_btn, 0);
+	//	// start:ON
+	//	//lv_label_set_text_fmt(label, "%s", "#000000 START");
+	//	lv_label_set_text(label, "#000000 "LV_SYMBOL_STOP);
+	//	lv_obj_set_style_bg_color(start_btn, lv_color_hex(0x7CFC00), 0);
+	//}
 }
 
 void UI_Page1_Msg_Refulsh()

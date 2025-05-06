@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-24 14:44:19
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
- * @LastEditTime: 2025-02-06 15:50:57
+ * @LastEditTime: 2025-04-25 10:02:49
  * @FilePath: \USERd:\workfile\项目3 vor\software\VOR_V2.0\implement\Slave_Vor_Ctrl.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -34,6 +34,7 @@ typedef struct
         pause
     } state;
     uint8_t RepPause;
+    uint8_t RepStop;
     uint16_t PauseCount;
     float pausePhase;
     uint32_t Tick;
@@ -48,21 +49,21 @@ Vor_Machine_parameter vor_para;
 #define Pi 3.1415926
 const uint16_t PauseStopCount = 500;
 
-int C610SpdCompensetion=500;
+int C610SpdCompensetion = 500;
 extern uint8_t HAL_CAM_SET_sign_led(void);
 
-void MotorSpeedSet(float sin_data,float factor)
+void MotorSpeedSet(float sin_data, float factor)
 {
     if (vor_para.ExMode == Ex_BOTH ||
         vor_para.ExMode == Ex_OKR)
-        Motor_Set_Speed(-vor_para.vel * sin_data*factor*(C610SpdCompensetion/500) );
+        Motor_Set_Speed(-vor_para.vel * sin_data * factor * (C610SpdCompensetion / 500));
     else if (vor_para.ExMode == Ex_BOTH_R)
-        Motor_Set_Speed(vor_para.vel * sin_data*factor*(C610SpdCompensetion/500) );
+        Motor_Set_Speed(vor_para.vel * sin_data * factor * (C610SpdCompensetion / 500));
     else
         Motor_Set_Speed(0);
 
     if (vor_para.ExMode != Ex_OKR)
-        tim_f_sin_set(angle_step * sin_data * vor_para.vel*factor);
+        tim_f_sin_set(angle_step * sin_data * vor_para.vel * factor);
     else
         tim_f_sin_set(0);
 }
@@ -71,6 +72,8 @@ uint8_t Slave_motor(void)
 {
     float time_max = 1000;
     float sin_data;
+    if (vor_para.RepStop)
+        return 1;
     if (vor_para.state == running)
     {
         uint32_t Phase_2Pi = 1000.0f / vor_para.freq;
@@ -79,12 +82,12 @@ uint8_t Slave_motor(void)
         {
             HAL_CAM_SET_sign_led();
         }
-        float factor =(vor_para.Tick >= 1000) ? 1.0f:vor_para.Tick / 1000.0f;
+        float factor = (vor_para.Tick >= 1000) ? 1.0f : vor_para.Tick / 1000.0f;
         factor = (factor > 1) ? 1 : factor;
         sin_data = sin(((float)2.0f * Pi * vor_para.freq * vor_para.Tick / 1000.0f));
         vor_para.CurrentCounter = vor_para.freq * vor_para.Tick / 1000.0f;
         vor_para.Tick++;
-        MotorSpeedSet(sin_data,factor); // motor speed set
+        MotorSpeedSet(sin_data, factor); // motor speed set
 
         if (vor_para.CurrentCounter >= vor_para.counterReq)
             return 1;                       // **finish
@@ -145,6 +148,7 @@ uint8_t VOR_Machine_Init(float freq, float vel, uint32_t count, uint8_t Exmode)
     vor_para.Tick = 0;
     vor_para.state = running;
     vor_para.RepPause = 0;
+    vor_para.RepStop = 0;
 #endif
     return 1;
 }
@@ -152,6 +156,7 @@ uint8_t VOR_Machine_Init(float freq, float vel, uint32_t count, uint8_t Exmode)
 uint8_t VOR_Machine_Stop(void)
 {
     vor_para.counterReq = vor_para.CurrentCounter + 1;
+    vor_para.RepStop = 1;
     return 1;
 }
 

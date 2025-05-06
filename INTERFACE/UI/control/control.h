@@ -21,7 +21,6 @@ extern "C"
 
 #define control_cb_array_size 10
 #define CmdCheck(in, ref) strncmp(in, ref, sizeof(ref) - 1)
-
 	typedef enum
 	{
 		ready,
@@ -29,14 +28,6 @@ extern "C"
 		runing,
 		end,
 	} task_runing;
-	//typedef enum
-	//{
-	//	CMD_add,
-	//	CMD_Move,
-	//	CMD_Del,
-	//	CMD_Set,
-	//} CMD_Enum;
-
 	typedef struct
 	{
 		union
@@ -51,10 +42,19 @@ extern "C"
 				uint8_t Exit : 1;
 				uint8_t VHIT_Next : 1;
 				uint8_t finish : 1;
-				uint8_t pause : 1;
+				uint8_t reqPause : 1;
+				uint8_t isPause : 1;
 				uint8_t powerUp : 2;
 			};
 		} State_Bit;
+		union
+		{
+			uint16_t flag;
+			struct
+			{
+				uint8_t H_init : 1;//hardware init
+			};
+		} State2_Bit;
 		struct
 		{
 			enum

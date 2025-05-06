@@ -138,14 +138,18 @@ uint8_t Ctrl_Read_Ack(uint8_t* msg, uint16_t msg_size,
 	if (Msg_COMPARE("ISCtrlInit", msg))
 	{
 		sprintf(src, "ISCtrlInit %d",
-			control_info.State_Bit.H_init);
+			control_info.State2_Bit.H_init);
 		return 0;
 	}
 
 	if (Msg_COMPARE("run_State?", msg))
 	{
-		uint8_t flag = control_info.State_Bit.IsRunning;
-		sprintf(src, (flag) ? "isStart" : "isStop");
+		if (SrcSize == sizeof(uint32_t))
+		{
+			uint16_t* flag = (uint16_t*)src;
+			flag[0] = control_info.State_Bit.flag;
+			flag[1] = control_info.UI_para.state;
+		}
 		return 0;
 	}
 	if (Msg_COMPARE("Msg?", msg))
@@ -318,13 +322,22 @@ uint8_t Maintain_Service_Read_ack(uint8_t* msg, uint16_t msg_size,
 		{
 		}
 	}
+	if (Msg_COMPARE("FACTORY Reset", msg))
+	{
+#ifdef STM32F40_41xxx
+		extern uint8_t Verify_Factory_Reset(void);
+		extern void RequestReset(void);
+		Verify_Factory_Reset();
+		RequestReset();
+#endif
+	}
 	if (Msg_COMPARE("DFU", msg))
 	{
 #ifdef STM32F40_41xxx
 		extern void RequestEnterDFU(void);
 		RequestEnterDFU();
 #endif
-}
+	}
 	if (Msg_COMPARE("CONFIG SAVE", msg))
 	{
 		Ctrl_Save_Config();
@@ -409,6 +422,11 @@ uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info* e, uint8_t LR)
 		{
 			Message_Center_Read_prinft("Ctrl", 0, 0,
 				"DFU");
+		}
+		if (Msg_COMPARE("FACTORY Reset", message))
+		{
+			Message_Center_Read_prinft("Ctrl", 0, 0,
+				"FACTORY Reset");
 		}
 	}
 	if (*last_Rk3588_Flag != *flag)
@@ -527,7 +545,7 @@ void controlfunction()
 	{
 		control_info.isExpired = Verify_Check_isExpired();
 	}
-	control_info.State_Bit.H_init = 1;
+	control_info.State2_Bit.H_init = 1;	//for ui sync
 	control_info.State_Bit.powerUp = 3;
 	while (1)
 	{
@@ -575,6 +593,7 @@ void controlfunction()
 		control_info.State_Bit.WaitRk = 0;
 		control_info.Rk3588_Flag.Rflag = 0;
 		control_info.Rk3588_Flag.Lflag = 0;
+
 #else
 		switch (control_info.Dev_Mode_Bit.UARTMODE)
 		{
@@ -585,9 +604,10 @@ void controlfunction()
 			control_info.Rk3588_Flag.Lflag = 0;
 			break;
 		case 1:
+			control_info.Rk3588_Flag.Lflag = 0;
 			break;
 		case 2:
-			control_info.Rk3588_Flag.Rflag = 0;
+			
 			break;
 		}
 		//		if (control_info.Dev_Mode_Bit.Rkmask)
