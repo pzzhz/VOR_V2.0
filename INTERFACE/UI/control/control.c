@@ -82,7 +82,8 @@ typedef enum
 	StartCmdNone,
 	StartCmdBegin,
 	StartCmdStop,
-	StartCmdPause
+	StartCmdPause,
+	StartCmdBeginLongPress
 } Start_Cmd_Type;
 Start_Cmd_Type Start_Stop_Flag = StartCmdNone;
 
@@ -589,10 +590,10 @@ void controlfunction()
 			}*/
 		}
 #ifndef STM32F40_41xxx
-		control_info.State_Bit.powerUp = 0;
+		/*control_info.State_Bit.powerUp = 0;
 		control_info.State_Bit.WaitRk = 0;
 		control_info.Rk3588_Flag.Rflag = 0;
-		control_info.Rk3588_Flag.Lflag = 0;
+		control_info.Rk3588_Flag.Lflag = 0;*/
 
 #else
 		switch (control_info.Dev_Mode_Bit.UARTMODE)

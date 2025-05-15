@@ -133,7 +133,7 @@ void UI_Page_Management_Init()
 	// value = 0;
 	create_custom_keyboard(lv_scr_act(), 1);
 #ifndef STM32F40_41xxx
-	value = 0;
+	//value = 0;
 #endif
 	switch (value)
 	{
