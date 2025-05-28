@@ -15,7 +15,7 @@ extern "C"
 {
 #endif
 
-    uint8_t CONT_Machine_Init(float vel, uint32_t MillSec);
+    uint8_t CONT_Machine_Init(float vel,float okr_vel, uint32_t MillSec);
     uint8_t Cont_Machine_Stop(void);
     uint8_t Cont_Machine_Pause(void);
     uint8_t Cont_Machine_Get_Count(uint32_t *MillSecReq, uint32_t *CurrentMillSec);

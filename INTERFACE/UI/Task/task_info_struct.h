@@ -41,6 +41,7 @@ extern "C"
     typedef struct {
         int Sec;
         float Vel;
+        float okr_Vel;
     }Task_Parameter_Continue;
     //OVAR
     typedef struct {

@@ -257,8 +257,10 @@ lv_obj_t* UI_Table_Create(Table_Contain_Property* table_Contain_Property, void* 
 	lv_memset_00(table_proprity, sizeof(Table_Property));
 
 	lv_obj_set_height(table, 50);
-	for (int k = 1; k < 4; k++)
-		lv_table_set_col_width(table, k, 90);
+	lv_table_set_col_width(table, 0, 90);
+	lv_table_set_col_width(table, 1, 90);
+	for (int k = 2; k < 4; k++)
+		lv_table_set_col_width(table, k, 110);
 	lv_obj_clear_flag(table, LV_OBJ_FLAG_SCROLLABLE);
 	lv_obj_set_style_radius(table, 10, NULL);
 	lv_style_init(&table_proprity->style);

@@ -132,6 +132,7 @@ void UI_Page_Management_Init()
 	Message_Center_Read_prinft("Ctrl", &value, sizeof(int), "isNeedSetup");
 	// value = 0;
 	create_custom_keyboard(lv_scr_act(), 1);
+	value = 0;
 #ifndef STM32F40_41xxx
 	//value = 0;
 #endif

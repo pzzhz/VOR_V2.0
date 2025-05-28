@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-16 09:37:35
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
- * @LastEditTime: 2024-09-21 14:26:29
+ * @LastEditTime: 2025-05-26 11:11:15
  * @FilePath: \USERd:\workfile\项目11 robomaster\software\01 code\ovor\template\c610\C610.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE10
  */
@@ -80,7 +80,7 @@ void Motor_Set_Speed(float speed)
 
 void Motor_Spd_Pid(void)
 {
-    if (isC610Online)
+    if (isC610Online==0)
         return;
     if (C610_Set_Speed == 0)
     {

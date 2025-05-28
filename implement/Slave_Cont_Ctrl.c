@@ -27,6 +27,7 @@ typedef struct
     } state;
     uint32_t Tick;
     float vel;
+		 float okr_vel;
     uint8_t ReqPause;
     // Task_Parameter_Struct info;
     int32_t accTimer;
@@ -38,7 +39,7 @@ Cont_Machine_parameter cont_para;
 
 
 extern void Motor_Set_Speed(float speed);
-
+extern int C610SpdCompensetion;
 void Cont_Back_init(float tragetPos, float sps, float accMs);
 
 static uint8_t motor_set(void)
@@ -51,6 +52,7 @@ static uint8_t motor_set(void)
         float factor = cont_para.accTimer / 1000.0f;
         factor = (factor > 1) ? 1 : factor;
         tim_f_sin_set(angle_step * cont_para.vel * factor);
+				Motor_Set_Speed(-cont_para.okr_vel * factor * (C610SpdCompensetion / 500));
         if (cont_para.Tick >= cont_para.MillSecReq || cont_para.ReqPause)
         {
             cont_para.state = back;
@@ -101,7 +103,7 @@ static uint8_t CONT_handler(void)
     return 0;
 }
 
-uint8_t CONT_Machine_Init(float vel, uint32_t MillSec)
+uint8_t CONT_Machine_Init(float vel,float okr_vel, uint32_t MillSec)
 {
 #if 0
     Slave1_Set_Machine_Cb(CONT_handler);
@@ -111,8 +113,10 @@ uint8_t CONT_Machine_Init(float vel, uint32_t MillSec)
 #else
     if (vel > 360 || vel < -360)
         return 0;
+		 if (okr_vel > 360 || okr_vel < -360)
+        return 0;
     cont_para.vel = vel;
-    cont_para.vel = vel;
+    cont_para.okr_vel = okr_vel;
     cont_para.MillSecReq = MillSec;
     Slave1_Step_Generator_Init(50000, 10);
     Slave1_Set_Machine_Cb(CONT_handler);

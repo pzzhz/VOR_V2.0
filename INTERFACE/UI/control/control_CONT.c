@@ -36,7 +36,7 @@ uint8_t HAL_Slave_CONT_Init(Task_Parameter_Struct *e)
 	Cont_info.time = ControlGetTick();
 	Cont_info.SetSec = e->CONT.Sec;
 #else
-	CONT_Machine_Init(e->CONT.Vel, e->CONT.Sec * 1000);
+	CONT_Machine_Init(e->CONT.Vel,e->CONT.okr_Vel, e->CONT.Sec * 1000);
 #endif // !STM32F40_41xxx
 
 	return 1;

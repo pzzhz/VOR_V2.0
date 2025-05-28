@@ -60,7 +60,8 @@ uint8_t HAL_Incline_Init(float angle, uint32_t time)
 {
 	inc_info.Setangle = angle;
 #ifdef STM32F40_41xxx
-	INC_Machine_Init(angle, 0);
+		extern uint8_t inc_dir_g;
+	INC_Machine_Init(angle, 0,inc_dir_g);
 
 #endif
 	return 1;
@@ -84,8 +85,9 @@ uint8_t HAL_Incline_Get_State(float* angle)
 
 uint8_t HAL_Incline_Fouces_Move(int8_t direction)
 {
+	extern uint8_t inc_dir_g;
 #ifdef STM32F40_41xxx
-	return INC_Machine_Manual_Ctrl(direction);
+	return INC_Machine_Manual_Ctrl(direction,inc_dir_g);
 #endif
 	return 0;
 }
@@ -210,7 +212,7 @@ void HAL_GET_SYSINFO(char* str)
 	sn[0] = *(uint32_t*)0x1FFF7A10;
 	sn[1] = *(uint32_t*)0x1FFF7A14;
 	sn[2] = *(uint32_t*)0x1FFF7A18;
-	sprintf(str, "V2.1.%d \tSN:%.8x", Version_NUMBER, sn[1]);
+	sprintf(str, "V2.1.%d TEST \tSN:%.8x", Version_NUMBER, sn[1]);
 	return;
 #endif
 	sprintf(str, "V2.1.%d \tSN:%.8x", Version_NUMBER, 0x550);

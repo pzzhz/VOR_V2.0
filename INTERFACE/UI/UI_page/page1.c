@@ -118,8 +118,9 @@ void Set_table_Cell_Text(lv_obj_t* obj, Task_Parameter_Struct* e)
 		else
 			lv_table_set_cell_value_fmt(obj, 0, 1, "%ds", e->CONT.Sec);
 		sprintf(strs, "%.0f°/s", e->CONT.Vel);
-		lv_table_set_cell_value_fmt(obj, 0, 2, "%s", strs);
-		lv_table_set_cell_value_fmt(obj, 0, 3, " ");
+		lv_table_set_cell_value_fmt(obj, 0, 2, "V%s", strs);
+		sprintf(strs, "%.0f°/s", e->CONT.okr_Vel);
+		lv_table_set_cell_value_fmt(obj, 0, 3, "O%s", strs);
 		break;
 	case Task_OVAR:
 		if (*item_property->ID == CurrentTask)
@@ -331,7 +332,7 @@ void UI_Task_Msg_Init(lv_obj_t* parent)
 
 	// 设置字体（例如使用内置的 Montserrat 字体，大小 24）
 	lv_style_set_text_font(&style, &lv_font_montserrat_28);
-	lv_obj_set_width(Msg_Label, 250);
+	lv_obj_set_width(Msg_Label, 350);
 	lv_label_set_long_mode(Msg_Label, LV_LABEL_LONG_WRAP);
 	// 将样式应用到标签
 	lv_obj_add_style(Msg_Label, &style, 0);

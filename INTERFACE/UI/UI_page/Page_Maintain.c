@@ -139,7 +139,7 @@ void UI_page_maintain_SYSINFO_hander(lv_event_t* e)
 	extern void UI_page_maintain_DEV_Menu_Init();
 	if (e->code != LV_EVENT_CLICKED && e->code != LV_EVENT_LONG_PRESSED)
 		return;
-#if 0
+#if 1
 	UI_page_maintain_DEV_Menu_Init();
 #else
 	lv_obj_t* btn = e->user_data;
@@ -278,8 +278,13 @@ void UI_page_maintain_COMBOX_init(lv_obj_t* parent, const char* text, const char
 	{
 		lv_obj_add_event_cb(combox, event_cb, LV_EVENT_VALUE_CHANGED, (void*)cmd);
 	}
-
 }
+
+void UI_page_maintain_label_init(lv_obj_t* parent, const char* text, const char* Items, lv_event_cb_t event_cb)
+{
+	
+}
+
 #include "../../UI/UI_Component/UI_SpinBox.h"
 void UI_page_maintain_Num_init(lv_obj_t* parent, const char* text, const char* Items, lv_event_cb_t event_cb, const char* cmd)
 {
