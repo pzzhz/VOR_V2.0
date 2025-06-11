@@ -24,7 +24,6 @@
 uint8_t ControlFunction(Task_Parameter_Struct* task, Task_control_info* e, control_cb_struct* cb)
 {
 	const int camWaitTime_s = 5;
-	e->UI_para.state = ready;
 	MYPRINTF("\r\n vor begin");
 	MYPRINTF("\r\n");
 	MYPRINTF("\r\n");
@@ -35,6 +34,7 @@ uint8_t ControlFunction(Task_Parameter_Struct* task, Task_control_info* e, contr
 		cb->stop == 0)
 		return 0;
 Pause_Resume:
+	e->UI_para.state = taskinit;
 	uint8_t CAM_State = HAL_CAM_REC_Set(1);
 	for (int i = 0; i < camWaitTime_s; i++)
 	{
@@ -63,6 +63,7 @@ Pause_Resume:
 		if (e->State_Bit.Exit) // for exit
 		{
 			Ctrl_Msg_Printf("%d:%s #A52A2A Terminated#", e->currentCount,cb->Name());
+			e->UI_para.state = taskTerminal;
 			cb->stop();
 		}
 		if (e->State_Bit.reqPause == 1)
@@ -71,11 +72,13 @@ Pause_Resume:
 			{
 				cb->pause(1);
 				Ctrl_Msg_Printf("%d:%s Pause", e->currentCount,cb->Name());
+				e->UI_para.state = taskPause;
 				Rk3588_Send_Pause;
 				HAL_CAM_REC_Set(1);
 			}
 			else if (machine_flag == Imp_paused)
 			{
+				//e->UI_para.state = taskruning;
 				goto Pause_Resume;
 			}
 			e->State_Bit.reqPause = 0;
@@ -95,6 +98,6 @@ Pause_Resume:
 		Ctrl_Msg_Printf("CAM ERROR");
 	}
 	/*--one sec for cam stop*/
-	e->UI_para.state = end;
+	e->UI_para.state = taskend;
 	return 0;
 }

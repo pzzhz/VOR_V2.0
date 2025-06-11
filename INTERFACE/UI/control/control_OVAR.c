@@ -140,6 +140,7 @@ static void motor_handle(Task_Parameter_Struct *task, Task_control_info *e)
 		if (e->State_Bit.Exit) // for exit
 		{
 			Ctrl_Msg_Printf("%d:OVAR #A52A2A Terminated#", e->currentCount+1);
+			e->UI_para.state = taskTerminal;
 			hal_Slave_OVAR_Stop();
 		}
 		if (e->State_Bit.reqPause)
@@ -149,6 +150,7 @@ static void motor_handle(Task_Parameter_Struct *task, Task_control_info *e)
 				e->State_Bit.isPause = 1;
 				HAL_Slave_OVAR_Pause(1);
 				HAL_CAM_REC_Set(1);
+				e->UI_para.state = taskPause;
                 Rk3588_Send_Pause;
 				Ctrl_Msg_Printf("%d:OVAR Pause", e->currentCount+1);
 				//				if (CamIsStop == 0)
@@ -158,6 +160,7 @@ static void motor_handle(Task_Parameter_Struct *task, Task_control_info *e)
 			else if (OVAR_flag == Imp_paused)
 			{
 				e->State_Bit.isPause = 0;
+				//e->UI_para.state = taskruning;
 				goto Pause_Resume;
 			}
 			e->State_Bit.reqPause = 0;
@@ -198,6 +201,6 @@ uint8_t OvarControlFunction(Task_Parameter_Struct *task,
 		Inc_handle(0);
 	Ctrl_Msg_Printf("OVAR end ");
 	MYPRINTF("\r\n ovar end");
-	e->UI_para.state = end;
+	e->UI_para.state = taskend;
 	return 0;
 }

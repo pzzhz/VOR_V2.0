@@ -38,7 +38,7 @@ uint8_t HAL_Slave_TC_Init(Task_Parameter_Struct* e)
 	tc_info.flag_pause = 0;
 #else
 	if (e->mode == Task_TC)
-		TC_Machine_Init(e->TC.Counter,e->TC.Vel);
+		TC_Machine_Init(e->TC.Counter, e->TC.Vel);
 #endif // !STM32F40_41xxx
 
 	return 1;
@@ -104,12 +104,12 @@ uint8_t HAL_Slave_TC_Get_State(uint32_t* remainingCount, uint32_t* parcent)
 uint8_t TcControlFunction(Task_Parameter_Struct* task, Task_control_info* e)
 {
 	const int camWaitTime_s = 5;
-	e->UI_para.state = ready;
 	MYPRINTF("\r\n vor begin");
 	MYPRINTF("\r\n");
 	// æ‰§è?Œéƒ¨åˆ?
 	MYPRINTF("\r\n");
 Pause_Resume:
+	e->UI_para.state = taskinit;
 	uint8_t CAM_State = HAL_CAM_REC_Set(1);
 	for (int i = 0; i < camWaitTime_s; i++)
 	{
@@ -132,12 +132,13 @@ Pause_Resume:
 		TC_machine_flag = HAL_Slave_TC_Get_State(&count, &parcent);
 		if (LastCount != count && TC_machine_flag == Imp_running)
 		{
-			Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount+1,"TC", parcent);
+			Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount + 1, "TC", parcent);
 			LastCount = count;
 		}
 		if (e->State_Bit.Exit) // for exit
 		{
-			Ctrl_Msg_Printf("%d:%s #A52A2A Terminated#", e->currentCount+1,"TC");
+			Ctrl_Msg_Printf("%d:%s #A52A2A Terminated#", e->currentCount + 1, "TC");
+			e->UI_para.state = taskTerminal;
 			HAL_Slave_TC_Stop();
 		}
 		if (e->State_Bit.reqPause == 1)
@@ -145,8 +146,9 @@ Pause_Resume:
 			if (TC_machine_flag == Imp_running)
 			{
 				HAL_Slave_TC_Pause(1);
-				Ctrl_Msg_Printf("%d:%s Pause", e->currentCount+1,"TC");
+				Ctrl_Msg_Printf("%d:%s Pause", e->currentCount + 1, "TC");
 				Rk3588_Send_Pause;
+				e->UI_para.state = taskPause;
 				e->State_Bit.isPause = 1;
 				// if (CamIsStop == 0)
 				// 	HAL_CAM_REC_Set(1);
@@ -156,6 +158,7 @@ Pause_Resume:
 			else if (TC_machine_flag == Imp_paused)
 			{
 				e->State_Bit.isPause = 0;
+				//e->UI_para.state = taskruning;
 				goto Pause_Resume;
 				//Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount,"TC", parcent);
 				//HAL_Slave_TC_Pause(0);
@@ -170,7 +173,7 @@ Pause_Resume:
 		MYPRINTF("\r");
 	}
 	if (e->State_Bit.Exit == 0)
-		Ctrl_Msg_Printf("%d:%s Done:100%%", e->currentCount+1,"TC");
+		Ctrl_Msg_Printf("%d:%s Done:100%%", e->currentCount + 1, "TC");
 	/*one sec for cam stop*/
 	SaftExitDelay(1000, 0);
 	if (CamIsStop == 0)
@@ -181,6 +184,6 @@ Pause_Resume:
 	}
 	/*--one sec for cam stop*/
 	MYPRINTF("\r\n vor end");
-	e->UI_para.state = end;
+	e->UI_para.state = taskend;
 	return 0;
 }

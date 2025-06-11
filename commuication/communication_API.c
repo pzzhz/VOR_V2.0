@@ -115,7 +115,7 @@ uint8_t HAL_BL_USART_INIT(void)
 		0);
 	usart_protocol_init(USART3_Send_Package);
 #else
-	//SerialPort_Init(usart_protocol_InterruptHandle, L"COM1");
+	SerialPort_Init(usart_protocol_InterruptHandle, L"COM1");
 	usart_protocol_init(SerialPort_SendBuf);
 #endif // STM32F40_41xxx
 

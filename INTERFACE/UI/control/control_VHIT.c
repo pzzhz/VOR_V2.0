@@ -123,12 +123,12 @@ uint8_t HAL_Slave_VHIT_Next()
 uint8_t VHITControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 {
 	const int camWaitTime_s = 5;
-	e->UI_para.state = ready;
 	MYPRINTF("\r\n vor begin");
 	MYPRINTF("\r\n");
 	// æ‰§è?Œéƒ¨åˆ?
 	MYPRINTF("\r\n");
 Pause_Resume:
+	e->UI_para.state = taskinit;
 	uint8_t CAM_State = HAL_CAM_REC_Set(1);
 	Message_Center_Send_prinft("page1", 0, 0, "VHIT_NEXT_INIT");
 	for (int i = 0; i < camWaitTime_s; i++)
@@ -164,6 +164,7 @@ Pause_Resume:
 		}
 		if (e->State_Bit.Exit) // for exit
 		{
+			e->UI_para.state = taskTerminal;
 			Ctrl_Msg_Printf("%d:%s #A52A2A Terminated#", e->currentCount+1, ModeName);
 			HAL_Slave_VHIT_Stop();
 		}
@@ -206,6 +207,6 @@ Pause_Resume:
 	Message_Center_Send_prinft("page1", 0, 0, "VHIT_NEXT_DEINIT");
 	/*--one sec for cam stop*/
 	MYPRINTF("\r\n vor end");
-	e->UI_para.state = end;
+	e->UI_para.state = taskend;
 	return 0;
 }

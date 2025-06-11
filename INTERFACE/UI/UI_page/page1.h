@@ -25,7 +25,7 @@ extern "C"
 			struct
 			{
 				uint8_t H_init : 1;//hardware init
-				uint8_t Init : 1;
+				uint8_t isRun : 1;
 				uint8_t WaitRk : 1;
 				uint8_t IsRunning : 1;
 				uint8_t Exit : 1;

@@ -111,12 +111,12 @@ const char *ModeStr(Task_Parameter_Struct *task)
 uint8_t VorControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 {
 	const int camWaitTime_s = 5;
-	e->UI_para.state = ready;
 	MYPRINTF("\r\n vor begin");
 	MYPRINTF("\r\n");
 	// æ‰§è?Œéƒ¨åˆ?
 	MYPRINTF("\r\n");
 	Pause_Resume:
+	e->UI_para.state = taskinit;
 	uint8_t CAM_State = HAL_CAM_REC_Set(1);
 	for (int i = 0; i < camWaitTime_s; i++)
 	{
@@ -145,6 +145,7 @@ uint8_t VorControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 		{
 			Ctrl_Msg_Printf("%d:%s #A52A2A Terminated#", e->currentCount + 1, ModeStr(task));
 			e->State_Bit.isPause = 0;
+			e->UI_para.state = taskTerminal;
 			HAL_Slave_VOR_Stop();
 		}
 		if (e->State_Bit.reqPause == 1)
@@ -156,6 +157,7 @@ uint8_t VorControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 				Ctrl_Msg_Printf("%d:%s Pause", e->currentCount + 1, ModeStr(task));
 				e->State_Bit.isPause = 1;
                 Rk3588_Send_Pause;
+				e->UI_para.state = taskPause;
 				// if (CamIsStop == 0)
 				// 	HAL_CAM_REC_Set(1);
 				// CamIsStop = 1;
@@ -163,6 +165,7 @@ uint8_t VorControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 			}
 			else if (VOR_machine_flag == Imp_paused)
 			{
+				//e->UI_para.state = taskruning;
 				e->State_Bit.isPause = 0;
 				goto Pause_Resume;
 				//Ctrl_Msg_Printf("%d:%s Done:%d%%", e->currentCount, ModeStr(task), parcent);
@@ -188,6 +191,6 @@ uint8_t VorControlFunction(Task_Parameter_Struct *task, Task_control_info *e)
 	}
 	/*--one sec for cam stop*/
 	MYPRINTF("\r\n vor end");
-	e->UI_para.state = end;
+	e->UI_para.state = taskend;
 	return 0;
 }

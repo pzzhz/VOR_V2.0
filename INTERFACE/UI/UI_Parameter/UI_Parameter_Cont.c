@@ -198,3 +198,14 @@ static uint8_t UI_Get(Task_Parameter_Struct* e)
 
 	return 1;
 }
+
+uint8_t Cont_exam_Para_Check(Task_Parameter_Struct* e)
+{
+	if (e->CONT.Sec > 1000 && e->CONT.Sec != 0)
+		return 0;
+	if (e->CONT.okr_Vel > 360 || e->CONT.okr_Vel < -360)
+		return 0;
+	if (e->CONT.Vel > 360 || e->CONT.Vel < -360)
+		return 0;
+	return 1;
+}

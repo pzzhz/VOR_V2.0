@@ -97,7 +97,7 @@ void Serial_Thread(LPCWSTR comname)
             while (bytesRead--)
             {
                 uint32_t hex = dataReceived[count];
-                OutputDebugPrintf("_%02X", hex);
+                OutputDebugPrintf("%c", hex);
                 if (Handle_cb)
                     Handle_cb(dataReceived[count++]);
                 Sleep(1);

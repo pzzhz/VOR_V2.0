@@ -166,7 +166,7 @@ uint8_t Task_control_Begin(Task_control_info* e)
 		return 0;
 	e->taskArray = TaskArray;
 	e->State_Bit.flag = 0;
-	e->State_Bit.Init = 1;
+	e->State_Bit.isRun = 1;
 	return 1;
 }
 
@@ -197,18 +197,18 @@ void Task_control_handler(Task_control_info* e)
 	if (e == 0)
 		return;
 	control = e;
-	e->State_Bit.Init = 1;
-	e->State_Bit.Init = 0;
+	e->State_Bit.isRun = 0;
 	e->State_Bit.WaitRk = 0;
 	Ctrl_Msg_Printf(" ");
 	ZEROControlFunction(1);
 	// uint16_t len = 0;
 BEGIN_POS:
 	// get all task need to implement
-	e->State_Bit.Init=0;
+	e->State_Bit.isRun=0;
+	e->State_Bit.IsRunning = 0;
 	while (1)
 	{
-		if (e->State_Bit.Init == 1)
+		if (e->State_Bit.isRun == 1)
 		{
 			e->State_Bit.flag = 0;
 			e->Error_Bit.flag = 0;
@@ -232,6 +232,7 @@ BEGIN_POS:
 	{
 		Task_Parameter_Struct* task = &e->taskArray[i];
 		e->currentCount = i;
+		e->UI_para.state = taskInv;
 		task_interval_handle(i);
 		uint8_t isretract = 1;
 		switch (task->mode)

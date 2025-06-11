@@ -23,9 +23,9 @@
 #else
 typedef uint32_t TaskHandle_t;
 #endif
-void thread_create(void *function, Task_control_info *e, TaskHandle_t *control_thread, uint16_t sizeofstack);
+void thread_create(void* function, Task_control_info* e, TaskHandle_t* control_thread, uint16_t sizeofstack);
 TaskHandle_t task_ctrl_thread, contrl_thread;
-Task_control_info control_info = {0};
+Task_control_info control_info = { 0 };
 uint8_t inc_dir_g;
 
 #if 0
@@ -96,8 +96,8 @@ uint8_t Ctrl_Get_Strat_Cmd()
 	return cmd;
 }
 
-uint8_t Ctrl_Msg_Printf(const char *format,
-						...)
+uint8_t Ctrl_Msg_Printf(const char* format,
+	...)
 {
 	va_list args;
 	va_start(args, format);
@@ -109,8 +109,8 @@ uint8_t Ctrl_Msg_Printf(const char *format,
 uint8_t Ctrl_Save_Config()
 {
 	HAL_CONFIG_WRITE(0,
-					 (uint8_t *)&control_info.Dev_Mode_Bit.flag,
-					 sizeof(control_info.Dev_Mode_Bit.flag));
+		(uint8_t*)&control_info.Dev_Mode_Bit.flag,
+		sizeof(control_info.Dev_Mode_Bit.flag));
 }
 
 uint8_t Ctrl_Resume_Config()
@@ -120,41 +120,93 @@ uint8_t Ctrl_Resume_Config()
 	if (res != 0)
 	{
 		memcpy(&control_info.Dev_Mode_Bit.flag,
-			   buff,
-			   sizeof(control_info.Dev_Mode_Bit.flag));
+			buff,
+			sizeof(control_info.Dev_Mode_Bit.flag));
 	}
 
-	control_info.Dev_Mode_Bit.C610 = 1;
+	control_info.Dev_Mode_Bit.C610 = 0;
 	// control_info.Dev_Mode_Bit.Inc_DIR = 0;
 	control_info.Dev_Mode_Bit.UARTMODE = 0;
 	// inc_dir_g = 1;
 }
 
+char* GetRunState()
+{
+	static const char st_msg[][10] = { "init","ready","pre","run","terminal","pause" };
+	if (control_info.State_Bit.H_init)
+	{
+		return "init";//init
+	}
+	if (control_info.State_Bit.IsRunning)
+	{
+		switch (control_info.UI_para.state)
+		{
+		case taskInv:
+			return "inv";
+		case taskinit:
+			return "pre";
+		case taskruning:
+			return "run";
+		case taskTerminal:
+			return "terminal";
+		case taskPause:
+			return "pause";
+		case taskend:
+			return "finish";
+		default:
+			break;
+		}
+	}
+	else
+	{
+		return "ready";
+	}
+
+}
+
 // return 0 ->ok
-uint8_t Ctrl_Read_Ack(uint8_t *msg, uint16_t msg_size,
-					  uint8_t *src, uint16_t SrcSize)
+uint8_t Ctrl_Read_Ack(uint8_t* msg, uint16_t msg_size,
+	uint8_t* src, uint16_t SrcSize)
 {
 	if (Msg_COMPARE("ReqReadState", msg))
 	{
 		sprintf(src, "ReadState %d %d",
-				control_info.State_Bit.IsRunning, control_info.currentCount);
+			control_info.State_Bit.IsRunning, control_info.currentCount);
+		return 0;
+	}
+	if (Msg_COMPARE("GetRunInfo", msg))
+	{
+		sprintf(src, "RunInfo  %s %d",
+			GetRunState(),control_info.currentCount+1);
+		return 0;
+	}
+	if (Msg_COMPARE("ReqTaskMsg", msg))
+	{
+		sprintf(src, "TaskMsg %s",
+			control_info.message);
 		return 0;
 	}
 	if (Msg_COMPARE("ISCtrlInit", msg))
 	{
 		sprintf(src, "ISCtrlInit %d",
-				control_info.State2_Bit.H_init);
+			control_info.State2_Bit.H_init);
 		return 0;
 	}
-
 	if (Msg_COMPARE("run_State?", msg))
 	{
 		if (SrcSize == sizeof(uint32_t))
 		{
-			uint16_t *flag = (uint16_t *)src;
+			uint16_t* flag = (uint16_t*)src;
 			flag[0] = control_info.State_Bit.flag;
 			flag[1] = control_info.UI_para.state;
 		}
+		return 0;
+	}
+	if (Msg_COMPARE("H_run_State", msg))
+	{
+
+		sprintf(src, "H_run_State %d",
+			control_info.State_Bit);
 		return 0;
 	}
 	if (Msg_COMPARE("Msg?", msg))
@@ -170,7 +222,7 @@ uint8_t Ctrl_Read_Ack(uint8_t *msg, uint16_t msg_size,
 	{
 		if (SrcSize == sizeof(int))
 		{
-			int *value = (int *)src;
+			int* value = (int*)src;
 			if (value != 0)
 			{
 				if (Verify_Check_isExpired())
@@ -185,7 +237,7 @@ uint8_t Ctrl_Read_Ack(uint8_t *msg, uint16_t msg_size,
 	{
 		if (SrcSize == sizeof(timetyped))
 		{
-			timetyped *t = (timetyped *)src;
+			timetyped* t = (timetyped*)src;
 			uint8_t res = Verify_get_license_Date(t);
 		}
 	}
@@ -194,15 +246,15 @@ uint8_t Ctrl_Read_Ack(uint8_t *msg, uint16_t msg_size,
 		if (SrcSize == sizeof(timetyped) &&
 			src != 0)
 		{
-			HAL_TIME_Get((timetyped *)src);
+			HAL_TIME_Get((timetyped*)src);
 		}
 	}
 
 	return 1;
 }
 
-uint8_t Ctrl_Write_Ack(uint8_t *msg, uint16_t msg_size,
-					   uint8_t *src, uint16_t SrcSize)
+uint8_t Ctrl_Write_Ack(uint8_t* msg, uint16_t msg_size,
+	uint8_t* src, uint16_t SrcSize)
 {
 	if (Msg_COMPARE("ReqShift", msg))
 	{
@@ -225,9 +277,9 @@ uint8_t Ctrl_Write_Ack(uint8_t *msg, uint16_t msg_size,
 		if (SrcSize == sizeof(timetyped) &&
 			src != 0)
 		{
-			timetyped *t;
-			t = (timetyped *)src;
-			Verify_Set_Time((void *)t);
+			timetyped* t;
+			t = (timetyped*)src;
+			Verify_Set_Time((void*)t);
 		}
 	}
 	if (Msg_COMPARE("SetVaildTime", msg))
@@ -236,15 +288,15 @@ uint8_t Ctrl_Write_Ack(uint8_t *msg, uint16_t msg_size,
 		if (SrcSize == sizeof(uint8_t) &&
 			src != 0)
 		{
-			uint8_t *month = src;
+			uint8_t* month = src;
 			Verify_Set_Subscribe(*month);
 		}
 	}
 	return 0;
 }
 
-uint8_t Maintain_Service_Read_ack(uint8_t *msg, uint16_t msg_size,
-								  uint8_t *src, uint16_t SrcSize)
+uint8_t Maintain_Service_Read_ack(uint8_t* msg, uint16_t msg_size,
+	uint8_t* src, uint16_t SrcSize)
 {
 	if (Msg_COMPARE("Camere LED", msg))
 	{
@@ -297,7 +349,7 @@ uint8_t Maintain_Service_Read_ack(uint8_t *msg, uint16_t msg_size,
 			if (value >= 0 && value <= 1)
 				control_info.Dev_Mode_Bit.LoopTest = value;
 		}
-		int *Returnvalue = (int *)src;
+		int* Returnvalue = (int*)src;
 		*Returnvalue = control_info.Dev_Mode_Bit.LoopTest;
 		return 0;
 	}
@@ -311,20 +363,20 @@ uint8_t Maintain_Service_Read_ack(uint8_t *msg, uint16_t msg_size,
 		}
 		if (src != 0)
 		{
-			int *Returnvalue = (int *)src;
+			int* Returnvalue = (int*)src;
 			*Returnvalue = control_info.Dev_Mode_Bit.UARTMODE;
 		}
 		return 0;
 	}
 	if (Msg_COMPARE("DEV TIME ", msg))
 	{
-		int value[6] = {0};
+		int value[6] = { 0 };
 		int res = sscanf(msg, "DEV TIME %d/%d/%d/%d/%d/%d", &value[0], &value[1], &value[2],
-						 &value[3], &value[4], &value[5]);
+			&value[3], &value[4], &value[5]);
 		if (res == 6)
 		{
 		}
-	}
+}
 	if (Msg_COMPARE("FACTORY Reset", msg))
 	{
 #ifdef STM32F40_41xxx
@@ -349,11 +401,11 @@ uint8_t Maintain_Service_Read_ack(uint8_t *msg, uint16_t msg_size,
 	{
 #ifdef STM32F40_41xxx
 		extern int C610SpdCompensetion;
-		uint64_t *num = (uint64_t *)src;
+		uint64_t* num = (uint64_t*)src;
 		*num = (uint64_t)&C610SpdCompensetion;
 #else
 		static int C610SpdCompensetion = 500;
-		uint64_t *num = (uint64_t *)src;
+		uint64_t* num = (uint64_t*)src;
 		*num = (uint64_t)&C610SpdCompensetion;
 
 #endif
@@ -361,7 +413,7 @@ uint8_t Maintain_Service_Read_ack(uint8_t *msg, uint16_t msg_size,
 	if (Msg_COMPARE("DEV C610 CONFIG", msg))
 	{
 		int ison = 0;
-		uint32_t *num = (uint32_t *)src;
+		uint32_t* num = (uint32_t*)src;
 
 		int res = sscanf(msg, "DEV C610 CONFIG %d", &ison);
 		if (res == 1)
@@ -387,14 +439,14 @@ uint8_t ctrlWaitRk3588()
 	return 0;
 }
 
-uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info *e, uint8_t LR)
+uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info* e, uint8_t LR)
 {
 	const uint16_t Rk_Ack_Expiration = 200; // 2000ms
 	static uint16_t Rk_Ack_CountL, Rk_Ack_CountR;
 	static uint8_t last_Rk3588_FlagL, last_Rk3588_FlagR;
-	uint16_t *Rk_Ack_Count = (LR) ? &Rk_Ack_CountL : &Rk_Ack_CountR;
-	uint8_t *last_Rk3588_Flag = (LR) ? &last_Rk3588_FlagL : &last_Rk3588_FlagR;
-	uint8_t *flag = (LR) ? &e->Rk3588_Flag.Lflag : &e->Rk3588_Flag.Rflag;
+	uint16_t* Rk_Ack_Count = (LR) ? &Rk_Ack_CountL : &Rk_Ack_CountR;
+	uint8_t* last_Rk3588_Flag = (LR) ? &last_Rk3588_FlagL : &last_Rk3588_FlagR;
+	uint8_t* flag = (LR) ? &e->Rk3588_Flag.Lflag : &e->Rk3588_Flag.Rflag;
 	static char message[50];
 	uint8_t res = (LR) ? Hal_Rk3588_Readarray(message) : Hal_Rk3588_L_Readarray(message);
 	if (res == 1)
@@ -424,12 +476,12 @@ uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info *e, uint8_t LR)
 		if (Msg_COMPARE("DFU", message))
 		{
 			Message_Center_Read_prinft("Ctrl", 0, 0,
-									   "DFU");
+				"DFU");
 		}
 		if (Msg_COMPARE("FACTORY Reset", message))
 		{
 			Message_Center_Read_prinft("Ctrl", 0, 0,
-									   "FACTORY Reset");
+				"FACTORY Reset");
 		}
 	}
 	if (*last_Rk3588_Flag != *flag)
@@ -484,11 +536,11 @@ uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info *e, uint8_t LR)
 	*last_Rk3588_Flag = *flag;
 }
 
-void Ctrl_info_Indicator(Task_control_info *e)
+void Ctrl_info_Indicator(Task_control_info* e)
 {
 	static int16_t count;
 	static uint8_t IntCount;
-	const char dot[3][4] = {".", "..", "..."};
+	const char dot[3][4] = { ".", "..", "..." };
 	count++;
 	if (count < 100)
 		return;
@@ -504,8 +556,8 @@ void Ctrl_info_Indicator(Task_control_info *e)
 	}
 	IntCount = (IntCount >= 2) ? 0 : IntCount + 1;
 }
-void Ctrl_Vhit_Ack(uint8_t *msg, uint16_t msg_size,
-				   uint8_t *src, uint16_t SrcSize)
+void Ctrl_Vhit_Ack(uint8_t* msg, uint16_t msg_size,
+	uint8_t* src, uint16_t SrcSize)
 {
 	if (Msg_COMPARE("VHIT_Next_CMD", msg))
 	{
@@ -555,7 +607,7 @@ void controlfunction()
 		Rk3588_Ack_Cmd_Handle(&control_info, 0);
 		Rk3588_Ack_Cmd_Handle(&control_info, 1); //(L) pc using com 1 stm32 using uart1
 		Ctrl_info_Indicator(&control_info);
-		if (control_info.State_Bit.Init == 0)
+		if (control_info.State_Bit.isRun == 0)
 		{
 			Startflag = Ctrl_Get_Strat_Cmd();
 			if (control_info.State_Bit.WaitRk == 0 &&
@@ -612,7 +664,7 @@ void controlfunction()
 		case 2:
 
 			break;
-		}
+			}
 		//		if (control_info.Dev_Mode_Bit.Rkmask)
 		//		{
 		//			control_info.State_Bit.powerUp = 0;
@@ -628,26 +680,26 @@ void controlfunction()
 	}
 }
 
-void thread_create(void *function, Task_control_info *e, TaskHandle_t *control_thread, uint16_t sizeofstack)
+void thread_create(void* function, Task_control_info* e, TaskHandle_t* control_thread, uint16_t sizeofstack)
 {
 #ifndef STM32F40_41xxx
 	HANDLE hThread;
 	DWORD dwThreadId;
 	hThread = CreateThread(NULL,
-						   0,
-						   function,
-						   e,
-						   0,
-						   &dwThreadId);
+		0,
+		function,
+		e,
+		0,
+		&dwThreadId);
 #else
 	//	static TaskHandle_t control_thread;
 	volatile BaseType_t res =
 		xTaskCreate((TaskFunction_t)function,
-					(const char *)"Outside_motor",
-					(uint16_t)sizeofstack,
-					(void *)e,
-					(UBaseType_t)2,
-					(TaskHandle_t *)&control_thread);
+			(const char*)"Outside_motor",
+			(uint16_t)sizeofstack,
+			(void*)e,
+			(UBaseType_t)2,
+			(TaskHandle_t*)&control_thread);
 #endif
 }
 

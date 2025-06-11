@@ -24,6 +24,7 @@ typedef struct
         error,
         manual
     } state;
+		 int8_t manual_Dir_last;
     int8_t manual_dir;
     uint8_t inc_dir;
     uint32_t Tick;
@@ -125,8 +126,9 @@ uint8_t Inc_ctrl(void)
 			}
         inc_para.Tick++;
         INC_IO_Set(io_cmd);
-        if (inc_para.Tick > 200)
+        if (inc_para.Tick > 2000||io_cmd!=inc_para.manual_Dir_last)
         {
+					inc_para.manual_Dir_last=io_cmd;
             exit_flag = 1;
             // inc_para.state = end;
         }

@@ -23,10 +23,12 @@ extern "C"
 #define CmdCheck(in, ref) strncmp(in, ref, sizeof(ref) - 1)
 	typedef enum
 	{
-		ready,
+		taskinit,
 		taskruning,
-		runing,
-		end,
+		taskPause,
+		taskTerminal,
+		taskend,
+		taskInv,
 	} task_runing;
 	typedef struct
 	{
@@ -36,9 +38,9 @@ extern "C"
 			struct
 			{
 				uint8_t H_init:1;//hardware init
-				uint8_t Init : 1;
+				uint8_t isRun : 1;	//trager
 				uint8_t WaitRk : 1;
-				uint8_t IsRunning : 1;
+				uint8_t IsRunning : 1;	//flag
 				uint8_t Exit : 1;
 				uint8_t VHIT_Next : 1;
 				uint8_t finish : 1;
@@ -101,7 +103,7 @@ extern "C"
 		Task_Parameter_Struct* taskArray;
 		uint16_t taskCount;
 		uint16_t currentCount;
-		uint16_t taskRemainSec;
+		uint16_t taskParcentage;
 		uint8_t isExpired;
 	} Task_control_info;
 	void controlInit(void);
