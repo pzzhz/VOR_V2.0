@@ -17,6 +17,7 @@
 #include "version.h"
 
 #ifdef STM32F40_41xxx
+
 #include "../implement/Slave_Vor_Ctrl.h"
 #include "../implement/Slave_Inc_Ctrl.h"
 #include "../HARDWARE/CAN/can.h"
@@ -60,8 +61,8 @@ uint8_t HAL_Incline_Init(float angle, uint32_t time)
 {
 	inc_info.Setangle = angle;
 #ifdef STM32F40_41xxx
-		extern uint8_t inc_dir_g;
-	INC_Machine_Init(angle, 0,inc_dir_g);
+	extern uint8_t inc_dir_g;
+	INC_Machine_Init(angle, 0, inc_dir_g);
 
 #endif
 	return 1;
@@ -87,7 +88,7 @@ uint8_t HAL_Incline_Fouces_Move(int8_t direction)
 {
 	extern uint8_t inc_dir_g;
 #ifdef STM32F40_41xxx
-	return INC_Machine_Manual_Ctrl(direction,inc_dir_g);
+	return INC_Machine_Manual_Ctrl(direction, inc_dir_g);
 #endif
 	return 0;
 }
@@ -198,6 +199,26 @@ uint8_t HAL_IMU_GET_Angle(float* angle)
 	if (angle != 0)
 	{
 		*angle = 1.335f;
+	}
+#endif
+
+	return 1;
+}
+
+uint8_t HAL_Encode_GET_angle(float* angle)
+{
+#ifdef STM32F40_41xxx
+	extern     float Slave1_Get_Encode_Angle_real(void);
+	if (angle != 0)
+	{
+		*angle =  Slave1_Get_Encode_Angle_real();
+	}
+#else
+	static float anglex;
+	if (angle != 0)
+	{
+		anglex += 5.0f;
+		*angle = anglex;
 	}
 #endif
 
@@ -499,7 +520,7 @@ int HAL_CONFIG_READ(uint8_t ID, uint8_t* buffer, uint32_t size)
 				memcpy(buffer, &BKSbuf[2], readcount);
 			}
 		}
-}
+	}
 	return res;
 #endif
 }
@@ -550,9 +571,9 @@ uint8_t HAL_CONFIG_WRITE(uint8_t ID, uint8_t* buffer, uint32_t size)
 	// first id len [...] crc
 	if (size < 50)
 	{
-		if(size==0)
+		if (size == 0)
 		{
-			memset(&buf[0],0,5);
+			memset(&buf[0], 0, 5);
 			return 0;
 		}
 		memcpy(&buf[2], buffer, size);
@@ -562,7 +583,7 @@ uint8_t HAL_CONFIG_WRITE(uint8_t ID, uint8_t* buffer, uint32_t size)
 		buf_end = size + 2;
 		buf[buf_end] = crcValue >> 8;
 		buf[buf_end + 1] = crcValue & 0xff;
-}
+	}
 	return res;
 #endif
 }

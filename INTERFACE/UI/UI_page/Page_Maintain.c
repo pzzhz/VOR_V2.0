@@ -73,18 +73,18 @@ static lv_obj_t* create_switch(lv_obj_t* parent,
 		"Camere Vol %d", VolSet) == 0)
 	{
 		state = 0;
-		if (strncmp(msg, "Fail", 4) == 0)
+		if (strlen(msg) > 0)
 		{
-			state = 2;
+			state = 1;
 		}
 	}
-	if (state != 0)
+	if (state == 1)
 	{
-		/*lv_obj_t* mbox1 = lv_msgbox_create(NULL, "error message",
+		lv_obj_t* mbox1 = lv_msgbox_create(NULL, "error message",
 			(state == 1) ? "CMD FAIL" : (state == 2) ? "CAN connect FAIL"
 			: "Reserved",
 			0, true);
-		lv_obj_center(mbox1);*/
+		lv_obj_center(mbox1);
 	}
 }
 
@@ -282,7 +282,7 @@ void UI_page_maintain_COMBOX_init(lv_obj_t* parent, const char* text, const char
 
 void UI_page_maintain_label_init(lv_obj_t* parent, const char* text, const char* Items, lv_event_cb_t event_cb)
 {
-	
+
 }
 
 #include "../../UI/UI_Component/UI_SpinBox.h"
@@ -345,6 +345,55 @@ void UI_page_maintain_DFU_btn_handle(lv_event_t* e)
 	}
 }
 
+void UI_page_maintain_Uart_Test_btn_handle(lv_event_t* e)
+{
+	uint32_t res = 0;
+	const char displayLabel[][5] = { "N|N","N|P","P|N","P|P", };//0 nn 01 np 10 pn 11 pp 
+	if (e->code == LV_EVENT_CLICKED)
+	{
+		Message_Center_Read_prinft("Ctrl", &res, sizeof(res),
+			"UART Test");
+		lv_obj_t* parent = (lv_obj_t*)e->user_data;
+		if (parent != 0)
+		{
+			lv_obj_t* label = lv_obj_get_child(parent, 0);
+			if (res >= 4)
+				res = 0;
+			lv_label_set_text_fmt(label, "UART TEST %s", displayLabel[res]);
+		}
+	}
+}
+
+void Encode_reflush_Timer(lv_timer_t* e)
+{
+	int32_t res = 0;
+	Message_Center_Read_prinft("Ctrl", &res, sizeof(res),
+		"ENCODE Test");
+	lv_obj_t* parent = (lv_obj_t*)e->user_data;
+	if (parent != 0)
+	{
+		lv_obj_t* label = lv_obj_get_child(parent, 0);
+		lv_label_set_text_fmt(label, "ENCODE T %d", res);
+	}
+}
+
+void UI_page_maintain_Encoder_btn_handle(lv_event_t* e)
+{
+	static lv_timer_t* timer;
+
+	//const char displayLabel[][5] = { "N|N","N|P","P|N","P|P", };//0 nn 01 np 10 pn 11 pp 
+	if (e->code == LV_EVENT_CLICKED)
+	{
+		if (timer == 0)
+			timer = lv_timer_create(Encode_reflush_Timer, 100, e->user_data);
+	}
+	if (e->code == LV_EVENT_DELETE)
+	{
+		lv_timer_del(timer);
+		timer = 0;
+	}
+}
+
 void UI_page_maintain_license_btn_handle(lv_event_t* e)
 {
 	if (e->code == LV_EVENT_CLICKED)
@@ -400,10 +449,14 @@ void UI_page_maintain_DEV_Menu_Init()
 	UI_page_maintain_Sw_init(obj, "C610", UI_page_maintain_C610_hander, "C610 CONFIG");
 	UI_page_maintain_COMBOX_init(obj, "UART", "DISABLE\nUART1\nBoth", UI_page_maintain_UART_hander, "UART CONFIG");
 	lv_obj_t* btn = lv_list_add_btn(obj, 0, "DFU");
+	lv_obj_t* btn_Encode_TEST = lv_list_add_btn(obj, 0, "ENCODE");
+	lv_obj_t* btn_UART_TEST = lv_list_add_btn(obj, 0, "UART TEST");
 	lv_obj_t* btn_display_license = lv_list_add_btn(obj, 0, "license");
 	lv_obj_t* btn_Factory_Reset = lv_list_add_btn(obj, 0, "Factory Reset");
 	UI_page_maintain_Num_init(obj, "sec", "sss", NULL, "c");
 	lv_obj_add_event_cb(btn, UI_page_maintain_DFU_btn_handle, LV_EVENT_CLICKED, btn);
+	lv_obj_add_event_cb(btn_UART_TEST, UI_page_maintain_Uart_Test_btn_handle, LV_EVENT_CLICKED, btn_UART_TEST);
+	lv_obj_add_event_cb(btn_Encode_TEST, UI_page_maintain_Encoder_btn_handle, LV_EVENT_ALL, btn_Encode_TEST);
 	lv_obj_add_event_cb(btn_display_license, UI_page_maintain_license_btn_handle, LV_EVENT_CLICKED, btn);
 	lv_obj_add_event_cb(btn_Factory_Reset, UI_page_maintain_Factory_Reset_btn_handle, LV_EVENT_CLICKED, 0);
 	lv_obj_add_event_cb(obj, UI_page_maintain_MsgBox_close, LV_EVENT_DELETE, 0);

@@ -2,7 +2,7 @@
  * @Author: pzzhh2 101804901+Pzzhh@users.noreply.github.com.
  * @Date: 2024-07-16 09:37:35
  * @LastEditors: pzzhh2 101804901+Pzzhh@users.noreply.github.com
- * @LastEditTime: 2025-05-26 11:11:15
+ * @LastEditTime: 2025-06-20 14:19:06
  * @FilePath: \USERd:\workfile\项目11 robomaster\software\01 code\ovor\template\c610\C610.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE10
  */
@@ -35,6 +35,12 @@ void C610_Current_Cmd(C610_Current_Ctrl buf)
 {
     can_send_msg(0x200, (uint8_t *)&buf, 8);
     // can_tx_msg(0x200, 0, 0, 8, (uint8_t *)&buf);
+}
+
+void C610_Updata_Info(int16_t t_rpm, int16_t m_rpm, int16_t m_current, int16_t m_pwm)
+{
+    uint16_t buf[4] = {t_rpm, m_rpm, m_current, m_pwm};
+    can_send_msg(0x500, (uint8_t *)&buf, 8);
 }
 
 void C610_Current_Cmd2(int16_t a, int16_t b, int16_t c, int16_t d)
@@ -80,7 +86,7 @@ void Motor_Set_Speed(float speed)
 
 void Motor_Spd_Pid(void)
 {
-    if (isC610Online==0)
+    if (isC610Online == 0)
         return;
     if (C610_Set_Speed == 0)
     {
@@ -91,6 +97,10 @@ void Motor_Spd_Pid(void)
     float C610_Speed = -(C610_Set_Speed) * (60.0f * 36.0f) / (-65);
     pwm = C610_PID_CAL(&rotate.pid[0], &motor_chassis[0], C610_Speed);
     C610_Current_Cmd2(pwm, 0, 0, 0);
+    C610_Updata_Info(C610_Speed,
+                     motor_chassis[0].speed_rpm,
+                     motor_chassis[0].given_current,
+                     pwm);
 }
 
 float Avarage(float *val, int len)

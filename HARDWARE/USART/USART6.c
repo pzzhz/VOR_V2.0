@@ -119,6 +119,7 @@ void USART6_IRQHandler(void) // 串口1中断服务程序
         {
             USART_ITConfig(USART6, USART_IT_TXE, DISABLE);
         }
+				 USART_ClearITPendingBit(USART6, USART_IT_TXE);
     }
-    USART6->SR = 0;
+//    USART6->SR = 0;
 }

@@ -27,6 +27,7 @@ void thread_create(void* function, Task_control_info* e, TaskHandle_t* control_t
 TaskHandle_t task_ctrl_thread, contrl_thread;
 Task_control_info control_info = { 0 };
 uint8_t inc_dir_g;
+uint8_t Uart_Test_Pass = 0, Uart_Test_Req = 0;
 
 #if 0
 UI_Function_struct control_cb_array[control_cb_array_size];
@@ -124,9 +125,9 @@ uint8_t Ctrl_Resume_Config()
 			sizeof(control_info.Dev_Mode_Bit.flag));
 	}
 
-	control_info.Dev_Mode_Bit.C610 = 0;
-	// control_info.Dev_Mode_Bit.Inc_DIR = 0;
-	control_info.Dev_Mode_Bit.UARTMODE = 0;
+	// control_info.Dev_Mode_Bit.C610 = 0;
+	// // control_info.Dev_Mode_Bit.Inc_DIR = 0;
+	// control_info.Dev_Mode_Bit.UARTMODE = 0;
 	// inc_dir_g = 1;
 }
 
@@ -177,7 +178,7 @@ uint8_t Ctrl_Read_Ack(uint8_t* msg, uint16_t msg_size,
 	if (Msg_COMPARE("GetRunInfo", msg))
 	{
 		sprintf(src, "RunInfo  %s %d",
-			GetRunState(),control_info.currentCount+1);
+			GetRunState(), control_info.currentCount + 1);
 		return 0;
 	}
 	if (Msg_COMPARE("ReqTaskMsg", msg))
@@ -295,7 +296,7 @@ uint8_t Ctrl_Write_Ack(uint8_t* msg, uint16_t msg_size,
 	return 0;
 }
 
-uint8_t Maintain_Service_Read_ack(uint8_t* msg, uint16_t msg_size,
+uint8_t Maintain_Service_Read_ack( uint8_t * msg, uint16_t msg_size,
 	uint8_t* src, uint16_t SrcSize)
 {
 	if (Msg_COMPARE("Camere LED", msg))
@@ -321,6 +322,8 @@ uint8_t Maintain_Service_Read_ack(uint8_t* msg, uint16_t msg_size,
 		{
 			if (volX1000 < 1800 && volX1000 > 500)
 				res = HAL_CAM_SET_Led_Voltage(volX1000);
+			if (res == 0)
+				sprintf(msg, "fail");
 		}
 		return !res;
 	}
@@ -376,7 +379,7 @@ uint8_t Maintain_Service_Read_ack(uint8_t* msg, uint16_t msg_size,
 		if (res == 6)
 		{
 		}
-}
+	}
 	if (Msg_COMPARE("FACTORY Reset", msg))
 	{
 #ifdef STM32F40_41xxx
@@ -385,6 +388,20 @@ uint8_t Maintain_Service_Read_ack(uint8_t* msg, uint16_t msg_size,
 		// Verify_Factory_Reset();
 		RequestReset();
 #endif
+	}
+	if (Msg_COMPARE("UART Test", msg))
+	{
+		Uart_Test_Req = 1;
+		ControlDelay(100);
+		uint32_t* num = (uint32_t*)src;
+		if (num != 0 && SrcSize == sizeof(uint32_t))
+		{
+			*num = Uart_Test_Pass;
+		}
+	}
+	if (Msg_COMPARE("ENCODE Test", msg))
+	{
+		
 	}
 	if (Msg_COMPARE("DFU", msg))
 	{
@@ -483,6 +500,12 @@ uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info* e, uint8_t LR)
 			Message_Center_Read_prinft("Ctrl", 0, 0,
 				"FACTORY Reset");
 		}
+		if (Msg_COMPARE("UART Test", message))
+		{
+			Uart_Test_Pass = (LR) ?
+				(Uart_Test_Pass | 2) :
+				(Uart_Test_Pass | 1);
+		}
 	}
 	if (*last_Rk3588_Flag != *flag)
 	{
@@ -531,6 +554,13 @@ uint8_t Rk3588_Ack_Cmd_Handle(Task_control_info* e, uint8_t LR)
 		{
 			*Rk_Ack_Count = *Rk_Ack_Count - 1;
 		}
+	}
+	if (Uart_Test_Req)
+	{
+		extern void RK3588_SendTestCmd();
+		RK3588_SendTestCmd();
+		Uart_Test_Req = 0;
+		Uart_Test_Pass=0;
 	}
 
 	*last_Rk3588_Flag = *flag;
@@ -604,8 +634,7 @@ void controlfunction()
 	control_info.State_Bit.powerUp = 3;
 	while (1)
 	{
-		Rk3588_Ack_Cmd_Handle(&control_info, 0);
-		Rk3588_Ack_Cmd_Handle(&control_info, 1); //(L) pc using com 1 stm32 using uart1
+
 		Ctrl_info_Indicator(&control_info);
 		if (control_info.State_Bit.isRun == 0)
 		{
@@ -646,9 +675,10 @@ void controlfunction()
 #ifndef STM32F40_41xxx
 		control_info.State_Bit.powerUp = 0;
 		control_info.State_Bit.WaitRk = 0;
-		control_info.Rk3588_Flag.Rflag = 0;
-		control_info.Rk3588_Flag.Lflag = 0;
-
+	/*	control_info.Rk3588_Flag.Rflag = 0;
+		control_info.Rk3588_Flag.Lflag = 0;*/
+		Rk3588_Ack_Cmd_Handle(&control_info, 0);
+		Rk3588_Ack_Cmd_Handle(&control_info, 1);
 #else
 		switch (control_info.Dev_Mode_Bit.UARTMODE)
 		{
@@ -664,7 +694,9 @@ void controlfunction()
 		case 2:
 
 			break;
-			}
+		}
+		Rk3588_Ack_Cmd_Handle(&control_info, 0);
+		Rk3588_Ack_Cmd_Handle(&control_info, 1); //(L) pc using com 1 stm32 using uart1
 		//		if (control_info.Dev_Mode_Bit.Rkmask)
 		//		{
 		//			control_info.State_Bit.powerUp = 0;

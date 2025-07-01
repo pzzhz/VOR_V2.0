@@ -113,7 +113,11 @@ void RK3588_terminal_Printf(uint8_t LR)
 	(LR) ? Rk3588_Printf("cancel") : Rk3588_L_Printf("cancel");
 }
 
-
+void RK3588_SendTestCmd()
+{
+	Rk3588_Printf("UART Test\n");
+	Rk3588_L_Printf("UART Test\n");
+}
 
 void RK3588_Initial_Printf(void)
 {

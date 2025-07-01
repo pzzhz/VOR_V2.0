@@ -41,6 +41,7 @@ extern "C"
     void tim_f_set(int f);
     void Slave_server_Init(void);
     float Slave1_Get_Encode_Angle(void);
+		float Slave1_Get_Encode_Angle_real(void);
     int32_t Slave1_Get_Encode(void);
     void Slave1_Set_Encode(uint32_t cnt);
     void Slave1_Set_Encode_Angle(float angle);

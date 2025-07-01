@@ -435,6 +435,15 @@ float Slave1_Get_Encode_Angle()
     return angle;
 }
 
+float Slave1_Get_Encode_Angle_real()
+{
+
+    int32_t count = *(int32_t *)&(TIM2->CNT);
+    count = count - 1073741 / 2;
+    float angle = count / 1073741.0f * 360.0f;
+    return angle;
+}
+
 uint8_t Slave1_get_Encode_error()
 {
     return isEncode_error;
